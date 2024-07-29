@@ -12,6 +12,9 @@ static void checkWinCondition(Player* p, FOE_DLL* foeList) {
     }
 }
 
+// When the player dies, a counter incrememnts
+// Once the counter reaches 10, it's Game Over
+// Until then, the Player is placed back at its starter position
 static void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, char map[15][15]) {
 
 	printf("You died!\n");
@@ -34,9 +37,11 @@ static void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, 
 		p->E.dead = false;
 
 		placeObjectsOnMap(objList, foeList, p, 5);
+		breedFoes(p, objList, foeList);
 	}
 }
 
+// Game initializes and the loop begins
 static void NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	p = initPlayer();																			// Player is initialized
 
@@ -49,6 +54,7 @@ static void NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FO
 	GameLoop(getc, map, p, objList, foeList);													// Everything's set. LET THE GAME BEGIN!!!
 }
 
+// Game initializes (while using a save file as source), and the loop begins
 static void LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	initPlayerMagic(p);																			// Since the game has already loaded the save, magic initialization is first
 
@@ -61,7 +67,7 @@ static void LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 	GameLoop(getc, map, p, objList, foeList);
 }
 
-// the game loop
+// Game loop
 static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	while (1) {
 		removeFoeByStatus(foeList);																// In case there was a fight, the corpses need to be taken care of
@@ -93,7 +99,7 @@ static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 	}
 }
 
-// the main menu and its mechanism
+// The main menu and its mechanism
 static void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
 

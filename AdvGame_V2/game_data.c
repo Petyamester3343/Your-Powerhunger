@@ -23,6 +23,7 @@
 
 #define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
 
+// Checks if the file has the extension .dat
 static bool hasDatExtension(const char* fileName) {
     const char* ext = strrchr(fileName, '.');
     printf("Checking file: %s, found extension: %s\n",
@@ -30,16 +31,19 @@ static bool hasDatExtension(const char* fileName) {
     return (ext != NULL && strcmp(ext, ".dat") == 0);
 }
 
+// Creates the save folder
 static void ensureSaveDir() {
     if(_mkdir(SAVE_DIR) != 0 && errno != EEXIST) {
         fprintf(stderr, "Cannot create main save directory!\n");
     }
 }
 
+// Checks if the file exists
 static bool checkFileExists(const char* filePath) {
     return access(filePath, F_OK) != -1;
 }
 
+// Saves the Player's stats (actions included)
 static void saveData(Player* p) {
     ensureSaveDir();
 
@@ -82,6 +86,7 @@ static void saveData(Player* p) {
 	SLEEP_MS(500);
 }
 
+// Lists the existing save files
 static void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
     DIR* dir;
     struct dirent* entry;
@@ -111,6 +116,7 @@ static void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
     printf("Files found: %d\n", *fileCount);
 }
 
+// Allows the user to choose from the available save datas and load one of them
 static int chooseAndLoadData(Player* p) {
 	char saveFiles[10][MAX_PATH];
 	int fileCount = 0;
@@ -184,6 +190,7 @@ static int chooseAndLoadData(Player* p) {
 	return 0;
 }
 
+// Allows the user to choose from the available save datas and delete one of them
 static void chooseAndDeleteData() {
 	char saveFiles[10][MAX_PATH];
 	int fileCount = 0;

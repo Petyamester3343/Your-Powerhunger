@@ -5,10 +5,13 @@
 #include "DLL_container.h"
 #include "def_vals.h"
 
+// Mathematical formula for the Player
+// Once reached, they will ascend to the next level
 #define LV_UP_REQ(lv) ((lv)*(lv)*25)
 
 static void playerChoosesAction(Player* p, Foe* f);
 
+// Allows the character to level up
 static void level_up(Player* p) {
 	if (p->E.xp >= LV_UP_REQ(p->lv)) {
 		p->lv++;
@@ -63,8 +66,8 @@ static void xp_gain(unsigned int experience, Player* p, bool fought) {
 	}
 }
 
-// Grants the player money from slaying a Foe
-// Shops will be at Town one day
+// Grants the player GOLD from slaying a Foe
+// The first can be used to buy upgrades in Shop
 static void looting(Player* p, unsigned int money) {
 	p->money += money;
 	printf("%d GOLD gained!\n", money);
@@ -72,7 +75,7 @@ static void looting(Player* p, unsigned int money) {
 }
 
 
-// determines if there is a Foe in the Player's vicinity
+// Determines if there is a Foe in the Player's vicinity
 static bool checkPlayerSurrounding(Foe* f, Player* p) {
 
 	return
@@ -227,7 +230,8 @@ static void foeAttack(Player* p, Foe* f) {
 	}
 }
 
-// Player casts Magia on a Foe in exchange for n MP (n is varying)
+// Player casts Magia on a Foe in exchange for n MP
+// (n is varying, for it is based on the Magia the Player may casr)
 static void playerCastsMagic(Player* p, Foe* f, Magia m) {
 	bool obliterated = false;
 
@@ -296,6 +300,7 @@ static void playerCastsMagic(Player* p, Foe* f, Magia m) {
 	Sleep(500);
 }
 
+// Allows the Player to choose from their acquired spells
 static void playerChoosesMagic(Player* p, Foe* f) {
 	char magChoice[7] = { '>', ' ', ' ', ' ', ' ', ' ', ' ' };
 
@@ -499,7 +504,7 @@ static void foeChoosesAction(Player* p, Foe* f) {
 	}
 }
 
-// character can initiate attack after they moved
+// Allows the Player to initiate attack after they moved
 static void impendingDoom(Player* p, FOE_DLL* foeList) {
 	FoeNode* curr = foeList->head;
 	while (curr != NULL) {

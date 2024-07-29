@@ -9,12 +9,14 @@
 
 static int foeCooldown = 0;
 
-// indicator of Jimmy having been defeated
+// Indicators of Jimmy having been defeated and summoned
 static bool jimmyDefeated = false;
 static bool jimmySummoned = false;
 
-// level up value
+// Level up value, used to incrememnt the Player's numeral stats
 const static unsigned int LVUP_VAL = 10;
+
+
 
 // PLAYER DEFAULT STATS
 static unsigned int PLAYER_MAX_HP = 100;
@@ -43,6 +45,8 @@ static void defPlayerValRestore(Player* p) {
 	p->boughtDEF = false;
 	p->boughtVigor = false;
 }
+
+
 
 // Enemies
 
@@ -87,6 +91,8 @@ static unsigned int JIMMY_HP = 150;
 static unsigned int JIMMY_ATK = 50;
 static unsigned int JIMMY_DEF = 40;
 
+
+
 // Magic
 
 // FIREBALL DEFAULT STATS
@@ -126,6 +132,8 @@ static unsigned int RSOJ_LV_REQ = 0;
 static unsigned int RSOJ_PRICE = 1250;
 static const char* AKARI = "Raining Spears of Justice";
 
+
+// Initializes the Player's Magia roster
 static void initPlayerMagic(Player* p) {
 	// initializing magic
 	for (unsigned int i = 0; i < 6; i++) {

@@ -6,7 +6,7 @@
 #include <math.h>
 #include <time.h>
 
-// draws the map
+// Draws the map
 static void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // to manipulate the color of the output
 	system("cls");
@@ -70,6 +70,7 @@ static void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
 	}
 }
 
+// Moves the boss of the game
 static void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p) {
 	if(isPresent) {
         FoeNode* jimmyNode = findFoeByName(foeList, "Jimmy");
@@ -97,6 +98,7 @@ static void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p) {
 	}
 }
 
+// Allows the Foes to move
 static void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
 	FoeNode* current = foeList->head;
 	while (current != NULL) {
@@ -161,8 +163,7 @@ static void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
 	}
 }
 
-// initializes the player and the spells
-// in order to avoid access violation
+// Initializes the player and the spells in order to avoid access violation
 static Player* initPlayer() {
 	Player* p = (Player*)malloc(sizeof(Player));
 
@@ -181,7 +182,9 @@ static Player* initPlayer() {
 	return p;
 }
 
+// Initializes the map
 static void initMap(char map[MAP_SIZE][MAP_SIZE]) {
+	memset(map, '\0', sizeof(map[0][0] * MAP_SIZE * MAP_SIZE));
 	FILE* mapFP = fopen("map.txt", "r");
 
 	if (mapFP == NULL) {
@@ -205,6 +208,8 @@ static void initMap(char map[MAP_SIZE][MAP_SIZE]) {
 	fclose(mapFP);
 }
 
+// Places a random Object on the map, which buffs the Player (until the next level up, that is)
+// Depending on the situation, the iteration can be controlled
 static void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsigned int num) {
 	for (int i = 0; i < num; i++) {
 		Object* o = (Object*)malloc(sizeof(Object));
@@ -236,6 +241,7 @@ static void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsig
 	}
 }
 
+// Allows the Player to pick Objects up
 static void playerSeeksObj(Player* p, OBJ_DLL* list) {
 	static int mangaFound = 0;
 	ObjNode* currObjNode = list->head;
@@ -478,9 +484,9 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
 	return moved;
 }
 
-// A method which creates Foes based on the Player's level
+// Creates Foes based on the Player's level
 static void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
-    for(unsigned int i=0; i<5; i++) {
+    for(unsigned int i = 0; i < 5; i++) {
         if (p->lv <= 3) {
             if (getFoeCountByName(foeList, SLIME_NAME) < 2) { // Limit number of Slimes
                 insertFoeIntoList(p, objList, foeList, SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, 10);
@@ -536,7 +542,7 @@ static void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	}
 }
 
-// debug feature
+// A simple non-interactive UI
 static void showPlayerInfo(Player* p) {
 	printf("HP:\t%d/%d\n", p->E.hp, PLAYER_MAX_HP);
 	printf("MP:\t%d/%d\n", p->mp, PLAYER_MAX_MP);
@@ -546,7 +552,7 @@ static void showPlayerInfo(Player* p) {
 	printf("GOLD:\t%d\n", p->money);
 }
 
-// debug feature
+// The Player's current location on the map (under the UI)
 static void narrate(char map[15][15], Player* p) {
 	printf("Current location: ");
 	switch (map[p->E.pos.col][p->E.pos.row]) {

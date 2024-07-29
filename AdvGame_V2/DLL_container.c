@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+// Checks if a certain position is already occupied
 static bool isPosOccupied(unsigned int col, unsigned int row, Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
 	if (col == p->E.pos.col && row == p->E.pos.row && p->E.pos.occupied)
 		return true;
@@ -23,7 +24,7 @@ static bool isPosOccupied(unsigned int col, unsigned int row, Player* p, OBJ_DLL
 	return false;
 }
 
-// random position generator
+// A random position generator
 static Pos generateRandomPos(Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
 	Pos pos = { 0, 0 };
 
