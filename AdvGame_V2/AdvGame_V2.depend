@@ -1,0 +1,103 @@
+# depslib dependency file v1.0
+1722241669 source:c:\users\phant0m\desktop\advgame_v2\advgame_v2\dll_container.c
+	"DLL_container.h"
+	<string.h>
+
+1721734674 c:\users\phant0m\desktop\advgame_v2\advgame_v2\dll_container.h
+	"entities.h"
+
+1722247111 c:\users\phant0m\desktop\advgame_v2\advgame_v2\entities.h
+	<stdbool.h>
+	<stdlib.h>
+
+1722247923 source:c:\users\phant0m\desktop\advgame_v2\advgame_v2\game_data.c
+	"def_vals.h"
+	<windows.h>
+	<direct.h>
+	<sys/stat.h>
+	<unistd.h>
+	<conio.h>
+	<dirent.h>
+	<errno.h>
+	<limits.h>
+	<stdbool.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1722247111 c:\users\phant0m\desktop\advgame_v2\advgame_v2\def_vals.h
+	<string.h>
+	"entities.h"
+
+1721822336 source:c:\users\phant0m\desktop\advgame_v2\advgame_v2\game_loop.c
+	"skeleton.c"
+
+1722252431 c:\users\phant0m\desktop\advgame_v2\advgame_v2\skeleton.c
+	"game_data.c"
+	"battle_sys.c"
+	"shop.c"
+	"DLL_container.c"
+	<math.h>
+	<time.h>
+
+1722247923 c:\users\phant0m\desktop\advgame_v2\advgame_v2\game_data.c
+	"def_vals.h"
+	<windows.h>
+	<direct.h>
+	<sys/stat.h>
+	<unistd.h>
+	<conio.h>
+	<dirent.h>
+	<errno.h>
+	<limits.h>
+	<stdbool.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1722233203 c:\users\phant0m\desktop\advgame_v2\advgame_v2\battle_sys.c
+	<stdio.h>
+	<windows.h>
+	<conio.h>
+	"DLL_container.h"
+	"def_vals.h"
+
+1722246218 c:\users\phant0m\desktop\advgame_v2\advgame_v2\shop.c
+	"entities.h"
+	"def_vals.h"
+	<stdio.h>
+	<windows.h>
+	<conio.h>
+
+1722241669 c:\users\phant0m\desktop\advgame_v2\advgame_v2\dll_container.c
+	"DLL_container.h"
+	<string.h>
+
+1722252431 source:c:\users\phant0m\desktop\advgame_v2\advgame_v2\skeleton.c
+	"game_data.c"
+	"battle_sys.c"
+	"shop.c"
+	"DLL_container.c"
+	<math.h>
+	<time.h>
+
+1722246218 source:c:\users\phant0m\desktop\advgame_v2\advgame_v2\shop.c
+	"entities.h"
+	"def_vals.h"
+	<stdio.h>
+	<windows.h>
+	<conio.h>
+
+1721822301 source:c:\users\phant0m\desktop\advgame_v2\advgame_v2\main.c
+	"game_loop.c"
+
+1722253115 c:\users\phant0m\desktop\advgame_v2\advgame_v2\game_loop.c
+	"skeleton.c"
+
+1722233203 source:c:\users\phant0m\desktop\advgame_v2\advgame_v2\battle_sys.c
+	<stdio.h>
+	<windows.h>
+	<conio.h>
+	"DLL_container.h"
+	"def_vals.h"
+
