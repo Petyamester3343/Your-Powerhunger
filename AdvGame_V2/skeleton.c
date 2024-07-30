@@ -421,7 +421,7 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
 		else printf("%s bumped into a wall! (X: %d, Y: %d)\n", p->E.name, p->E.pos.col + 1, p->E.pos.row + 1);
 		break;
 	case 'e': impendingDoom(p, foeList); break;
-    case 'l': placeObjectsOnMap(objList, foeList, p, 5); break; // debug
+    //case 'l': placeObjectsOnMap(objList, foeList, p, 5); break; // debug, floods the map with object to check for appending mistakes
 	case '0': saveData(p); break;
 	case 32:
 		while (curr != NULL) {
