@@ -184,7 +184,7 @@ static Player* initPlayer() {
 
 // Initializes the map
 static void initMap(char map[MAP_SIZE][MAP_SIZE]) {
-	memset(map, '\0', sizeof(map[0][0] * MAP_SIZE * MAP_SIZE));
+	memset(map, '\0', sizeof(char * MAP_SIZE * MAP_SIZE));
 	FILE* mapFP = fopen("map.txt", "r");
 
 	if (mapFP == NULL) {
@@ -238,7 +238,7 @@ static void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsig
 	}
 }
 
-// Allows the Player to pick Objects up
+// Allows the Player to pick Objects up and consume them
 static void playerSeeksObj(Player* p, OBJ_DLL* list) {
 	static int mangaFound = 0;
 	ObjNode* currObjNode = list->head;
@@ -246,7 +246,7 @@ static void playerSeeksObj(Player* p, OBJ_DLL* list) {
 		if (currObjNode->o->pos.col == p->E.pos.col && currObjNode->o->pos.row == p->E.pos.row) {
 			ObjNode* nextObjNode = currObjNode->next;
 
-			// Found the object
+			// Player has found an Object
 			switch (currObjNode->o->sign) {
 			case '+':
 				printf("%s found some Elixir! HP +%d\n", p->E.name, currObjNode->o->eff);
@@ -481,6 +481,24 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
 	if (moved) {
 		printf("%s moved! (X: %d, Y: %d)\n", p->E.name, p->E.pos.col + 1, p->E.pos.row + 1);
 		playerSeeksObj(p, objList); // After moving one unit in any direction, Player checks if "there is something on the ground"
+		curr = foeList->head;
+		while(curr != NULL) {
+            if(curr->f->E.pos.col == p->E.pos.col && curr->f->E.pos.row == p->E.pos.row) {
+                int rndGen = rand()%2;
+                switch(rndGen) {
+                case 0:
+                    printf("%s successfully approached %s! %s gets to make the first move!\n", p->E.name, curr->f->E.name, p->E.name);
+                    SLEEP_MS(500);
+                    playerChoosesAction(p, curr->f);
+                    break;
+                case 1:
+                    printf("%s unfortunately noticed %s! %s gets to act first!\n", curr->f->E.name, p->E.name, curr->f->E.name);
+                    SLEEP_MS(500);
+                    foeChoosesAction(p, curr->f);
+                    break;
+                }
+            }
+		}
 	}
 
 	return moved;

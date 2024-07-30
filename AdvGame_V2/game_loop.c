@@ -25,6 +25,7 @@ static void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, 
 	if (p->deathCount == 10) {																	// Player can die 10 times in total. After that, the game restarts.
 		const char* msg = "GAME OVER";
 		for (int i = 0; i < sizeof(msg); i++) {
+			p->deathCount = 0;
 			printf("%c ", msg[i]);
 			Sleep(10000);
 			MainMenu(input, map, p, objList, foeList);
@@ -56,15 +57,15 @@ static void NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FO
 
 // Game initializes (while using a save file as source), and the loop begins
 static void LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
-	initPlayerMagic(p);																			// Since the game has already loaded the save, magic initialization is first
+	initPlayerMagic(p);																			// Since the game has already loaded the save, re-initialization of Player's Magia is first
 
 	objList = createObjList();																	// Object list are initialized for now
 	placeObjectsOnMap(objList, foeList, p, 5);
 
-	foeList = (FOE_DLL*)createFoeList();
+	foeList = (FOE_DLL*)createFoeList();                                                        // Same sitch with the Foe list
 	breedFoes(p, objList, foeList);
 
-	GameLoop(getc, map, p, objList, foeList);
+	GameLoop(getc, map, p, objList, foeList);                                                   // Everything's set. LET THE GAME CONTINUE!
 }
 
 // Game loop
@@ -72,7 +73,6 @@ static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 	bool divineHelpGained = false;
 
 	while (1) {
-		removeFoeByStatus(foeList);																// In case there was a fight, the corpses need to be taken care of
 		system("cls");																			// Clears the console for the new output
 		drawMap(map, p, objList, foeList);														// Draws the map (player, foes, objects, unoccupied positions)
 		showPlayerInfo(p);																		// A simple UI, which shows the current and max. stats of player, along with the money they possess
@@ -80,6 +80,7 @@ static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 
 		bool acted = playerAction(getc, map, p, objList, foeList);								// This function determines if the player has "moved" in any way possible.
 		if (acted) {
+		    removeFoeByStatus(foeList);															// In case there was a fight, the Foes' corpses need to be taken care of
 			moveFoes(foeList, objList, p);														// If so, the enemies move, too (but their movement is randomized, quasi-wandering).
 			moveJimmy(jimmySummoned, foeList, p);												// If Jimmy is present, he moves towards the player (based on the absolute values of the hor. and vert. distance between them)
 
@@ -99,8 +100,6 @@ static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 		}
 
 		checkWinCondition(p, foeList);
-
-		Sleep(10);
 	}
 }
 
