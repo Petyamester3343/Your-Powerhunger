@@ -7,8 +7,6 @@
 // DEFAULT MAP SIZE
 #define MAP_SIZE 15
 
-static int foeCooldown = 0;
-
 // Indicators of Jimmy having been defeated and summoned
 static bool jimmyDefeated = false;
 static bool jimmySummoned = false;

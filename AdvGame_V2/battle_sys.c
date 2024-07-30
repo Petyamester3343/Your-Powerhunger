@@ -308,34 +308,34 @@ static void playerChoosesMagic(Player* p, Foe* f) {
 		system("cls");
 		printf("Choose your spell:\n");
 		if (p->M[0].acquired)
-			printf("\t%c %s\n", magChoice[0], p->M[0].magName);
+			printf("\t%c %s (%d MP)\n", magChoice[0], p->M[0].magName, p->M[0].magCost);
 		else
-			printf("-\n");
+			printf("\t%c -\n", magChoice[0]);
 
 		if (p->M[1].acquired)
-			printf("\t%c %s\n", magChoice[1], p->M[1].magName);
+			printf("\t%c %s (%d MP)\n", magChoice[1], p->M[1].magName, p->M[1].magCost);
 		else
-			printf("-\n");
+			printf("\t%c -\n", magChoice[1]);
 
 		if (p->M[2].acquired)
-			printf("\t%c %s\n", magChoice[2], p->M[2].magName);
+			printf("\t%c %s (%d MP)\n", magChoice[2], p->M[2].magName, p->M[2].magCost);
 		else
-			printf("-\n");
+			printf("\t%c -\n", magChoice[2]);
 
 		if (p->M[3].acquired)
-			printf("\t%c %s\n", magChoice[3], p->M[3].magName);
+			printf("\t%c %s (%d MP)\n", magChoice[3], p->M[3].magName, p->M[3].magCost);
 		else
-			printf("-\n");
+			printf("\t%c -\n", magChoice[3]);
 
 		if (p->M[4].acquired)
-			printf("\t%c %s\n", magChoice[4], p->M[4].magName);
+			printf("\t%c %s (%d MP)\n", magChoice[4], p->M[4].magName, p->M[4].magCost);
 		else
-			printf("-\n");
+			printf("\t%c -\n", magChoice[4]);
 
 		if (p->M[5].acquired && strcmp(AKARI, p->M[5].magName) == 0)
-			printf("\t%c %s\n", magChoice[5], p->M[5].magName);
+			printf("\t%c %s (%d MP)\n", magChoice[5], p->M[5].magName, p->M[5].magCost);
 		else
-			printf("-\n");
+			printf("\t%c -\n", magChoice[5]);
 
 		printf("\t%c EXIT\n\n", magChoice[6]);
 		char in = getch();
@@ -477,25 +477,39 @@ static void foeChoosesAction(Player* p, Foe* f) {
         && (f->E.hp != 0 && p->E.hp != 0)) {
 		switch (rand() % 50) {
 		default:
+		    // Defaulting to attak Player
 			if (!f->E.fled && !p->E.fled)
 				foeAttack(p, f);
 			break;
 		case 12:
-			f->E.def += 2;
+		    // Case of Foe "hardening its skin"
+			f->E.def += 5;
 			defChanged = true;
 			printf("%s hardened its skin!\n", f->E.name);
 			Sleep(500);
 			break;
-		case 25: f->E.fled = true; break;
+		case 25:
+		    // Case of Foe fleeing from the Player's wrath
+		    if(f->E.hp <= 25) {
+                f->E.fled = true;
+                break;
+		    }
 		}
 
-		if (p->E.def != PLAYER_DEF)
+		// Player's DEF returns to original after each turn
+		if (p->E.def != PLAYER_DEF) {
 			p->E.def = PLAYER_DEF;
+		}
 
-		if (defChanged) f->E.def -= 2;
+		// Foe's DEF returns to original
+		if (defChanged){
+            f->E.def -= 5;
+		}
 
-		if (!p->E.fled && !f->E.fled)
+		// In case both quarries are still there
+		if (!p->E.fled && !f->E.fled) {
 			playerChoosesAction(p, f);
+		}
 
 		else {
 			printf("%s has fled the scene!\n", f->E.name);
@@ -504,7 +518,7 @@ static void foeChoosesAction(Player* p, Foe* f) {
 	}
 }
 
-// Allows the Player to initiate attack after they moved
+// Allows the Player to initiate attack when they have a Foe in their vicinity
 static void impendingDoom(Player* p, FOE_DLL* foeList) {
 	FoeNode* curr = foeList->head;
 	while (curr != NULL) {
@@ -535,7 +549,7 @@ static void playerChoosesAction(Player* p, Foe* f) {
 	5. elem.: FLEE
 	*/
 
-	// choose an action
+	// The choosing segment
 	while (p->E.fled == false && !p->E.dead && !f->E.dead) {
 		system("cls");
 		printf("%s's HP: %d\n%s's MP: %d\n\n", p->E.name, p->E.hp, p->E.name, p->mp);
@@ -591,15 +605,19 @@ static void playerChoosesAction(Player* p, Foe* f) {
 			break;
 		case 13:
 			chose = true;
+		    // If the Player chooses to attack the Foe
 			if (actChoice[0] == '>') {
 				playerAttack(p, f);
 			}
+			// If the Player chooses to initiate his defenses
+			// I'd make it dependent on the Aegis Cores the Player picked up
 			else if (actChoice[1] == '>') {
 				printf("%s strengthtened his defense!", p->E.name);
 				if (p->E.def == tempDEF)
 					p->E.def = enhDEF;
 				Sleep(500);
 			}
+			// If the Player chooses to cast Magia on the Foe
 			else if (actChoice[2] == '>') {
 				if (p->M[0].acquired) {
 					unsigned int mana = p->mp;
@@ -615,6 +633,7 @@ static void playerChoosesAction(Player* p, Foe* f) {
 					Sleep(500);
 				}
 			}
+			// If the Player decides to heal himself
 			else if (actChoice[3] == '>') {
 				printf("%s ate some bread! HP +20", p->E.name);
 				if (p->E.hp < PLAYER_MAX_HP)
@@ -623,6 +642,7 @@ static void playerChoosesAction(Player* p, Foe* f) {
 					p->E.hp = PLAYER_MAX_HP;
 				Sleep(500);
 			}
+			// If the player flees the scene
 			else {
 				p->E.fled = true;
 				chose = false;
@@ -638,6 +658,7 @@ static void playerChoosesAction(Player* p, Foe* f) {
 			return;
 		}
 
+		// In case both the quarries are alive and has not fled yet
 		if (!f->E.dead && (!f->E.fled || !p->E.fled) && chose) {
 			system("cls");
 			foeChoosesAction(p, f);

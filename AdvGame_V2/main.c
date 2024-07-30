@@ -23,10 +23,5 @@ int main(void)
     // Main Menu shows up
     MainMenu(c, map, p, objList, foeList);
 
-    // Freeing the memory upon quitting the game
-    destroyFoeList(foeList);
-    destroyObjList(objList);
-    free(p);
-
-    return 666;
+    return 0;
 }

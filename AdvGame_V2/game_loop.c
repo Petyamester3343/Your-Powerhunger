@@ -69,6 +69,8 @@ static void LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 
 // Game loop
 static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+	bool divineHelpGained = false;
+
 	while (1) {
 		removeFoeByStatus(foeList);																// In case there was a fight, the corpses need to be taken care of
 		system("cls");																			// Clears the console for the new output
@@ -84,9 +86,12 @@ static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 			if (getFoeCount(foeList) == 0) {													// Should the player clear the map, they are granted another chance to gain more power
 				placeObjectsOnMap(objList, foeList, p, 5);
 				breedFoes(p, objList, foeList);
+				divineHelpGained = false;
 			}
-			if (p->E.hp < PLAYER_MAX_HP)
+			if (p->E.hp < PLAYER_MAX_HP && !divineHelpGained) {
 				placeObjectsOnMap(objList, foeList, p, 1);										// Loot rain for more power!
+				divineHelpGained = true;
+			}
 		}
 
 		if (p->E.hp == 0) {
@@ -148,7 +153,7 @@ static void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 			}
 
 			else if (choice[1] == '#') {
-				if (chooseAndLoadData(p) == -1) {															// Should a save file not exist
+				if (chooseAndLoadData(p) == -1) {												    // Should a save file not exist
 					NewGame(getc, map, p, objList, foeList);
 				}
 				else {																				// If there is a save file,
@@ -156,7 +161,7 @@ static void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 				}
 			}
 			else {
-				chooseAndDeleteData();																        // Save file gets deleted
+				chooseAndDeleteData();																// Save file gets deleted
 			}
 			break;
 		case 27: exit(1); break;

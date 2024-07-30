@@ -60,31 +60,37 @@ static ObjNode* findObjByPos(OBJ_DLL* list, Pos p) {
 }
 
 // Inserts an instance of object into the list
-static void insertObjIntoList(OBJ_DLL* olist, FOE_DLL* flist, char sign, unsigned int eff, Player* p) {
+static bool insertObjIntoList(OBJ_DLL* olist, FOE_DLL* flist, char sign, unsigned int eff, Player* p) {
 	Object* o = (Object*)malloc(sizeof(Object));
-	if (o != NULL) {
-		o->sign = sign;
-		o->eff = eff;
-		o->pos = generateRandomPos(p, olist, flist);
-		o->pos.occupied = true;
-	}
+	if (o == NULL)
+        return false;
+
+	o->sign = sign;
+	o->eff = eff;
+	o->pos = generateRandomPos(p, olist, flist);
+	o->pos.occupied = true;
 
 	ObjNode* neu = (ObjNode*)malloc(sizeof(ObjNode));
-	if (neu != NULL) {
-		neu->o = o;
-		neu->prev = NULL;
-		neu->next = NULL;
+	if (neu == NULL) {
+        free(o);
+        return false;
+    }
 
-		if (olist->head == NULL) {
-			olist->head = neu;
-			olist->tail = neu;
-		}
-		else {
-			olist->tail->next = neu;
-			neu->prev = olist->tail;
-			olist->tail = neu;
-		}
+    neu->o = o;
+	neu->prev = NULL;
+	neu->next = NULL;
+
+	if (olist->head == NULL) {
+		olist->head = neu;
+		olist->tail = neu;
 	}
+	else {
+		olist->tail->next = neu;
+		neu->prev = olist->tail;
+		olist->tail = neu;
+	}
+
+	return true;
 }
 
 // Empties the object list
@@ -140,19 +146,20 @@ static FOE_DLL* createFoeList() {
 // Creates an instance of Foe inside the list
 static FoeNode* createFoe(Foe* f) {
 	FoeNode* neu = (FoeNode*)malloc(sizeof(FoeNode));
-	if (neu != NULL) {
-		neu->f = f;
-		neu->prev = NULL;
-		neu->next = NULL;
-	}
-	return neu;
+	if (neu == NULL)
+        return NULL;
+
+	neu->f = f;
+	neu->prev = NULL;
+	neu->next = NULL;
+    return neu;
 }
 
 // Finds a foe by its name
 static FoeNode* findFoeByName(FOE_DLL* list, const char* name) {
 	FoeNode* curr = list->head;
 	while (curr != NULL) {
-		if (curr->f->E.name == name) {
+		if (strcmp(curr->f->E.name, name) == 0) {
 			return curr;
 		}
 		curr = curr->next;
@@ -161,21 +168,30 @@ static FoeNode* findFoeByName(FOE_DLL* list, const char* name) {
 }
 
 // Inserts a Foe into the list
-static void insertFoeIntoList(Player* p, OBJ_DLL* ol, FOE_DLL* fl, const char* name, unsigned int hp, unsigned int atk, unsigned int def, unsigned int xp, unsigned int loot) {
+static bool insertFoeIntoList
+(Player* p, OBJ_DLL* ol, FOE_DLL* fl, const char* name, unsigned int hp, unsigned int atk, unsigned int def, unsigned int xp, unsigned int loot) {
 	Foe* f = (Foe*)malloc(sizeof(Foe));
-	if (f != NULL) {
-		f->E.name = strdup(name);
-		f->E.hp = hp;
-		f->E.atk = atk;
-		f->E.def = def;
-		f->E.xp = xp;
-		f->E.pos = generateRandomPos(p, ol, fl);
-		f->E.dead = false;
-		f->E.fled = false;
-		f->loot = loot;
-	}
+	if (f == NULL)
+        return false;
+
+	f->E.name = strdup(name);
+	f->E.hp = hp;
+	f->E.atk = atk;
+	f->E.def = def;
+	f->E.xp = xp;
+	f->E.pos = generateRandomPos(p, ol, fl);
+	f->E.dead = false;
+	f->E.fled = false;
+	f->loot = loot;
+
 
 	FoeNode* neu = createFoe(f);
+
+	if(neu == NULL) {
+        free(f);
+        return false;
+	}
+
 	if (fl->tail == NULL) {
 		fl->head = neu;
 		fl->tail = neu;
@@ -185,6 +201,8 @@ static void insertFoeIntoList(Player* p, OBJ_DLL* ol, FOE_DLL* fl, const char* n
 		neu->prev = fl->tail;
 		fl->tail = neu;
 	}
+
+	return true;
 }
 
 // Removes an instance of Foe from the list

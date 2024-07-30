@@ -119,6 +119,7 @@ static void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
 // Allows the user to choose from the available save datas and load one of them
 static int chooseAndLoadData(Player* p) {
 	char saveFiles[10][MAX_PATH];
+	bzero(saveFiles, sizeof(saveFiles));
 	int fileCount = 0;
 
 	listSaveFiles(saveFiles, &fileCount);

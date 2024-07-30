@@ -11,60 +11,58 @@ static void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // to manipulate the color of the output
 	system("cls");
 
+	bool isDrawn = false;
 	for (unsigned int i = 0; i < MAP_SIZE; i++) {
 		for (unsigned int j = 0; j < MAP_SIZE; j++) {
-			bool isDrawn = false;
 
-			// Draw player
+			// Draw Player
 			if (i == p->E.pos.col && j == p->E.pos.row) {
 				SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
 				printf("X \x1b[0m");
-				isDrawn = true;
+				continue;
 			}
 
-			// Draw objects
+			// Draw the Objects
 			ObjNode* currObj = objList->head;
-			int count = 0;
-			while (currObj != NULL) {
-				if (currObj->o->pos.col == i && currObj->o->pos.row == j) {
-					count++;
-					if (count == 1 && !isDrawn) {
-						SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-						printf("%c \x1b[0m", currObj->o->sign);
-						isDrawn = true;
-					}
-				}
-				currObj = currObj->next;
-			}
+            while(currObj != NULL) {
+                if (currObj->o->pos.col == i && currObj->o->pos.row == j) {
+                    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+                    printf("%c \x1b[0m", currObj->o->sign);
+                    break;
+                }
+                currObj = currObj->next;
+            }
+
+            if(currObj != NULL) continue;
 
 			// Draw foes
 			FoeNode* currFoe = foeList->head;
 			while (currFoe != NULL) {
 				if (currFoe->f->E.pos.col == i && currFoe->f->E.pos.row == j) {
-					if (!isDrawn) {
-						SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-						printf("! \x1b[0m");
-						isDrawn = true;
-					}
-					else {
-						// Foe cannot occupy this cell because it's already occupied
-						isDrawn = false;
-						break; // Exit the loop to prevent further checks
-					}
+                    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+                    if(strcmp(currFoe->f->E.name, "Jimmy") == 0) {
+                        printf("J \x1b[0m");
+                    }
+                    else {
+                        printf("! \x1b[0m");
+                    }
+                    break;
 				}
 				currFoe = currFoe->next;
 			}
 
-			if (!isDrawn) {
-				switch (map[i][j]) {
-				case 'T':
-					SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-					printf("%c \x1b[0m", map[i][j]);
-					break;
-				default:
-					printf("%c \x1b[0m", map[i][j]);
-				}
+			if(currFoe != NULL) continue;
+
+
+            switch (map[i][j]) {
+			case 'T':
+				SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+				printf("%c \x1b[0m", map[i][j]);
+				break;
+			default:
+				printf("%c \x1b[0m", map[i][j]);
 			}
+
 		}
 		printf("\n");
 	}
@@ -95,13 +93,15 @@ static void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p) {
                 }
             }
         }
+        printf("Jimmy moved toward %s! (x: %d, y: %d)\n", p->E.name, jimmyNode->f->E.pos.col + 1, jimmyNode->f->E.pos.row + 1);
+        SLEEP_MS(500);
 	}
 }
 
-// Allows the Foes to move
+// Allows the Foes (except for Jimmy) to move
 static void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
 	FoeNode* current = foeList->head;
-	while (current != NULL) {
+	while (current != NULL && strcmp(current->f->E.name, "Jimmy") != 0) {
 		bool moved = false;
 		Pos newPos;
 		Pos prevPos = current->f->E.pos;
@@ -212,32 +212,29 @@ static void initMap(char map[MAP_SIZE][MAP_SIZE]) {
 // Depending on the situation, the iteration can be controlled
 static void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsigned int num) {
 	for (int i = 0; i < num; i++) {
-		Object* o = (Object*)malloc(sizeof(Object));
-		if (o != NULL) {
-			switch (rand() % 7) {
-			case 0:
-				insertObjIntoList(list, fl, 'S', 5, p);
-				break;
-			case 1:
-				insertObjIntoList(list, fl, 'A', 5, p);
-				break;
-			case 2:
-				insertObjIntoList(list, fl, '+', 5, p);
-				break;
-			case 3:
-				insertObjIntoList(list, fl, '/', 5, p);
-				break;
-			case 4:
-				insertObjIntoList(list, fl, 'M', 5, p);
-				break;
-			case 5:
-				insertObjIntoList(list, fl, '&', 10, p);
-				break;
-			case 6:
-				insertObjIntoList(list, fl, '$', rand() % 30 + 10, p);
-				break;
-			}
-		}
+        switch (rand() % 7) {
+            case 0:
+                insertObjIntoList(list, fl, 'S', 5, p);
+                break;
+            case 1:
+                insertObjIntoList(list, fl, 'A', 5, p);
+                break;
+            case 2:
+                insertObjIntoList(list, fl, '+', 5, p);
+                break;
+            case 3:
+                insertObjIntoList(list, fl, '/', 5, p);
+                break;
+            case 4:
+                insertObjIntoList(list, fl, 'M', 5, p);
+                break;
+            case 5:
+                insertObjIntoList(list, fl, '&', 10, p);
+                break;
+            case 6:
+                insertObjIntoList(list, fl, '$', rand() % 30 + 10, p);
+                break;
+        }
 	}
 }
 
@@ -424,7 +421,7 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
 		else printf("%s bumped into a wall! (X: %d, Y: %d)\n", p->E.name, p->E.pos.col + 1, p->E.pos.row + 1);
 		break;
 	case 'e': impendingDoom(p, foeList); break;
-		// case 'l': placeObjectsOnMap(objList, foeList, p, 5); break; // debug
+    case 'l': placeObjectsOnMap(objList, foeList, p, 5); break; // debug
 	case '0': saveData(p); break;
 	case 32:
 		while (curr != NULL) {
@@ -470,7 +467,12 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
 				break;
 			case 13:
 				exitChose = true;
-				if (exitChoice[0] == '>') exit(177013);
+				if (exitChoice[0] == '>') {
+                    destroyFoeList(foeList);
+                    destroyObjList(objList);
+                    free(p);
+                    exit(177013);
+				}
 				else break;
 			}
 		}
@@ -478,13 +480,14 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
 
 	if (moved) {
 		printf("%s moved! (X: %d, Y: %d)\n", p->E.name, p->E.pos.col + 1, p->E.pos.row + 1);
-		playerSeeksObj(p, objList);
+		playerSeeksObj(p, objList); // After moving one unit in any direction, Player checks if "there is something on the ground"
 	}
 
 	return moved;
 }
 
 // Creates Foes based on the Player's level
+// Adjusted not to flood the map
 static void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
     for(unsigned int i = 0; i < 5; i++) {
         if (p->lv <= 3) {
@@ -535,7 +538,7 @@ static void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
         }
     }
 
-	if (p->lv == 10 && !jimmySummoned) {
+	if (p->lv >= 10 && !jimmySummoned) {
 		insertFoeIntoList(p, objList, foeList, BOSS_NAME, JIMMY_HP, JIMMY_ATK, JIMMY_DEF, 0, 0);
 		foeList->tail->f->E.pos.col = foeList->tail->f->E.pos.row = 14;
 		jimmySummoned = true;
