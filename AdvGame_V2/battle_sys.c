@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <windows.h>
 #include <conio.h>
 
 #include "DLL_container.h"
@@ -8,6 +7,14 @@
 // Mathematical formula for the Player
 // Once reached, they will ascend to the next level
 #define LV_UP_REQ(lv) ((lv)*(lv)*25)
+
+#ifdef _WIN32
+    #include <windows.h>
+    #define SLEEP_MS(ms) Sleep(ms)
+#else
+    #include <unistd.h>
+    #define SLEEP_MS(ms) usleep((ms)*1000)
+#endif // _WIN32
 
 static void playerChoosesAction(Player* p, Foe* f);
 
@@ -28,27 +35,27 @@ static void level_up(Player* p) {
 
 		printf("%s is now at LEVEL %d!\n", p->E.name, p->lv);
 
-		if (p->lv == FIREBALL_LV_REQ) {
+		if (p->lv == FIREBALL_LV_REQ && !p->M[0].acquired) {
 			p->M[0].acquired = true;
 			printf("%s has acquired %s!\n", p->E.name, FB);
 		}
-		if (p->lv == BLIZZARD_LV_REQ) {
+		if (p->lv == BLIZZARD_LV_REQ && !p->M[1].acquired) {
 			p->M[1].acquired = true;
 			printf("%s has acquired %s!\n", p->E.name, BLIZZ);
 		}
-		if (p->lv == LIGHTNING_LV_REQ) {
+		if (p->lv == LIGHTNING_LV_REQ && !p->M[2].acquired) {
 			p->M[2].acquired = true;
 			printf("%s has acquired %s!\n", p->E.name, RAI);
 		}
-		if (p->lv == GRAV_BOMB_LV_REQ) {
+		if (p->lv == GRAV_BOMB_LV_REQ && !p->M[3].acquired) {
 			p->M[3].acquired = true;
 			printf("%s has acquired %s!\n", p->E.name, GRAV);
 		}
-		if (p->lv == LOEWENHERZ_LV_REQ) {
+		if (p->lv == LOEWENHERZ_LV_REQ && !p->M[4].acquired) {
 			p->M[4].acquired = true;
 			printf("%s has acquired %s!\n", p->E.name, LIONHEART);
 		}
-		Sleep(500);
+		SLEEP_MS(500);
 	}
 }
 
@@ -71,9 +78,8 @@ static void xp_gain(unsigned int experience, Player* p, bool fought) {
 static void looting(Player* p, unsigned int money) {
 	p->money += money;
 	printf("%d GOLD gained!\n", money);
-	Sleep(500);
+	SLEEP_MS(500);
 }
-
 
 // Determines if there is a Foe in the Player's vicinity
 static bool checkPlayerSurrounding(Foe* f, Player* p) {
@@ -106,13 +112,13 @@ static void playerAttack(Player* p, Foe* f) {
 						f->E.hp -= pCrit_DMG;
 						printf("CRITICAL DAMAGE!\t(%s: %d\t|\t%s: %d)\n",
 							p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 					else {
 						f->E.hp -= 3;
 						printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n",
 							f->E.name, p->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 				}
 				else {
@@ -120,7 +126,7 @@ static void playerAttack(Player* p, Foe* f) {
 					f->E.dead = true;
 					printf("%s obliterated %s!\n", p->E.name, f->E.name);
 					obliterated = true;
-					Sleep(500);
+					SLEEP_MS(500);
 				}
 			}
 			else {
@@ -129,26 +135,26 @@ static void playerAttack(Player* p, Foe* f) {
 						f->E.hp -= pDMG;
 						printf("Attack successful!\t(%s: %d\t|\t%s: %d)\n",
 							p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 					else {
 						f->E.hp -= 1;
 						printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n",
 							f->E.name, p->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 				}
 				else {
 					f->E.hp = 0;
 					f->E.dead = true;
 					printf("%s smoked %s!\n", p->E.name, f->E.name);
-					Sleep(500);
+					SLEEP_MS(500);
 				}
 			}
 		}
 		else {
 			printf("%s missed!\n", p->E.name);
-			Sleep(500);
+			SLEEP_MS(500);
 		}
 	}
 
@@ -158,7 +164,7 @@ static void playerAttack(Player* p, Foe* f) {
                 jimmyDefeated = true;
 			xp_gain((obliterated) ? f->E.xp * 2 : f->E.xp, p, true);
 			looting(p, (obliterated) ? f->loot * 2 : f->loot);
-			Sleep(500);
+			SLEEP_MS(500);
 		}
 		return;
 	}
@@ -180,20 +186,20 @@ static void foeAttack(Player* p, Foe* f) {
 						p->E.hp -= fCrit_DMG;
 						printf("CRITICAL DAMAGE!\t(%s: %d\t|\t%s: %d)\n",
 							p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 					else {
 						p->E.hp -= 3;
 						printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n",
 							p->E.name, f->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 				}
 				else {
 					p->E.hp = 0;
 					p->E.dead = true;
 					printf("%s roasted %s!\n", f->E.name, p->E.name);
-					Sleep(500);
+					SLEEP_MS(500);
 				}
 			}
 			else {
@@ -202,26 +208,26 @@ static void foeAttack(Player* p, Foe* f) {
 						p->E.hp -= fDMG;
 						printf("Attack successful!\t(%s: %d\t|\t%s: %d)\n",
 							p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 					else {
 						p->E.hp -= 1;
 						printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n",
 							p->E.name, f->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 				}
 				else {
 					p->E.hp = 0;
 					p->E.dead = true;
 					printf("%s ate %s for breakfast!\n", f->E.name, p->E.name);
-					Sleep(500);
+					SLEEP_MS(500);
 				}
 			}
 		}
 		else {
 			printf("%s missed!\n", f->E.name);
-			Sleep(500);
+			SLEEP_MS(500);
 		}
 	}
 
@@ -249,19 +255,20 @@ static void playerCastsMagic(Player* p, Foe* f, Magia m) {
 						f->E.hp -= pCrit_MAG_DMG;
 						printf("CRITICAL DAMAGE!\t(%s: %d\t|\t%s: %d)\n",
                             p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 					else {
 						f->E.hp = 0;
 						f->E.dead = true;
 						obliterated = true;
 						printf("%s obliterated %s!\n", p->E.name, f->E.name);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 				}
 				else {
 					f->E.hp -= 10;
-					printf("%s tanked %s's attack!\n", f->E.name, p->E.name);
+					printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n",
+                        f->E.name, p->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
 				}
 			}
 			else {
@@ -270,24 +277,25 @@ static void playerCastsMagic(Player* p, Foe* f, Magia m) {
 						f->E.hp -= m.magATK;
 						printf("Attack successful!\t(%s: %d\t|\t%s: %d)\n",
                             p->E.name, p->E.hp, f->E.name, f->E.hp);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 					else {
 						f->E.hp = 0;
 						f->E.dead = true;
 						printf("%s smoked %s!\n", p->E.name, f->E.name);
-						Sleep(500);
+						SLEEP_MS(500);
 					}
 				}
 				else {
 					f->E.hp -= 5;
-					printf("%s tanked %s's attack!\n", f->E.name, p->E.name);
+					printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n",
+                        f->E.name, p->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
 				}
 			}
 		}
 		else {
 			printf("Not enough MP!\n");
-			Sleep(500);
+			SLEEP_MS(500);
 		}
 	}
 
@@ -297,7 +305,7 @@ static void playerCastsMagic(Player* p, Foe* f, Magia m) {
 		return;
 	}
 
-	Sleep(500);
+	SLEEP_MS(500);
 }
 
 // Allows the Player to choose from their acquired spells
@@ -456,7 +464,7 @@ static void playerChoosesMagic(Player* p, Foe* f) {
 				}
 			}
 			else return;
-			Sleep(500);
+			SLEEP_MS(500);
 			break;
 		}
 	}
@@ -486,7 +494,7 @@ static void foeChoosesAction(Player* p, Foe* f) {
 			f->E.def += 5;
 			defChanged = true;
 			printf("%s hardened its skin!\n", f->E.name);
-			Sleep(500);
+			SLEEP_MS(500);
 			break;
 		case 25:
 		    // Case of Foe fleeing from the Player's wrath
@@ -525,7 +533,19 @@ static void impendingDoom(Player* p, FOE_DLL* foeList) {
 		if (checkPlayerSurrounding(curr->f, p)) {
 			printf("%s noticed an instance of %s skulking around him (X: %d, Y: %d)\n",
                 p->E.name, curr->f->E.name, curr->f->E.pos.col + 1, curr->f->E.pos.row + 1);
-			playerChoosesAction(p, curr->f);
+            int randGen = rand()%2;
+            switch(randGen) {
+            case 0:
+                printf("%s was bamboozled by %s cathching it off guard!\n", curr->f->E.name, p->E.name);
+                SLEEP_MS(500);
+                playerChoosesAction(p, curr->f);
+                break;
+			case 1:
+			    printf("%s has already noticed %s. The monster outsmarted the wanderer's outsmarting!\n", curr->f->E.name, p->E.name);
+			    SLEEP_MS(500);
+			    foeChoosesAction(p, curr->f);
+			    break;
+            }
 		}
 		curr = curr->next;
 	}
@@ -615,11 +635,17 @@ static void playerChoosesAction(Player* p, Foe* f) {
 				printf("%s strengthtened his defense!", p->E.name);
 				if (p->E.def == tempDEF)
 					p->E.def = enhDEF;
-				Sleep(500);
+				SLEEP_MS(500);
 			}
 			// If the Player chooses to cast Magia on the Foe
 			else if (actChoice[2] == '>') {
-				if (p->M[0].acquired) {
+                bool hasMagic = false;
+                for(unsigned int i = 0; i<SKILL_ROSTER; i++) {
+                    if(p->M[i].acquired) {
+                        hasMagic = true;
+                    }
+                }
+				if (hasMagic) {
 					unsigned int mana = p->mp;
 					unsigned int prevMana = mana;
 					playerChoosesMagic(p, f);
@@ -630,7 +656,7 @@ static void playerChoosesAction(Player* p, Foe* f) {
 				else {
 					printf("You haven't unlocked any spells yet!\n");
 					chose = false;
-					Sleep(500);
+					SLEEP_MS(500);
 				}
 			}
 			// If the Player decides to heal himself
@@ -640,7 +666,7 @@ static void playerChoosesAction(Player* p, Foe* f) {
 					p->E.hp += 20;
 				else
 					p->E.hp = PLAYER_MAX_HP;
-				Sleep(500);
+				SLEEP_MS(500);
 			}
 			// If the player flees the scene
 			else {
@@ -654,7 +680,7 @@ static void playerChoosesAction(Player* p, Foe* f) {
 
 		if (p->E.fled) {
 			printf("%s has fled the scene!\n", p->E.name);
-			Sleep(500);
+			SLEEP_MS(500);
 			return;
 		}
 

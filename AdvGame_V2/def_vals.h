@@ -93,42 +93,42 @@ static unsigned int JIMMY_DEF = 40;
 
 // Magic
 
-// FIREBALL DEFAULT STATS
+// FIREBALL DEFAULT STATS (1.)
+static const char* FB = "Homing Fireball";
 static unsigned int FIREBALL_ATK = 10;
 static unsigned int FIREBALL_COST = 5;
 static unsigned int FIREBALL_LV_REQ = 2;
-static const char* FB = "Homing Fireball";
 
-// BLIZZARD DEFAULT STATS
+// BLIZZARD DEFAULT STATS (2.)
+static const char* BLIZZ = "Blades of the Blizzard Queen";
 static unsigned int BLIZZARD_ATK = 20;
 static unsigned int BLIZZARD_COST = 10;
 static unsigned int BLIZZARD_LV_REQ = 4;
-static const char* BLIZZ = "Blades of the Blizzard Queen";
 
-// LIGHTNING DEFAULT STATS
+// LIGHTNING DEFAULT STATS (3.)
+static const char* RAI = "Raijin's Wrath";
 static unsigned int LIGHTNING_ATK = 25;
 static unsigned int LIGHTNING_COST = 15;
 static unsigned int LIGHTNING_LV_REQ = 6;
-static const char* RAI = "Raijin's Wrath";
 
-// GRAVITY_BOMB DEFAULT STATS
+// GRAVITY_BOMB DEFAULT STATS (4.)
+static const char* GRAV = "Gravity Bomb";
 static unsigned int GRAV_BOMB_ATK = 35;
 static unsigned int GRAV_BOMB_COST = 25;
 static unsigned int GRAV_BOMB_LV_REQ = 7;
-static const char* GRAV = "Gravity Bomb";
 
-// LOEWENHERZ DEFAULT STATS
+// LOEWENHERZ DEFAULT STATS (5.)
+static const char* LIONHEART = "Ray of the Lionhearted";
 static unsigned int LOEWENHERZ_ATK = 40;
 static unsigned int LOEWENHERZ_COST = 35;
 static unsigned int LOEWENHERZ_LV_REQ = 9;
-static const char* LIONHEART = "Ray of the Lionhearted";
 
-// RSoJ DEFAULT STATS
+// RSoJ DEFAULT STATS (6.)
+static const char* AKARI = "Raining Spears of Justice";
 static unsigned int RSOJ_ATK = 60;
 static unsigned int RSOJ_COST = 50;
 static unsigned int RSOJ_LV_REQ = 0;
 static unsigned int RSOJ_PRICE = 1250;
-static const char* AKARI = "Raining Spears of Justice";
 
 
 // Initializes the Player's Magia roster

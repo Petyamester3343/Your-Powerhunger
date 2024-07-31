@@ -2,8 +2,15 @@
 #include "def_vals.h"
 
 #include <stdio.h>
-#include <windows.h>
 #include <conio.h>
+
+#ifdef _WIN32
+    #include <windows.h>
+    #define SLEEP_MS(ms) Sleep(ms)
+#else
+    #include <unistd.h>
+    #define SLEEP_MS(ms) usleep((ms)*1000)
+#endif
 
 // Prices of the permanent stat boosters
 static const int armor_price = 1000;
@@ -84,16 +91,16 @@ static void go2Shop(Player* p) {
 					p->M[5].acquired = true;
 					p->boughtMagic = true;
 					printf("%s has successfully acquired the most powerful spell known to mankind!\n", p->E.name);
-					Sleep(500);
+					SLEEP_MS(500);
 					break;
 				}
 				else if(p->boughtMagic){
 					printf("%s has already acquired the %s!\n", p->E.name, AKARI);
-					Sleep(500);
+					SLEEP_MS(500);
 				}
-				else {
+				else if (p->money < RSOJ_PRICE) {
                     printf("Not enough money!\n");
-					Sleep(500);
+					SLEEP_MS(500);
 				}
 			}
 			if (choice[1] == '>') {
@@ -102,16 +109,16 @@ static void go2Shop(Player* p) {
 					p->E.def += 30;
 					p->boughtDEF = true;
 					printf("%s has purchased the Aegis Automatized Armor! DEF +30\n", p->E.name);
-					Sleep(500);
+					SLEEP_MS(500);
 					break;
 				}
-				else if(p->boughtDEF) {
+				else if (p->boughtDEF) {
                     printf("%s has already acquired this upgrade!\n", p->E.name);
-                    Sleep(500);
+                    SLEEP_MS(500);
 				}
-				else {
+				else if (p->money < armor_price) {
 					printf("Not enough money!\n");
-					Sleep(500);
+					SLEEP_MS(500);
 				}
 			}
 			if (choice[2] == '>') {
@@ -120,16 +127,16 @@ static void go2Shop(Player* p) {
 					p->E.atk += 30;
 					p->boughtATK = true;
 					printf("%s has purchased the Plasma Railgun! ATK +30\n", p->E.name);
-					Sleep(500);
+					SLEEP_MS(500);
 					break;
 				}
-				else if(p->boughtATK) {
+				else if (p->boughtATK) {
                     printf("%s has already acquired this upgrade!\n", p->E.name);
-                    Sleep(500);
+                    SLEEP_MS(500);
 				}
-				else {
+				else if (p->money < plasma_gun_price) {
 					printf("Not enough money!\n");
-					Sleep(500);
+					SLEEP_MS(500);
 				}
 			}
 			if (choice[3] == '>') {
@@ -141,16 +148,16 @@ static void go2Shop(Player* p) {
 					p->mp = PLAYER_MAX_MP;
 					p->boughtVigor = true;
 					printf("%s has purchased the Vigor Enhancer! HP & MP +30 PERMANENTLY!\n", p->E.name);
-					Sleep(500);
+					SLEEP_MS(500);
 					break;
 				}
-				else if(p->boughtVigor) {
+				else if (p->boughtVigor) {
                     printf("%s has already acquired this upgrade!\n", p->E.name);
-                    Sleep(500);
+                    SLEEP_MS(500);
 				}
-				else {
+				else if (p->money < invigorator_price) {
 					printf("Not enough money!\n");
-					Sleep(500);
+					SLEEP_MS(500);
 				}
 			}
 			if (choice[4] == '>') {

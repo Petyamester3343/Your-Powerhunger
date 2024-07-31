@@ -8,7 +8,7 @@
     #include <sys/stat.h>
     #include <unistd.h>
     #define SLEEP_MS(ms) usleep((ms) * 1000) // usleep takes microseconds
-#endif
+#endif // _WIN32
 
 #include <conio.h>
 #include <dirent.h>
@@ -24,7 +24,7 @@
 #define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
 
 // Checks if the file has the extension .dat
-static bool hasDatExtension(const char* fileName) {
+static inline bool hasDatExtension(const char* fileName) {
     const char* ext = strrchr(fileName, '.');
     printf("Checking file: %s, found extension: %s\n",
            fileName, ext ? ext : "none");

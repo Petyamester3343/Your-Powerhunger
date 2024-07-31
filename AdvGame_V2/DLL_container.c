@@ -113,23 +113,29 @@ static void destroyObjList(OBJ_DLL* list) {
 
 // Removes an instance of Object from the list
 static void removeObjNode(OBJ_DLL* list, ObjNode* node) {
-	node->o->pos.occupied = false;
-
-	if (node->prev != NULL) {
-		node->prev->next = node->next;
-	}
-	else {
-		list->head = node->next;
-	}
-
-	if (node->next != NULL) {
-		node->next->prev = node->prev;
-	}
-	else {
-		list->tail = node->prev;
-	}
-
-	free(node);
+    node->o->pos.occupied = false;
+    if (node == list->head && node == list->tail) {
+        // Case: Only one node in the list
+        list->head = NULL;
+        list->tail = NULL;
+    }
+    else if (node == list->head) {
+        // Case: Deleting the head node
+        list->head = node->next;
+        list->head->prev = NULL;
+    }
+    else if (node == list->tail) {
+        // Case: Deleting the tail node
+        list->tail = node->prev;
+        list->tail->next = NULL;
+    }
+    else {
+        // Case: Deleting a node in between
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+    // Free the memory allocated to the node
+    free(node);
 }
 
 

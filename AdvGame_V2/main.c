@@ -7,7 +7,6 @@ int main(void)
 
     // 2D character array acting as a map
     char map[MAP_SIZE][MAP_SIZE];
-    initMap(map);
 
     // input for the user (it'd turn into getch())
     char c = ' ';

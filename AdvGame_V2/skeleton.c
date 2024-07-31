@@ -5,13 +5,13 @@
 
 #include <math.h>
 #include <time.h>
+#include <ctype.h>
 
 // Draws the map
 static void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // to manipulate the color of the output
 	system("cls");
 
-	bool isDrawn = false;
 	for (unsigned int i = 0; i < MAP_SIZE; i++) {
 		for (unsigned int j = 0; j < MAP_SIZE; j++) {
 
@@ -94,6 +94,11 @@ static void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p) {
             }
         }
         printf("Jimmy moved toward %s! (x: %d, y: %d)\n", p->E.name, jimmyNode->f->E.pos.col + 1, jimmyNode->f->E.pos.row + 1);
+        if(jimmyNode->f->E.pos.col == p->E.pos.col && jimmyNode->f->E.pos.row == p->E.pos.row) {
+            printf("%s has found you... Prepare for the BATTLE OF AEONS!!!\n", jimmyNode->f->E.name);
+            SLEEP_MS(500);
+            foeChoosesAction(p, jimmyNode->f);
+        }
         SLEEP_MS(500);
 	}
 }
@@ -159,7 +164,7 @@ static void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
 			printf("%s passed this turn (X: %d, Y: %d)\n", current->f->E.name, current->f->E.pos.col + 1, current->f->E.pos.row + 1);
 
 		current = current->next;
-		Sleep(166);
+		SLEEP_MS(166);
 	}
 }
 
@@ -171,20 +176,105 @@ static Player* initPlayer() {
 		char msg[100] = "";
 		printf("Name your hero: ");
 		scanf("%[^\n]s", msg);
-		if(strcmp(_tolower(msg), "akari")==0)
-            p->boughtMagic = true;
 		p->E.name = strdup(msg);
 		p->money = 0;
 		defPlayerValRestore(p);
 		initPlayerMagic(p);
+
+		if(strcmp(msg, "Akari") == 0) {
+            p->M[5].acquired = true;
+            p->M[5].magName = strdup(AKARI);
+            p->M[5].magATK = RSOJ_ATK;
+            p->M[5].magCost = RSOJ_COST;
+            p->boughtMagic = true;
+            printf("\x1b[31mSo, you have finally come for my head... ");
+            for(int i=0; i<strlen(msg); i++) {
+                printf("\x1b[31m%c", toupper(msg[i]));
+                SLEEP_MS(1000/3);
+            }
+        }
+
+        if(strcmp(msg, "Aleister") == 0) {
+            p->M[4].acquired = true;
+            printf("\x1b[31mMy death will never bring Her back... ");
+            for(int i=0; i<strlen(msg); i++) {
+                printf("\x1b[31m%c", toupper(msg[i]));
+                SLEEP_MS(1000/3);
+            }
+            printf("\x1b[31m!\x1b[0m\n");
+        }
+
+        if(strcmp(msg, "Sakura") == 0) {
+            p->M[2].acquired = true;
+            printf("\x1b[31mAs if you can defeat me... ");
+            for(int i=0; i<strlen(msg); i++) {
+                printf("\x1b[31m%c", toupper(msg[i]));
+                SLEEP_MS(1000/3);
+            }
+            printf("\x1b[31m...\x1b[0m\n");
+        }
+
+        if(strcmp(msg, "Phantom") == 0) {
+            p->lv = 10;
+
+            for(int i=0; i<SKILL_ROSTER; i++) {
+                p->M[i].acquired = true;
+            }
+
+            p->M[5].magName = strdup(AKARI);
+            p->M[5].magATK = RSOJ_ATK;
+            p->M[5].magCost = RSOJ_COST;
+            p->boughtMagic = true;
+
+            p->boughtATK = true;
+            p->boughtDEF = true;
+            p->boughtVigor = true;
+            PLAYER_MAX_HP += (p->lv-1)*LVUP_VAL + 30;
+            PLAYER_MAX_MP += (p->lv-1)*LVUP_VAL + 30;
+            PLAYER_ATK += (p->lv-1)*LVUP_VAL + 30;
+            PLAYER_DEF += (p->lv-1)*LVUP_VAL + 30;
+            p->E.hp = PLAYER_MAX_HP;
+            p->mp = PLAYER_MAX_MP;
+            p->E.atk = PLAYER_ATK;
+            p->E.def = PLAYER_DEF;
+
+            printf("\x1b[31mGet psyched for your funeral... ");
+            for(int i=0; i<strlen(msg); i++) {
+                printf("\x1b[31m%c", toupper(msg[i]));
+                SLEEP_MS(1000/3);
+            }
+            printf("\x1b[31m!!!\x1b[0m\n");
+        }
+
+        if(strcmp(msg, "Nari") == 0) {
+            p->M[1].acquired = true;
+            p->boughtATK = true;
+            p->boughtDEF = true;
+            PLAYER_ATK += (p->lv-1)*LVUP_VAL + 30;
+            PLAYER_DEF += (p->lv-1)*LVUP_VAL + 30;
+            p->E.atk = PLAYER_ATK;
+            p->E.def = PLAYER_DEF;
+
+            printf("\x1b[31mThe fallen materfamilias...\n");
+            SLEEP_MS(500);
+            printf("\x1b[31mHow does it feel like to betray your own brethren...\n");
+            SLEEP_MS(500);
+            printf("\x1b[31mJust because of a lie shattering your pride..., ");
+            for(int i=0; i<strlen(msg); i++) {
+                printf("\x1b[31m%c", toupper(msg[i]));
+                SLEEP_MS(1000/3);
+            }
+            printf("\x1b[31m?\x1b[0m\n");
+        }
 	}
+	SLEEP_MS(2000);
 
 	return p;
 }
 
 // Initializes the map
 static void initMap(char map[MAP_SIZE][MAP_SIZE]) {
-	memset(map, '\0', sizeof(char * MAP_SIZE * MAP_SIZE));
+	memset(map, '\0', sizeof(char) * MAP_SIZE * MAP_SIZE);
 	FILE* mapFP = fopen("map.txt", "r");
 
 	if (mapFP == NULL) {
@@ -244,8 +334,6 @@ static void playerSeeksObj(Player* p, OBJ_DLL* list) {
 	ObjNode* currObjNode = list->head;
 	while (currObjNode != NULL) {
 		if (currObjNode->o->pos.col == p->E.pos.col && currObjNode->o->pos.row == p->E.pos.row) {
-			ObjNode* nextObjNode = currObjNode->next;
-
 			// Player has found an Object
 			switch (currObjNode->o->sign) {
 			case '+':
@@ -320,10 +408,13 @@ static void playerSeeksObj(Player* p, OBJ_DLL* list) {
                 }
 				else {
 					mangaFound++;
-					if (mangaFound < 3 && mangaFound != 0)
-						printf("%s has found nothing in that chest...\nExcept for a manga with a topless girl and butterflies on its cover...\nOur dear wanderer left it there, for it was a bad omen.\n", p->E.name);
+					if (mangaFound < 3) {
+						printf("%s has found nothing in that chest...\nExcept for a manga with a topless girl and butterflies on its cover...\n", p->E.name);
+						printf("Our dear wanderer left it there, for it was a bad omen.\n");
+					}
 					if (mangaFound == 3) {
-						printf("%s has found that cursed manga again.\nCuriosity finally took over his mind and read it...\nOur dear wanderer became enraged about its content...\nHow a poor girl had to suffer in such an inhumane way...\nATK +20! DEF -20!\n", p->E.name);
+						printf("%s has found that cursed manga again.\nCuriosity finally took over his mind and read it...\n", p->E.name);
+						printf("Our dear wanderer became enraged about its content...\nHow a poor girl had to suffer in such an inhumane way...\nATK +20! DEF -20!\n");
 						mangaFound = 0;
 						p->E.atk += 20;
 						p->E.def -= 20;
@@ -333,34 +424,13 @@ static void playerSeeksObj(Player* p, OBJ_DLL* list) {
 				break;
 			}
 
-			Sleep(500);
+			SLEEP_MS(500);
 
-			if (currObjNode->o->found == true) {
-				if (currObjNode == list->head && currObjNode == list->tail) {
-					// Case: Only one node in the list
-					list->head = NULL;
-					list->tail = NULL;
-				}
-				else if (currObjNode == list->head) {
-					// Case: Deleting the head node
-					list->head = currObjNode->next;
-					list->head->prev = NULL;
-				}
-				else if (currObjNode == list->tail) {
-					// Case: Deleting the tail node
-					list->tail = currObjNode->prev;
-					list->tail->next = NULL;
-				}
-				else {
-					// Case: Deleting a node in between
-					currObjNode->prev->next = currObjNode->next;
-					currObjNode->next->prev = currObjNode->prev;
-				}
-
-				// Free the memory allocated to the node
-				free(currObjNode);
+			if(currObjNode->o->found) {
+                removeObjNode(list, currObjNode);
 			}
-			currObjNode = nextObjNode;
+
+			currObjNode = currObjNode->next;
 		}
 		else {
 			currObjNode = currObjNode->next;
@@ -498,6 +568,7 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
                     break;
                 }
             }
+            curr = curr->next;
 		}
 	}
 
