@@ -10,12 +10,14 @@
 // DEFAULT NORMAL OBJECT BUFF VALUE
 #define BUFF 5
 
+#define PWRHNGRDEFINE static inline
+
 // Indicators of Jimmy having been defeated and summoned
 static bool jimmyDefeated = false;
 static bool jimmySummoned = false;
 
 // Level up value, used to incrememnt the Player's numeral stats
-const static unsigned int LVUP_VAL = 10;
+static const unsigned int LVUP_VAL = 10;
 
 
 
@@ -26,7 +28,7 @@ static unsigned int PLAYER_ATK = 10;
 static unsigned int PLAYER_DEF = 10;
 static Pos PLAYER_START_POS = { 7,7 };
 
-static void defPlayerValRestore(Player* p) {
+PWRHNGRDEFINE void defPlayerValRestore(Player* p) {
 	PLAYER_MAX_HP = 100;
 	PLAYER_MAX_MP = 50;
 	PLAYER_ATK = 10;
@@ -142,7 +144,7 @@ static unsigned int RSOJ_PRICE = 1250;
 
 
 // Initializes the Player's Magia roster
-static void initPlayerMagic(Player* p) {
+PWRHNGRDEFINE void initPlayerMagic(Player* p) {
 	// initializing magic
 	for (unsigned int i = 0; i < 6; i++) {
 		switch (i) {

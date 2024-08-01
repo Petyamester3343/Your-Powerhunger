@@ -1,10 +1,12 @@
 #include "skeleton.c"
 
-// prototype functions for the game loop and the main menu since they are intertwined
-static void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
-static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
+#define PWRHNGRDEFINE static inline
 
-static void checkWinCondition(Player* p, FOE_DLL* foeList) {
+// prototype functions for the game loop and the main menu since they are intertwined
+PWRHNGRDEFINE void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
+PWRHNGRDEFINE void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
+
+PWRHNGRDEFINE void checkWinCondition(Player* p, FOE_DLL* foeList) {
     if (jimmyDefeated) {
         printf("%s, you have finally slain Jimmy. You win!\n", p->E.name);
         saveData(p);
@@ -15,7 +17,7 @@ static void checkWinCondition(Player* p, FOE_DLL* foeList) {
 // When the player dies, a counter incrememnts
 // Once the counter reaches 10, it's Game Over
 // Until then, the Player is placed back at its starter position
-static void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, char map[15][15]) {
+PWRHNGRDEFINE void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, char map[15][15]) {
 
 	printf("You died!\n");
 	p->deathCount++;																			// Death count is incremented by 1
@@ -45,7 +47,7 @@ static void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, 
 }
 
 // Game initializes and the loop begins
-static void NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGRDEFINE void NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	p = initPlayer();																			// Player is initialized
 
 	objList = createObjList();																	// Object list is initialized
@@ -60,7 +62,7 @@ static void NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FO
 }
 
 // Game initializes (while using a save file as source), and the loop begins
-static void LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGRDEFINE void LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	initPlayerMagic(p);																			// Since the game has already loaded the save, re-initialization of Player's Magia is first
 
 	objList = createObjList();																	// Object list is initialized
@@ -75,7 +77,7 @@ static void LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 }
 
 // Game loop
-static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGRDEFINE void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	bool divineHelpGained = false;
 
 	while (1) {
@@ -89,19 +91,21 @@ static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 			moveFoes(foeList, objList, p);														// If so, the enemies move, too (but their movement is randomized, quasi-wandering).
 			moveJimmy(jimmySummoned, foeList, p, objList);										// If Jimmy is present, he moves towards the player (based on the absolute values of the hor. and vert. distance between them)
 
+			if (p->E.hp < PLAYER_MAX_HP && !divineHelpGained) {
+				placeObjectsOnMap(objList, foeList, p, 1);										// Loot rain for more power!
+				divineHelpGained = true;
+			}
+			
 			if (getFoeCount(foeList) == 0) {													// Should the player clear the map, they are granted another chance to gain more power
 				placeObjectsOnMap(objList, foeList, p, 5);
 				breedFoes(p, objList, foeList);
 				divineHelpGained = false;
 			}
-			if (p->E.hp < PLAYER_MAX_HP && !divineHelpGained) {
-				placeObjectsOnMap(objList, foeList, p, 1);										// Loot rain for more power!
-				divineHelpGained = true;
-			}
 		}
 
 		if (p->E.hp == 0) {
 			GameOver(p, foeList, objList, getc, map);
+			divineHelpGained = false;
 		}
 
 	    removeFoeByStatus(foeList);															    // In case there was a fight, the Foes' corpses need to be taken care of
@@ -110,7 +114,7 @@ static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 }
 
 // The main menu and its mechanism
-static void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGRDEFINE void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
 	char choice[3] = { '#', ' ', ' ' };
 

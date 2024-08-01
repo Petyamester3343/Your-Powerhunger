@@ -12,13 +12,15 @@
     #define SLEEP_MS(ms) usleep((ms)*1000)
 #endif
 
+#define PWRHNGRDEFINE static inline
+
 // Prices of the permanent stat boosters
 static const int armor_price = 1000;
 static const int plasma_gun_price = 1000;
 static const int invigorator_price = 750;
 
 // The shop system (practically an upgrade system where one must sacrifice GOLD to obtain more power)
-static void go2Shop(Player* p) {
+PWRHNGRDEFINE void go2Shop(Player* p) {
 	char choice[5] = { '>', ' ', ' ', ' ', ' ' };
 	char exitChoice[2] = { ' ', '>' };
 	char input = ' ';

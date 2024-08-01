@@ -11,10 +11,12 @@
     #define SLEEP_MS(ms) usleep((ms)*1000)
 #endif // _WIN32
 
-static void playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl);
+#define PWRHNGRDEFINE static inline
+
+PWRHNGRDEFINE void playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl);
 
 // Determines if there is a Foe in the Player's vicinity
-static bool checkPlayerSurrounding(Foe* f, Player* p) {
+PWRHNGRDEFINE bool checkPlayerSurrounding(Foe* f, Player* p) {
 	return
 		(f->E.pos.col == p->E.pos.col + 1 && f->E.pos.row == p->E.pos.row) ||
 		(f->E.pos.col == p->E.pos.col - 1 && f->E.pos.row == p->E.pos.row) ||
@@ -27,7 +29,7 @@ static bool checkPlayerSurrounding(Foe* f, Player* p) {
 }
 
 // Player attacks Foe
-static void playerAttack(Player* p, Foe* f) {
+PWRHNGRDEFINE void playerAttack(Player* p, Foe* f) {
 	bool obliterated = false;
 
 	if (p->E.hp != 0 && f->E.hp != 0) {
@@ -102,7 +104,7 @@ static void playerAttack(Player* p, Foe* f) {
 }
 
 // Foe attacks Player
-static void foeAttack(Player* p, Foe* f) {
+PWRHNGRDEFINE void foeAttack(Player* p, Foe* f) {
 	if (p->E.hp != 0 && f->E.hp != 0) {
 		unsigned int fDMG = (f->E.atk < p->E.def) ? 0 : (f->E.atk - p->E.def);
 		int multi = 2;
@@ -169,7 +171,7 @@ static void foeAttack(Player* p, Foe* f) {
 
 // Player casts Magia on a Foe in exchange for n MP
 // (n is varying, for it is based on the Magia the Player may casr)
-static void playerCastsMagic(Player* p, Foe* f, Magia m) {
+PWRHNGRDEFINE void playerCastsMagic(Player* p, Foe* f, Magia m) {
 	bool obliterated = false;
 
 	if (p->E.hp != 0 && f->E.hp != 0) {
@@ -240,7 +242,7 @@ static void playerCastsMagic(Player* p, Foe* f, Magia m) {
 }
 
 // Allows the Player to choose from their acquired spells
-static void playerChoosesMagic(Player* p, Foe* f) {
+PWRHNGRDEFINE void playerChoosesMagic(Player* p, Foe* f) {
 	char magChoice[7] = { '>', ' ', ' ', ' ', ' ', ' ', ' ' };
 
 	while (!p->E.fled && !p->E.dead) {
@@ -402,7 +404,7 @@ static void playerChoosesMagic(Player* p, Foe* f) {
 }
 
 // Foe acts
-static void foeChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
+PWRHNGRDEFINE void foeChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
 	f->E.fled = false;
 	bool defChanged = false;
 
@@ -429,23 +431,29 @@ static void foeChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
 			SLEEP_MS(500);
 			break;
         case 50:
-            switch(rand()%8) {
-            default:
-                insertFoeIntoList(p, ol, fl, SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, SLIME_LOOT);
-                printf("Acolyte summoned a Slime on the map!");
-                break;
-            case 5:
-                insertFoeIntoList(p, ol, fl, GOBLIN_NAME, GOBLIN_HP, GOBLIN_ATK, GOBLIN_DEF, GOBLIN_XP, GOBLIN_LOOT);
-                printf("Acolyte summoned a Goblin on the map!");
-                break;
-            case 6:
-                insertFoeIntoList(p, ol, fl, THWARTED_SELF_NAME, THWARTED_SELF_HP, THWARTED_SELF_ATK, THWARTED_SELF_DEF, THWARTED_SELF_XP, THWARTED_SELF_LOOT);
-                printf("Acolyte summoned a Slime on the map!");
-                break;
-            case 7:
-                insertFoeIntoList(p, ol, fl, GOLEM_NAME, GOLEM_HP, GOLEM_ATK, GOLEM_DEF, GOLEM_XP, GOLEM_LOOT);
-                printf("Acolyte summoned a Carcass Golem on the map!");
-                break;
+            if(strcmp(f->E.name, ACOLYTE_NAME) == 0) {
+                switch(rand()%8) {
+                default:
+                    insertFoeIntoList(p, ol, fl, SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, SLIME_LOOT);
+                    printf("The Acolyte summoned a Slime on the map!");
+                    break;
+                case 5:
+                    insertFoeIntoList(p, ol, fl, GOBLIN_NAME, GOBLIN_HP, GOBLIN_ATK, GOBLIN_DEF, GOBLIN_XP, GOBLIN_LOOT);
+                    printf("The Acolyte summoned a Goblin on the map!");
+                    break;
+                case 6:
+                    insertFoeIntoList(p, ol, fl, ACOLYTE_NAME, ACOLYTE_HP, ACOLYTE_ATK, ACOLYTE_DEF, ACOLYTE_XP, ACOLYTE_LOOT);
+                    printf("The Acolyte summoned one of his brethren on the map!");
+                    break;
+                case 7:
+                    insertFoeIntoList(p, ol, fl, THWARTED_SELF_NAME, THWARTED_SELF_HP, THWARTED_SELF_ATK, THWARTED_SELF_DEF, THWARTED_SELF_XP, THWARTED_SELF_LOOT);
+                    printf("The Acolyte summoned your Thwarted Self on the map!");
+                    break;
+                case 8:
+                    insertFoeIntoList(p, ol, fl, GOLEM_NAME, GOLEM_HP, GOLEM_ATK, GOLEM_DEF, GOLEM_XP, GOLEM_LOOT);
+                    printf("The Acolyte summoned a Carcass Golem on the map!");
+                    break;
+                }
             }
             SLEEP_MS(500);
             break;
@@ -480,7 +488,7 @@ static void foeChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
 }
 
 // Allows the Player to initiate attack when they have a Foe in their vicinity
-static void impendingDoom(Player* p, FOE_DLL* foeList, OBJ_DLL* ol) {
+PWRHNGRDEFINE void impendingDoom(Player* p, FOE_DLL* foeList, OBJ_DLL* ol) {
 	FoeNode* curr = foeList->head;
 	while (curr != NULL) {
 		if (checkPlayerSurrounding(curr->f, p)) {
@@ -505,13 +513,13 @@ static void impendingDoom(Player* p, FOE_DLL* foeList, OBJ_DLL* ol) {
 }
 
 // Player chooses an action
-static void playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
+PWRHNGRDEFINE void playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
 	char in = ' ';
 	char actChoice[5] = { '>', ' ', ' ', ' ', ' ' };
 	p->E.fled = false;
 	bool chose = false;
 
-	unsigned int enhDEF = p->E.def * p->aegisPickedUp;
+	unsigned int enhDEF = 0;
 
 	/*
 	1. elem.: ATTACK
@@ -584,10 +592,22 @@ static void playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
 			// If the Player chooses to initiate his defenses
 			// I'd make it dependent on the Aegis Cores the Player picked up
 			else if (actChoice[1] == '>') {
-				printf("%s activated the Aegis Cores. Defense strengthtened!", p->E.name);
-				if (p->E.def != enhDEF) {
-					p->E.def = enhDEF;
-				}
+                if(p->aegisPickedUp > 1) {
+                    enhDEF = p->E.def * p->aegisPickedUp;
+                    p->E.def = enhDEF;
+                    printf("%d Aegis Cores acivated. %s's DEF is now strengthtened! (DEF: %d)", p->aegisPickedUp, p->E.name, p->E.def);
+                }
+                else if (p->aegisPickedUp == 1) {
+                    enhDEF = p->E.def + 5;
+                    p->E.def = enhDEF;
+                    printf("Aegis Core activated. %s's DEF is slightly strengthened! (DEF: %d)", p->E.name, p->E.def);
+
+                }
+                else {
+                    enhDEF = p->E.def + 2;
+                    p->E.def = enhDEF;
+                    printf("%s is foucsing on the defensive with a blocking stance. (DEF: %d)", p->E.name, p->E.def);
+                }
 				SLEEP_MS(500);
 			}
 			// If the Player chooses to cast Magia on the Foe

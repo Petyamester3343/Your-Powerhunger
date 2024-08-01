@@ -23,8 +23,10 @@
 
 #define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
 
+#define PWRHNGRDEFINE static inline
+
 // Checks if the file has the extension .dat
-static inline bool hasDatExtension(const char* fileName) {
+PWRHNGRDEFINE bool hasDatExtension(const char* fileName) {
     const char* ext = strrchr(fileName, '.');
     printf("Checking file: %s, found extension: %s\n",
            fileName, ext ? ext : "none");
@@ -32,19 +34,19 @@ static inline bool hasDatExtension(const char* fileName) {
 }
 
 // Creates the save folder
-static void ensureSaveDir() {
+PWRHNGRDEFINE void ensureSaveDir() {
     if(_mkdir(SAVE_DIR) != 0 && errno != EEXIST) {
         fprintf(stderr, "Cannot create main save directory!\n");
     }
 }
 
 // Checks if the file exists
-static bool checkFileExists(const char* filePath) {
+PWRHNGRDEFINE bool checkFileExists(const char* filePath) {
     return access(filePath, F_OK) != -1;
 }
 
 // Saves the Player's stats (actions included)
-static void saveData(Player* p) {
+PWRHNGRDEFINE void saveData(Player* p) {
     ensureSaveDir();
 
 	char filePath[MAX_PATH];
@@ -87,7 +89,7 @@ static void saveData(Player* p) {
 }
 
 // Lists the existing save files
-static void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
+PWRHNGRDEFINE void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
     DIR* dir;
     struct dirent* entry;
     int count = 0;
@@ -117,7 +119,7 @@ static void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
 }
 
 // Allows the user to choose from the available save datas and load one of them
-static int chooseAndLoadData(Player* p) {
+PWRHNGRDEFINE int chooseAndLoadData(Player* p) {
 	char saveFiles[10][MAX_PATH];
 	bzero(saveFiles, sizeof(saveFiles));
 	int fileCount = 0;
@@ -192,7 +194,7 @@ static int chooseAndLoadData(Player* p) {
 }
 
 // Allows the user to choose from the available save datas and delete one of them
-static void chooseAndDeleteData() {
+PWRHNGRDEFINE void chooseAndDeleteData() {
 	char saveFiles[10][MAX_PATH];
 	int fileCount = 0;
 

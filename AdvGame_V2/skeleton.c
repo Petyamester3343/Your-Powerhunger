@@ -6,8 +6,10 @@
 #include <time.h>
 #include <ctype.h>
 
+#define PWRHNGRDEFINE static inline
+
 // Draws the map
-static void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGRDEFINE void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // to manipulate the color of the output
 	system("cls");
 
@@ -68,7 +70,7 @@ static void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
 }
 
 // Moves the boss of the game
-static void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DLL* ol) {
+PWRHNGRDEFINE void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DLL* ol) {
 	if(isPresent) {
         FoeNode* jimmyNode = findFoeByName(foeList, "Jimmy");
         if (jimmyNode != NULL) {
@@ -103,64 +105,66 @@ static void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DLL* ol) 
 }
 
 // Allows the Foes (except for Jimmy) to move
-static void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
+PWRHNGRDEFINE void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
 	FoeNode* current = foeList->head;
 	while (current != NULL && strcmp(current->f->E.name, "Jimmy") != 0) {
-		bool moved = false;
-		Pos newPos;
-		Pos prevPos = current->f->E.pos;
-		prevPos.occupied = false;
-		do {
-			newPos = prevPos;
-			switch (rand() % 4) { // 0 = up, 1 = down, 2 = left, 3 = right
-			case 0: // Move up
-				if (newPos.col > 0) {
-					newPos.occupied = false;
-					newPos.col -= 1;
-					newPos.occupied = true;
-				}
-				break;
-			case 1: // Move down
-				if (newPos.col < 14) {
-					newPos.occupied = false;
-					newPos.col += 1;
-					newPos.occupied = true;
-				}
-				break;
-			case 2: // Move left
-				if (newPos.row > 0) {
-					newPos.occupied = false;
-					newPos.row -= 1;
-					newPos.occupied = true;
-				}
-				break;
-			case 3: // Move right
-				if (newPos.row < 14) {
-					newPos.occupied = false;
-					newPos.row += 1;
-					newPos.occupied = true;
-				}
-				break;
-			}
-		} while ((findFoeByPos(foeList, newPos) != NULL) && findObjByPos(objList, newPos) != NULL && newPos.occupied); // Retry if occupied
+		if(!current->f->E.dead) {
+            bool moved = false;
+            Pos newPos;
+            Pos prevPos = current->f->E.pos;
+            prevPos.occupied = false;
+            do {
+                newPos = prevPos;
+                switch (rand() % 4) { // 0 = up, 1 = down, 2 = left, 3 = right
+                case 0: // Move up
+                    if (newPos.col > 0) {
+                        newPos.occupied = false;
+                        newPos.col -= 1;
+                        newPos.occupied = true;
+                    }
+                    break;
+                case 1: // Move down
+                    if (newPos.col < 14) {
+                        newPos.occupied = false;
+                        newPos.col += 1;
+                        newPos.occupied = true;
+                    }
+                    break;
+                case 2: // Move left
+                    if (newPos.row > 0) {
+                        newPos.occupied = false;
+                        newPos.row -= 1;
+                        newPos.occupied = true;
+                    }
+                    break;
+                case 3: // Move right
+                    if (newPos.row < 14) {
+                        newPos.occupied = false;
+                        newPos.row += 1;
+                        newPos.occupied = true;
+                    }
+                    break;
+                }
+            } while ((findFoeByPos(foeList, newPos) != NULL) && findObjByPos(objList, newPos) != NULL && newPos.occupied); // Retry if occupied
 
-		// Move to new position if it's not occupied
-		if (findFoeByPos(foeList, newPos) == NULL && findObjByPos(objList, newPos) == NULL) {
-			current->f->E.pos = newPos;
-			moved = true;
+            // Move to new position if it's not occupied
+            if (findFoeByPos(foeList, newPos) == NULL && findObjByPos(objList, newPos) == NULL) {
+                current->f->E.pos = newPos;
+                moved = true;
+            }
+            else {
+                current->f->E.pos = prevPos;
+                moved = false;
+            }
+
+            if (current->f->E.pos.col == p->E.pos.col && current->f->E.pos.row == p->E.pos.row && p->E.pos.occupied == current->f->E.pos.occupied)
+                foeChoosesAction(p, current->f, objList, foeList);
+
+            if (moved)
+                printf("%s moved (X: %d, Y: %d)\n", current->f->E.name, current->f->E.pos.col + 1, current->f->E.pos.row + 1);
+            else
+                printf("%s passed this turn (X: %d, Y: %d)\n", current->f->E.name, current->f->E.pos.col + 1, current->f->E.pos.row + 1);
 		}
-		else {
-			current->f->E.pos = prevPos;
-			moved = false;
-		}
-
-		if (current->f->E.pos.col == p->E.pos.col && current->f->E.pos.row == p->E.pos.row && p->E.pos.occupied == current->f->E.pos.occupied)
-			foeChoosesAction(p, current->f, objList, foeList);
-
-		if (moved)
-			printf("%s moved (X: %d, Y: %d)\n", current->f->E.name, current->f->E.pos.col + 1, current->f->E.pos.row + 1);
-		else
-			printf("%s passed this turn (X: %d, Y: %d)\n", current->f->E.name, current->f->E.pos.col + 1, current->f->E.pos.row + 1);
 
 		current = current->next;
 		SLEEP_MS(166);
@@ -168,7 +172,7 @@ static void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
 }
 
 // Initializes the player and the spells in order to avoid access violation
-static Player* initPlayer() {
+PWRHNGRDEFINE Player* initPlayer() {
 	Player* p = (Player*)malloc(sizeof(Player));
 
 	if (p != NULL) {
@@ -277,7 +281,7 @@ static Player* initPlayer() {
 }
 
 // Initializes the map
-static void initMap(char map[MAP_SIZE][MAP_SIZE]) {
+PWRHNGRDEFINE void initMap(char map[MAP_SIZE][MAP_SIZE]) {
 	memset(map, '\0', sizeof(char) * MAP_SIZE * MAP_SIZE);
 	FILE* mapFP = fopen("map.txt", "r");
 
@@ -304,7 +308,7 @@ static void initMap(char map[MAP_SIZE][MAP_SIZE]) {
 
 // Places a random Object on the map, which buffs the Player (until the next level up, that is)
 // Depending on the situation, the iteration can be controlled
-static void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsigned int num) {
+PWRHNGRDEFINE void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsigned int num) {
 	for (int i = 0; i < num; i++) {
         switch (rand() % 7) {
             case 0:
@@ -333,7 +337,7 @@ static void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsig
 }
 
 // Allows the Player to pick Objects up and consume them
-static void playerSeeksObj(Player* p, OBJ_DLL* list) {
+PWRHNGRDEFINE void playerSeeksObj(Player* p, OBJ_DLL* list) {
 	static int mangaFound = 0;
 	ObjNode* currObjNode = list->head;
 	while (currObjNode != NULL) {
@@ -358,8 +362,8 @@ static void playerSeeksObj(Player* p, OBJ_DLL* list) {
 				currObjNode->o->found = true;
 				break;
 			case 'A':
-				printf("%s found an Aegis Core! DEF +%d\n", p->E.name, currObjNode->o->eff);
 				p->aegisPickedUp++;
+				printf("%s found an Aegis Core! DEF +%d\nAegis Cores in %s's possession: %d", p->E.name, currObjNode->o->eff, p->E.name, p->aegisPickedUp);
 				p->E.def += currObjNode->o->eff;
 				currObjNode->o->found = true;
 				break;
@@ -445,7 +449,7 @@ static void playerSeeksObj(Player* p, OBJ_DLL* list) {
 
 // The player takes action upon input (movement, attacking foes in its vicinity)
 // It becomes true when they moved
-static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGRDEFINE bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	bool moved = false;
 	bool isShopThreatened = false;
 	unsigned int foesThreateningShop = 0;
@@ -582,7 +586,7 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
 
 // Creates Foes based on the Player's level
 // Adjusted not to flood the map
-static void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGRDEFINE void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
     for(unsigned int i = 0; i < 5; i++) {
         if (p->lv <= 3) {
             if (getFoeCountByName(foeList, SLIME_NAME) < 2) { // Limit number of Slimes
@@ -640,7 +644,7 @@ static void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 }
 
 // A simple non-interactive UI
-static void showPlayerInfo(Player* p) {
+PWRHNGRDEFINE void showPlayerInfo(Player* p) {
 	printf("HP:\t%d/%d\n", p->E.hp, PLAYER_MAX_HP);
 	printf("MP:\t%d/%d\n", p->mp, PLAYER_MAX_MP);
 	printf("ATK:\t%d/%d\n", p->E.atk, PLAYER_ATK);
@@ -650,7 +654,7 @@ static void showPlayerInfo(Player* p) {
 }
 
 // The Player's current location on the map (under the UI)
-static void narrate(char map[15][15], Player* p) {
+PWRHNGRDEFINE void narrate(char map[15][15], Player* p) {
 	printf("Current location: ");
 	switch (map[p->E.pos.col][p->E.pos.row]) {
 	case 'F': printf("Forest\n"); break;
