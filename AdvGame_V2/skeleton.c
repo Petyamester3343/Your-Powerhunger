@@ -1,7 +1,6 @@
 #include "game_data.c"
 #include "battle_sys.c"
 #include "shop.c"
-#include "DLL_container.c"
 
 #include <math.h>
 #include <time.h>
@@ -69,7 +68,7 @@ static void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
 }
 
 // Moves the boss of the game
-static void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p) {
+static void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DLL* ol) {
 	if(isPresent) {
         FoeNode* jimmyNode = findFoeByName(foeList, "Jimmy");
         if (jimmyNode != NULL) {
@@ -97,7 +96,7 @@ static void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p) {
         if(jimmyNode->f->E.pos.col == p->E.pos.col && jimmyNode->f->E.pos.row == p->E.pos.row) {
             printf("%s has found you... Prepare for the BATTLE OF AEONS!!!\n", jimmyNode->f->E.name);
             SLEEP_MS(500);
-            foeChoosesAction(p, jimmyNode->f);
+            foeChoosesAction(p, jimmyNode->f, ol, foeList);
         }
         SLEEP_MS(500);
 	}
@@ -156,7 +155,7 @@ static void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
 		}
 
 		if (current->f->E.pos.col == p->E.pos.col && current->f->E.pos.row == p->E.pos.row && p->E.pos.occupied == current->f->E.pos.occupied)
-			foeChoosesAction(p, current->f);
+			foeChoosesAction(p, current->f, objList, foeList);
 
 		if (moved)
 			printf("%s moved (X: %d, Y: %d)\n", current->f->E.name, current->f->E.pos.col + 1, current->f->E.pos.row + 1);
@@ -196,6 +195,11 @@ static Player* initPlayer() {
 
         if(strcmp(msg, "Aleister") == 0) {
             p->M[4].acquired = true;
+            p->boughtVigor = true;
+            PLAYER_MAX_HP += (p->lv-1)*LVUP_VAL + 30;
+            PLAYER_MAX_MP += (p->lv-1)*LVUP_VAL + 30;
+            p->E.hp = PLAYER_MAX_HP;
+            p->mp = PLAYER_MAX_MP;
             printf("\x1b[31mMy death will never bring Her back... ");
             for(int i=0; i<strlen(msg); i++) {
                 printf("\x1b[31m%c", toupper(msg[i]));
@@ -304,22 +308,22 @@ static void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsig
 	for (int i = 0; i < num; i++) {
         switch (rand() % 7) {
             case 0:
-                insertObjIntoList(list, fl, 'S', 5, p);
+                insertObjIntoList(list, fl, 'S', BUFF, p);
                 break;
             case 1:
-                insertObjIntoList(list, fl, 'A', 5, p);
+                insertObjIntoList(list, fl, 'A', BUFF, p);
                 break;
             case 2:
-                insertObjIntoList(list, fl, '+', 5, p);
+                insertObjIntoList(list, fl, '+', BUFF, p);
                 break;
             case 3:
-                insertObjIntoList(list, fl, '/', 5, p);
+                insertObjIntoList(list, fl, '/', BUFF, p);
                 break;
             case 4:
-                insertObjIntoList(list, fl, 'M', 5, p);
+                insertObjIntoList(list, fl, 'M', BUFF, p);
                 break;
             case 5:
-                insertObjIntoList(list, fl, '&', 10, p);
+                insertObjIntoList(list, fl, '&', BUFF*2, p);
                 break;
             case 6:
                 insertObjIntoList(list, fl, '$', rand() % 30 + 10, p);
@@ -355,6 +359,7 @@ static void playerSeeksObj(Player* p, OBJ_DLL* list) {
 				break;
 			case 'A':
 				printf("%s found an Aegis Core! DEF +%d\n", p->E.name, currObjNode->o->eff);
+				p->aegisPickedUp++;
 				p->E.def += currObjNode->o->eff;
 				currObjNode->o->found = true;
 				break;
@@ -490,7 +495,7 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
 		}
 		else printf("%s bumped into a wall! (X: %d, Y: %d)\n", p->E.name, p->E.pos.col + 1, p->E.pos.row + 1);
 		break;
-	case 'e': impendingDoom(p, foeList); break;
+	case 'e': impendingDoom(p, foeList, objList); break;
     //case 'l': placeObjectsOnMap(objList, foeList, p, 5); break; // debug, floods the map with object to check for appending mistakes
 	case '0': saveData(p); break;
 	case 32:
@@ -559,12 +564,12 @@ static bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objLi
                 case 0:
                     printf("%s successfully approached %s! %s gets to make the first move!\n", p->E.name, curr->f->E.name, p->E.name);
                     SLEEP_MS(500);
-                    playerChoosesAction(p, curr->f);
+                    playerChoosesAction(p, curr->f, objList, foeList);
                     break;
                 case 1:
                     printf("%s unfortunately noticed %s! %s gets to act first!\n", curr->f->E.name, p->E.name, curr->f->E.name);
                     SLEEP_MS(500);
-                    foeChoosesAction(p, curr->f);
+                    foeChoosesAction(p, curr->f, objList, foeList);
                     break;
                 }
             }
@@ -581,47 +586,47 @@ static void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
     for(unsigned int i = 0; i < 5; i++) {
         if (p->lv <= 3) {
             if (getFoeCountByName(foeList, SLIME_NAME) < 2) { // Limit number of Slimes
-                insertFoeIntoList(p, objList, foeList, SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, 10);
+                insertFoeIntoList(p, objList, foeList, SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, SLIME_LOOT);
                 printf("Slime summoned!\n");
             }
         }
 
         if (p->lv >= 4) {
             if (getFoeCountByName(foeList, GOBLIN_NAME) < 2 && rand() % 2 == 0) { // Limit number of Goblins
-                insertFoeIntoList(p, objList, foeList, GOBLIN_NAME, GOBLIN_HP, GOBLIN_ATK, GOBLIN_DEF, GOBLIN_XP, 20);
+                insertFoeIntoList(p, objList, foeList, GOBLIN_NAME, GOBLIN_HP, GOBLIN_ATK, GOBLIN_DEF, GOBLIN_XP, GOBLIN_LOOT);
                 printf("Goblin summoned!\n");
             } else if (getFoeCountByName(foeList, SLIME_NAME) < 2) {
-                insertFoeIntoList(p, objList, foeList, SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, 10);
+                insertFoeIntoList(p, objList, foeList, SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, SLIME_LOOT);
                 printf("Slime summoned!\n");
             }
         }
 
         if (p->lv >= 6) {
             if (getFoeCountByName(foeList, ACOLYTE_NAME) < 2 && rand() % 2 == 0) { // Limit number of Acolytes
-                insertFoeIntoList(p, objList, foeList, ACOLYTE_NAME, ACOLYTE_HP, ACOLYTE_ATK, ACOLYTE_DEF, ACOLYTE_XP, 40);
+                insertFoeIntoList(p, objList, foeList, ACOLYTE_NAME, ACOLYTE_HP, ACOLYTE_ATK, ACOLYTE_DEF, ACOLYTE_XP, ACOLYTE_LOOT);
                 printf("Acolyte summoned!\n");
             } else if (getFoeCountByName(foeList, GOBLIN_NAME) < 2) {
-                insertFoeIntoList(p, objList, foeList, GOBLIN_NAME, GOBLIN_HP, GOBLIN_ATK, GOBLIN_DEF, GOBLIN_XP, 20);
+                insertFoeIntoList(p, objList, foeList, GOBLIN_NAME, GOBLIN_HP, GOBLIN_ATK, GOBLIN_DEF, GOBLIN_XP, GOBLIN_LOOT);
                 printf("Goblin summoned!\n");
             }
         }
 
         if (p->lv >= 8) {
             if (getFoeCountByName(foeList, THWARTED_SELF_NAME) < 1 && rand() % 2 == 0) { // Limit number of Thwarted Selves
-                insertFoeIntoList(p, objList, foeList, THWARTED_SELF_NAME, THWARTED_SELF_HP, THWARTED_SELF_ATK, THWARTED_SELF_DEF, THWARTED_SELF_XP, 80);
+                insertFoeIntoList(p, objList, foeList, THWARTED_SELF_NAME, THWARTED_SELF_HP, THWARTED_SELF_ATK, THWARTED_SELF_DEF, THWARTED_SELF_XP, THWARTED_SELF_LOOT);
                 printf("Your Thwarted Self summoned!\n");
             } else if (getFoeCountByName(foeList, ACOLYTE_NAME) < 2) {
-                insertFoeIntoList(p, objList, foeList, ACOLYTE_NAME, ACOLYTE_HP, ACOLYTE_ATK, ACOLYTE_DEF, ACOLYTE_XP, 40);
+                insertFoeIntoList(p, objList, foeList, ACOLYTE_NAME, ACOLYTE_HP, ACOLYTE_ATK, ACOLYTE_DEF, ACOLYTE_XP, ACOLYTE_LOOT);
                 printf("Acolyte summoned!\n");
             }
         }
 
         if (p->lv >= 9) {
             if (getFoeCountByName(foeList, GOLEM_NAME) < 1 && rand() % 2 == 0) { // Limit number of Carcass Golems
-                insertFoeIntoList(p, objList, foeList, GOLEM_NAME, GOLEM_HP, GOLEM_ATK, GOLEM_DEF, GOLEM_XP, 160);
+                insertFoeIntoList(p, objList, foeList, GOLEM_NAME, GOLEM_HP, GOLEM_ATK, GOLEM_DEF, GOLEM_XP, GOLEM_LOOT);
                 printf("Carcass Golem summoned!\n");
             } else if (getFoeCountByName(foeList, THWARTED_SELF_NAME) < 1) {
-                insertFoeIntoList(p, objList, foeList, THWARTED_SELF_NAME, THWARTED_SELF_HP, THWARTED_SELF_ATK, THWARTED_SELF_DEF, THWARTED_SELF_XP, 80);
+                insertFoeIntoList(p, objList, foeList, THWARTED_SELF_NAME, THWARTED_SELF_HP, THWARTED_SELF_ATK, THWARTED_SELF_DEF, THWARTED_SELF_XP, THWARTED_SELF_LOOT);
                 printf("Your Thwarted Self summoned!\n");
             }
         }

@@ -87,7 +87,7 @@ static void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 		bool acted = playerAction(getc, map, p, objList, foeList);								// This function determines if the player has "moved" in any way possible.
 		if (acted) {
 			moveFoes(foeList, objList, p);														// If so, the enemies move, too (but their movement is randomized, quasi-wandering).
-			moveJimmy(jimmySummoned, foeList, p);												// If Jimmy is present, he moves towards the player (based on the absolute values of the hor. and vert. distance between them)
+			moveJimmy(jimmySummoned, foeList, p, objList);										// If Jimmy is present, he moves towards the player (based on the absolute values of the hor. and vert. distance between them)
 
 			if (getFoeCount(foeList) == 0) {													// Should the player clear the map, they are granted another chance to gain more power
 				placeObjectsOnMap(objList, foeList, p, 5);

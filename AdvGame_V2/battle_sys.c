@@ -1,12 +1,7 @@
-#include <stdio.h>
 #include <conio.h>
 
-#include "DLL_container.h"
-#include "def_vals.h"
-
-// Mathematical formula for the Player
-// Once reached, they will ascend to the next level
-#define LV_UP_REQ(lv) ((lv)*(lv)*25)
+#include "DLL_container.c"
+#include "xp_sys.c"
 
 #ifdef _WIN32
     #include <windows.h>
@@ -16,74 +11,10 @@
     #define SLEEP_MS(ms) usleep((ms)*1000)
 #endif // _WIN32
 
-static void playerChoosesAction(Player* p, Foe* f);
-
-// Allows the character to level up
-static void level_up(Player* p) {
-	if (p->E.xp >= LV_UP_REQ(p->lv)) {
-		p->lv++;
-
-		PLAYER_MAX_HP += 10;
-		PLAYER_ATK += 10;
-		PLAYER_DEF += 10;
-		PLAYER_MAX_MP += 10;
-
-		p->E.hp = PLAYER_MAX_HP;
-		p->E.atk = PLAYER_ATK;
-		p->E.def = PLAYER_DEF;
-		p->mp = PLAYER_MAX_MP;
-
-		printf("%s is now at LEVEL %d!\n", p->E.name, p->lv);
-
-		if (p->lv == FIREBALL_LV_REQ && !p->M[0].acquired) {
-			p->M[0].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, FB);
-		}
-		if (p->lv == BLIZZARD_LV_REQ && !p->M[1].acquired) {
-			p->M[1].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, BLIZZ);
-		}
-		if (p->lv == LIGHTNING_LV_REQ && !p->M[2].acquired) {
-			p->M[2].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, RAI);
-		}
-		if (p->lv == GRAV_BOMB_LV_REQ && !p->M[3].acquired) {
-			p->M[3].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, GRAV);
-		}
-		if (p->lv == LOEWENHERZ_LV_REQ && !p->M[4].acquired) {
-			p->M[4].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, LIONHEART);
-		}
-		SLEEP_MS(500);
-	}
-}
-
-// Grants the player experience points
-// (Either from an Arcane Tome or from slaying a Foe)
-static void xp_gain(unsigned int experience, Player* p, bool fought) {
-	p->E.xp += experience;
-	if (fought)
-		printf("%s has gained %d XP from the battle! (Current: %d / %d)\n",
-			p->E.name, experience, p->E.xp, LV_UP_REQ(p->lv));
-	else
-		printf("(Current: %d / %d)\n", p->E.xp, LV_UP_REQ(p->lv));
-	while (p->E.xp >= LV_UP_REQ(p->lv)) {
-		level_up(p);
-	}
-}
-
-// Grants the player GOLD from slaying a Foe
-// The first can be used to buy upgrades in Shop
-static void looting(Player* p, unsigned int money) {
-	p->money += money;
-	printf("%d GOLD gained!\n", money);
-	SLEEP_MS(500);
-}
+static void playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl);
 
 // Determines if there is a Foe in the Player's vicinity
 static bool checkPlayerSurrounding(Foe* f, Player* p) {
-
 	return
 		(f->E.pos.col == p->E.pos.col + 1 && f->E.pos.row == p->E.pos.row) ||
 		(f->E.pos.col == p->E.pos.col - 1 && f->E.pos.row == p->E.pos.row) ||
@@ -312,7 +243,7 @@ static void playerCastsMagic(Player* p, Foe* f, Magia m) {
 static void playerChoosesMagic(Player* p, Foe* f) {
 	char magChoice[7] = { '>', ' ', ' ', ' ', ' ', ' ', ' ' };
 
-	while (p->E.fled == false && !p->E.dead) {
+	while (!p->E.fled && !p->E.dead) {
 		system("cls");
 		printf("Choose your spell:\n");
 		if (p->M[0].acquired)
@@ -456,7 +387,7 @@ static void playerChoosesMagic(Player* p, Foe* f) {
 			}
 			else if (magChoice[5] == '>') {
 				if (p->M[5].acquired) {
-					playerCastsMagic(p, f, p->M[4]);
+					playerCastsMagic(p, f, p->M[5]);
 					return;
 				}
 				else {
@@ -471,33 +402,55 @@ static void playerChoosesMagic(Player* p, Foe* f) {
 }
 
 // Foe acts
-static void foeChoosesAction(Player* p, Foe* f) {
+static void foeChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
 	f->E.fled = false;
 	bool defChanged = false;
 
 	/*
 	1. elem.: ATTACK
 	2. elem.: DEFEND
-	3. elem.: FLEE
+	3. elem.: SUMMON (only Acolyte)
+	4. elem.: FLEE
 	*/
 
 	while ((f->E.fled == false && p->E.fled == false && !p->E.dead && !f->E.dead)
         && (f->E.hp != 0 && p->E.hp != 0)) {
-		switch (rand() % 50) {
+		switch (rand() % 150) {
 		default:
-		    // Defaulting to attak Player
+		    // Defaulting to attack Player
 			if (!f->E.fled && !p->E.fled)
 				foeAttack(p, f);
 			break;
-		case 12:
+		case 15:
 		    // Case of Foe "hardening its skin"
 			f->E.def += 5;
 			defChanged = true;
-			printf("%s hardened its skin!\n", f->E.name);
+			printf("%s hardened its skin!\n(+5 enemy DEF!)\n", f->E.name);
 			SLEEP_MS(500);
 			break;
-		case 25:
-		    // Case of Foe fleeing from the Player's wrath
+        case 50:
+            switch(rand()%8) {
+            default:
+                insertFoeIntoList(p, ol, fl, SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, SLIME_LOOT);
+                printf("Acolyte summoned a Slime on the map!");
+                break;
+            case 5:
+                insertFoeIntoList(p, ol, fl, GOBLIN_NAME, GOBLIN_HP, GOBLIN_ATK, GOBLIN_DEF, GOBLIN_XP, GOBLIN_LOOT);
+                printf("Acolyte summoned a Goblin on the map!");
+                break;
+            case 6:
+                insertFoeIntoList(p, ol, fl, THWARTED_SELF_NAME, THWARTED_SELF_HP, THWARTED_SELF_ATK, THWARTED_SELF_DEF, THWARTED_SELF_XP, THWARTED_SELF_LOOT);
+                printf("Acolyte summoned a Slime on the map!");
+                break;
+            case 7:
+                insertFoeIntoList(p, ol, fl, GOLEM_NAME, GOLEM_HP, GOLEM_ATK, GOLEM_DEF, GOLEM_XP, GOLEM_LOOT);
+                printf("Acolyte summoned a Carcass Golem on the map!");
+                break;
+            }
+            SLEEP_MS(500);
+            break;
+		case 75:
+		    // Case of Foe fleeing from the Player's divine wrath
 		    if(f->E.hp <= 25) {
                 f->E.fled = true;
                 break;
@@ -516,7 +469,7 @@ static void foeChoosesAction(Player* p, Foe* f) {
 
 		// In case both quarries are still there
 		if (!p->E.fled && !f->E.fled) {
-			playerChoosesAction(p, f);
+			playerChoosesAction(p, f, ol, fl);
 		}
 
 		else {
@@ -527,7 +480,7 @@ static void foeChoosesAction(Player* p, Foe* f) {
 }
 
 // Allows the Player to initiate attack when they have a Foe in their vicinity
-static void impendingDoom(Player* p, FOE_DLL* foeList) {
+static void impendingDoom(Player* p, FOE_DLL* foeList, OBJ_DLL* ol) {
 	FoeNode* curr = foeList->head;
 	while (curr != NULL) {
 		if (checkPlayerSurrounding(curr->f, p)) {
@@ -538,12 +491,12 @@ static void impendingDoom(Player* p, FOE_DLL* foeList) {
             case 0:
                 printf("%s was bamboozled by %s cathching it off guard!\n", curr->f->E.name, p->E.name);
                 SLEEP_MS(500);
-                playerChoosesAction(p, curr->f);
+                playerChoosesAction(p, curr->f, ol, foeList);
                 break;
 			case 1:
 			    printf("%s has already noticed %s. The monster outsmarted the wanderer's outsmarting!\n", curr->f->E.name, p->E.name);
 			    SLEEP_MS(500);
-			    foeChoosesAction(p, curr->f);
+			    foeChoosesAction(p, curr->f, ol, foeList);
 			    break;
             }
 		}
@@ -552,14 +505,13 @@ static void impendingDoom(Player* p, FOE_DLL* foeList) {
 }
 
 // Player chooses an action
-static void playerChoosesAction(Player* p, Foe* f) {
+static void playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
 	char in = ' ';
 	char actChoice[5] = { '>', ' ', ' ', ' ', ' ' };
 	p->E.fled = false;
 	bool chose = false;
 
-	unsigned int tempDEF = p->E.def;
-	unsigned int enhDEF = p->E.def + p->E.atk;
+	unsigned int enhDEF = p->E.def * p->aegisPickedUp;
 
 	/*
 	1. elem.: ATTACK
@@ -632,9 +584,10 @@ static void playerChoosesAction(Player* p, Foe* f) {
 			// If the Player chooses to initiate his defenses
 			// I'd make it dependent on the Aegis Cores the Player picked up
 			else if (actChoice[1] == '>') {
-				printf("%s strengthtened his defense!", p->E.name);
-				if (p->E.def == tempDEF)
+				printf("%s activated the Aegis Cores. Defense strengthtened!", p->E.name);
+				if (p->E.def != enhDEF) {
 					p->E.def = enhDEF;
+				}
 				SLEEP_MS(500);
 			}
 			// If the Player chooses to cast Magia on the Foe
@@ -687,7 +640,7 @@ static void playerChoosesAction(Player* p, Foe* f) {
 		// In case both the quarries are alive and has not fled yet
 		if (!f->E.dead && (!f->E.fled || !p->E.fled) && chose) {
 			system("cls");
-			foeChoosesAction(p, f);
+			foeChoosesAction(p, f, ol, fl);
 		}
 	}
 

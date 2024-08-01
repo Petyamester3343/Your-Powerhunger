@@ -175,7 +175,10 @@ static FoeNode* findFoeByName(FOE_DLL* list, const char* name) {
 
 // Inserts a Foe into the list
 static bool insertFoeIntoList
-(Player* p, OBJ_DLL* ol, FOE_DLL* fl, const char* name, unsigned int hp, unsigned int atk, unsigned int def, unsigned int xp, unsigned int loot) {
+(Player* p, OBJ_DLL* ol, FOE_DLL* fl,
+ const char* name,
+ unsigned int hp, const unsigned int atk, unsigned int def,
+ const unsigned int xp, const unsigned int loot) {
 	Foe* f = (Foe*)malloc(sizeof(Foe));
 	if (f == NULL)
         return false;

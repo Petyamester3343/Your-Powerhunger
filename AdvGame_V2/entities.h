@@ -54,6 +54,7 @@ typedef struct Player {
 	bool boughtATK;
 	bool boughtDEF;
 	bool boughtVigor;
+	unsigned int aegisPickedUp;
 } Player;
 
 // The enemy struct, having Entity "inherited,"

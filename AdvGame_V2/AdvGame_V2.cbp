@@ -56,6 +56,9 @@
 		<Unit filename="skeleton.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="xp_sys.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

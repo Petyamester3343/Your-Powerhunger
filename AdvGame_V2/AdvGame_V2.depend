@@ -101,26 +101,25 @@
 	"DLL_container.h"
 	"def_vals.h"
 
-1722431933 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\battle_sys.c
-	<stdio.h>
+1722502566 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\battle_sys.c
 	<conio.h>
-	"DLL_container.h"
-	"def_vals.h"
+	"DLL_container.c"
+	"xp_sys.c"
 	<windows.h>
 	<unistd.h>
 
-1721734674 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\dll_container.h
+1722500736 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\dll_container.h
 	"entities.h"
 
-1722247111 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\entities.h
+1722493548 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\entities.h
 	<stdbool.h>
 	<stdlib.h>
 
-1722410272 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\def_vals.h
+1722501719 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\def_vals.h
 	<string.h>
 	"entities.h"
 
-1722426729 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\dll_container.c
+1722500724 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\dll_container.c
 	"DLL_container.h"
 	<string.h>
 
@@ -139,14 +138,13 @@
 	<stdlib.h>
 	<string.h>
 
-1722431754 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\game_loop.c
+1722500415 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\game_loop.c
 	"skeleton.c"
 
-1722432085 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\skeleton.c
+1722500615 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\skeleton.c
 	"game_data.c"
 	"battle_sys.c"
 	"shop.c"
-	"DLL_container.c"
 	<math.h>
 	<time.h>
 	<ctype.h>
@@ -166,11 +164,10 @@
 	<stdlib.h>
 	<string.h>
 
-1722431933 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\battle_sys.c
-	<stdio.h>
+1722502566 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\battle_sys.c
 	<conio.h>
-	"DLL_container.h"
-	"def_vals.h"
+	"DLL_container.c"
+	"xp_sys.c"
 	<windows.h>
 	<unistd.h>
 
@@ -182,14 +179,14 @@
 	<windows.h>
 	<unistd.h>
 
-1722426729 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\dll_container.c
+1722500724 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\dll_container.c
 	"DLL_container.h"
 	<string.h>
 
 1722425830 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\main.c
 	"game_loop.c"
 
-1722431754 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\game_loop.c
+1722500415 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\game_loop.c
 	"skeleton.c"
 
 1722432059 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\shop.c
@@ -200,11 +197,25 @@
 	<windows.h>
 	<unistd.h>
 
-1722431754 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\skeleton.c
+1722500615 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\skeleton.c
 	"game_data.c"
 	"battle_sys.c"
 	"shop.c"
-	"DLL_container.c"
 	<math.h>
+	<time.h>
 	<ctype.h>
+
+1722501375 c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\xp_sys.c
+	"def_vals.h"
+	"entities.h"
+	<stdio.h>
+	<windows.h>
+	<unistd.h>
+
+1722501375 source:c:\users\phant0m\desktop\powerhunger_v2\advgame_v2\xp_sys.c
+	"def_vals.h"
+	"entities.h"
+	<stdio.h>
+	<windows.h>
+	<unistd.h>
 

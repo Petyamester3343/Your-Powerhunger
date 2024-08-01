@@ -7,6 +7,9 @@
 // DEFAULT MAP SIZE
 #define MAP_SIZE 15
 
+// DEFAULT NORMAL OBJECT BUFF VALUE
+#define BUFF 5
+
 // Indicators of Jimmy having been defeated and summoned
 static bool jimmyDefeated = false;
 static bool jimmySummoned = false;
@@ -42,6 +45,8 @@ static void defPlayerValRestore(Player* p) {
 	p->boughtATK = false;
 	p->boughtDEF = false;
 	p->boughtVigor = false;
+
+	p->aegisPickedUp = 0;
 }
 
 
@@ -51,42 +56,47 @@ static void defPlayerValRestore(Player* p) {
 // SLIME DEFAULT STATS
 static const char* SLIME_NAME = "Slime";
 static unsigned int SLIME_HP = 15;
-static unsigned int SLIME_ATK = 3;
+static const unsigned int SLIME_ATK = 3;
 static unsigned int SLIME_DEF = 2;
-static unsigned int SLIME_XP = 10;
+static const unsigned int SLIME_XP = 10;
+static const unsigned int SLIME_LOOT = 10;
 
 // GOBLIN DEFAULT STATS
 static const char* GOBLIN_NAME = "Goblin";
 static unsigned int GOBLIN_HP = 25;
-static unsigned int GOBLIN_ATK = 7;
+static const unsigned int GOBLIN_ATK = 7;
 static unsigned int GOBLIN_DEF = 6;
-static unsigned int GOBLIN_XP = 20;
+static const unsigned int GOBLIN_XP = 20;
+static const unsigned int GOBLIN_LOOT = 20;
 
 // ACOLYTE DEFAULT STATS
 static const char* ACOLYTE_NAME = "Acolyte";
 static unsigned int ACOLYTE_HP = 40;
-static unsigned int ACOLYTE_ATK = 12;
+static const unsigned int ACOLYTE_ATK = 12;
 static unsigned int ACOLYTE_DEF = 10;
-static unsigned int ACOLYTE_XP = 40;
+static const unsigned int ACOLYTE_XP = 40;
+static const unsigned int ACOLYTE_LOOT = 40;
 
 // THWARTED SELF DEFAULT STATS
 static const char* THWARTED_SELF_NAME = "Thwarted Self";
 static unsigned int THWARTED_SELF_HP = 70;
-static unsigned int THWARTED_SELF_ATK = 20;
+static const unsigned int THWARTED_SELF_ATK = 20;
 static unsigned int THWARTED_SELF_DEF = 14;
-static unsigned int THWARTED_SELF_XP = 80;
+static const unsigned int THWARTED_SELF_XP = 80;
+static const unsigned int THWARTED_SELF_LOOT = 80;
 
 // CARCASS GOLEM DEFAULT STATS
 static const char* GOLEM_NAME = "Carcass Golem";
 static unsigned int GOLEM_HP = 90;
-static unsigned int GOLEM_ATK = 30;
+static const unsigned int GOLEM_ATK = 30;
 static unsigned int GOLEM_DEF = 20;
-static unsigned int GOLEM_XP = 120;
+static const unsigned int GOLEM_XP = 160;
+static const unsigned int GOLEM_LOOT = 160;
 
 // JIMMY DEFAULT STATS
 static const char* BOSS_NAME = "Jimmy";
 static unsigned int JIMMY_HP = 150;
-static unsigned int JIMMY_ATK = 50;
+static const unsigned int JIMMY_ATK = 50;
 static unsigned int JIMMY_DEF = 40;
 
 
