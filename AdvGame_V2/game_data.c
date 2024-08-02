@@ -20,17 +20,12 @@
 #include <string.h>
 
 #define SAVE_DIR "saves/"
-
 #define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
-
 #define PWRHNGRDEFINE static inline
 
 // Checks if the file has the extension .dat
 PWRHNGRDEFINE bool hasDatExtension(const char* fileName) {
-    const char* ext = strrchr(fileName, '.');
-    printf("Checking file: %s, found extension: %s\n",
-           fileName, ext ? ext : "none");
-    return (ext != NULL && strcmp(ext, ".dat") == 0);
+    return (strrchr(fileName, '.') != NULL && strcmp(strrchr(fileName, '.'), ".dat") == 0);
 }
 
 // Creates the save folder
@@ -120,7 +115,7 @@ PWRHNGRDEFINE void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
 
 // Allows the user to choose from the available save datas and load one of them
 PWRHNGRDEFINE int chooseAndLoadData(Player* p) {
-	char saveFiles[10][MAX_PATH];
+	char saveFiles[SAVE_SIZE][MAX_PATH];
 	bzero(saveFiles, sizeof(saveFiles));
 	int fileCount = 0;
 

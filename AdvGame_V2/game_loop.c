@@ -18,21 +18,30 @@ PWRHNGRDEFINE void checkWinCondition(Player* p, FOE_DLL* foeList) {
 // Once the counter reaches 10, it's Game Over
 // Until then, the Player is placed back at its starter position
 PWRHNGRDEFINE void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, char map[15][15]) {
-
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	printf("You died!\n");
 	p->deathCount++;																			// Death count is incremented by 1
 	SLEEP_MS(2000);
 	emptyFoeList(foeList);																		// Both of the containers get emptied
 	emptyObjList(objList);
-	if (p->deathCount == 10) {																	// Player can die 10 times in total. After that, the game restarts.
-		const char* msg = "GAME OVER";
+	if(p->deathCount >= 7 && 10-p->deathCount!=1)
+        printf("Only %d chances left...\n",10-p->deathCount);
+
+	else if(10-p->deathCount == 1) {
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+        printf("Only one shot left...\nBetter make it count...\x1b[0m\n");
+	}
+
+	else if (p->deathCount == 10) {																	// Player can die 10 times in total. After that, the game restarts.
+		const char* msg = "GAME OVER!";
 		p->deathCount = 0;
+		SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
 		for (int i = 0; i < sizeof(msg); i++) {
-			printf("\x1b[31m%c ", msg[i]);
-			SLEEP_MS(300);
+			printf("%c", msg[i]);
+			SLEEP_MS(400);
 		}
 		printf("\x1b[0m\n");
-		SLEEP_MS(10000);
+		SLEEP_MS(5000);
 		MainMenu(input, map, p, objList, foeList);
 	}
 	else {
@@ -86,29 +95,29 @@ PWRHNGRDEFINE void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* obj
 		showPlayerInfo(p);																		// A simple UI, which shows the current and max. stats of player, along with the money they possess
 		narrate(map, p);																		// A desription of the territory the character is on (related buffs may be implemented later)
 
-		bool acted = playerAction(getc, map, p, objList, foeList);								// This function determines if the player has "moved" in any way possible.
-		if (acted) {
-			moveFoes(foeList, objList, p);														// If so, the enemies move, too (but their movement is randomized, quasi-wandering).
+		if (playerAction(getc, map, p, objList, foeList)) {                                     // This function determines if the player has acted in any way possible.
+		    removeFoeByStatus(foeList);	                                                        // In case there was a fight, the Foes' corpses need to be taken care of
+
+            if (getFoeCount(foeList) == 0) {													// Should the player clear the map, they are granted another chance to gain more power
+				placeObjectsOnMap(objList, foeList, p, 5);                                      // Loot rain after clearing the map.
+				breedFoes(p, objList, foeList);                                                 // New Foes are summoned.
+				divineHelpGained = false;                                                       // The Divine Help flag gets reset.
+			}
+
+			moveFoes(foeList, objList, p);														// After initialization, the enemies move, too (but their movement is randomized, quasi-wandering).
 			moveJimmy(jimmySummoned, foeList, p, objList);										// If Jimmy is present, he moves towards the player (based on the absolute values of the hor. and vert. distance between them)
 
 			if (p->E.hp < PLAYER_MAX_HP && !divineHelpGained) {
-				placeObjectsOnMap(objList, foeList, p, 1);										// Loot rain for more power!
-				divineHelpGained = true;
-			}
-			
-			if (getFoeCount(foeList) == 0) {													// Should the player clear the map, they are granted another chance to gain more power
-				placeObjectsOnMap(objList, foeList, p, 5);
-				breedFoes(p, objList, foeList);
-				divineHelpGained = false;
+				placeObjectsOnMap(objList, foeList, p, 1);										// A guardian angel gives the Player a random object...
+				divineHelpGained = true;                                                        // and that's that...
 			}
 		}
 
-		if (p->E.hp == 0) {
+		if (p->E.hp == 0) {                                                                     // In case Player's HP would reach 0
 			GameOver(p, foeList, objList, getc, map);
 			divineHelpGained = false;
 		}
 
-	    removeFoeByStatus(foeList);															    // In case there was a fight, the Foes' corpses need to be taken care of
 		checkWinCondition(p, foeList);                                                          // Your sole goal is to defeat Jimmy once you get strong enough (LV 10 or above)
 	}
 }

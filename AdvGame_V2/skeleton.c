@@ -40,11 +40,12 @@ PWRHNGRDEFINE void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DL
 			FoeNode* currFoe = foeList->head;
 			while (currFoe != NULL) {
 				if (currFoe->f->E.pos.col == i && currFoe->f->E.pos.row == j) {
-                    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
                     if(strcmp(currFoe->f->E.name, "Jimmy") == 0) {
+                        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE);
                         printf("J \x1b[0m");
                     }
                     else {
+                        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
                         printf("! \x1b[0m");
                     }
                     break;
@@ -60,8 +61,13 @@ PWRHNGRDEFINE void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DL
 				SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
 				printf("%c \x1b[0m", map[i][j]);
 				break;
+            case 'R':
+                SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE);
+                printf("%c \x1b[0m", map[i][j]);
+                break;
 			default:
 				printf("%c \x1b[0m", map[i][j]);
+				break;
 			}
 
 		}
@@ -184,6 +190,16 @@ PWRHNGRDEFINE Player* initPlayer() {
 		defPlayerValRestore(p);
 		initPlayerMagic(p);
 
+		if(strcmp(msg, "Sasuke") == 0) {
+            p->M[0].acquired = true;
+            printf("\x1b[31mHow in the actual HELL is YOUR PRESENCE here POSSIBLE... ");
+            for(int i=0; i<strlen(msg); i++) {
+                printf("\x1b[31m%c", toupper(msg[i]));
+                SLEEP_MS(1000/3);
+            }
+            printf("\x1b[31m?!\x1b[0m\n");
+		}
+
 		if(strcmp(msg, "Akari") == 0) {
             p->M[5].acquired = true;
             p->M[5].magName = strdup(AKARI);
@@ -195,6 +211,7 @@ PWRHNGRDEFINE Player* initPlayer() {
                 printf("\x1b[31m%c", toupper(msg[i]));
                 SLEEP_MS(1000/3);
             }
+            printf("\x1b[31m!\x1b[0m\n");
         }
 
         if(strcmp(msg, "Aleister") == 0) {
@@ -263,16 +280,42 @@ PWRHNGRDEFINE Player* initPlayer() {
             p->E.atk = PLAYER_ATK;
             p->E.def = PLAYER_DEF;
 
-            printf("\x1b[31mThe fallen materfamilias...\n");
+            printf("\x1b[31mThe failed materfamilias...\n");
             SLEEP_MS(500);
-            printf("\x1b[31mHow does it feel like to betray your own brethren...\n");
+            printf("\x1b[31mHow does it feel like to be in Hell for betraying your own, innocent blood...\n");
             SLEEP_MS(500);
-            printf("\x1b[31mJust because of a lie shattering your pride..., ");
+            printf("\x1b[31Even killing her with that disingenuous move of yours...\n");
+            SLEEP_MS(500);
+            printf("\x1b[31mJust because of a lie shattering your pride... ");
             for(int i=0; i<strlen(msg); i++) {
                 printf("\x1b[31m%c", toupper(msg[i]));
                 SLEEP_MS(1000/3);
             }
-            printf("\x1b[31m?\x1b[0m\n");
+            printf("\x1b[31m...\x1b[0m\n");
+        }
+
+        if(strcmp(msg, "Saki") == 0) {
+            printf("\x1b[31mYou...\n");
+            SLEEP_MS(500);
+            printf("\x1b[0mYou're not fit for this realm...\n");
+            SLEEP_MS(500);
+            printf("\x1b[0mI pity you...\n");
+            SLEEP_MS(500);
+            printf("\x1b[0mEven though I'm supposed to be your enemy...\n");
+            SLEEP_MS(500);
+            printf("\x1b[0mI cannot let you in...");
+            SLEEP_MS(2000);
+            exit(265918);
+        }
+
+        else {
+            printf("\x1b[31mWelcome to Hell... ");
+            SLEEP_MS(500);
+            for(int i=0;i<strlen(msg); i++) {
+                printf("\x1b[31m%c", toupper(msg[i]));
+                SLEEP_MS(1000/3);
+            }
+            printf("\x1b[31m!\x1b[0m\n");
         }
 	}
 	SLEEP_MS(2000);
@@ -363,7 +406,7 @@ PWRHNGRDEFINE void playerSeeksObj(Player* p, OBJ_DLL* list) {
 				break;
 			case 'A':
 				p->aegisPickedUp++;
-				printf("%s found an Aegis Core! DEF +%d\nAegis Cores in %s's possession: %d", p->E.name, currObjNode->o->eff, p->E.name, p->aegisPickedUp);
+				printf("%s found an Aegis Core! DEF +%d\nAegis Cores in %s's possession: %d\n", p->E.name, currObjNode->o->eff, p->E.name, p->aegisPickedUp);
 				p->E.def += currObjNode->o->eff;
 				currObjNode->o->found = true;
 				break;
@@ -651,6 +694,7 @@ PWRHNGRDEFINE void showPlayerInfo(Player* p) {
 	printf("DEF:\t%d/%d\n", p->E.def, PLAYER_DEF);
 	printf("LV:\t%d (XP:\t%d/%d)\n", p->lv, p->E.xp, LV_UP_REQ(p->lv));
 	printf("GOLD:\t%d\n", p->money);
+	printf("\nLives:\t%d\n", 10-p->deathCount);
 }
 
 // The Player's current location on the map (under the UI)

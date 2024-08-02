@@ -4,6 +4,9 @@
 
 #include "entities.h"
 
+// DEFAULT SAVE SIZE
+#define SAVE_SIZE 10
+
 // DEFAULT MAP SIZE
 #define MAP_SIZE 15
 
