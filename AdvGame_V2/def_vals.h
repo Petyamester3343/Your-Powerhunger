@@ -13,15 +13,12 @@
 // DEFAULT NORMAL OBJECT BUFF VALUE
 #define BUFF 5
 
-#define PWRHNGRDEFINE static inline
-
 // Indicators of Jimmy having been defeated and summoned
 static bool jimmyDefeated = false;
 static bool jimmySummoned = false;
 
 // Level up value, used to incrememnt the Player's numeral stats
 static const unsigned int LVUP_VAL = 10;
-
 
 
 // PLAYER DEFAULT STATS
@@ -31,7 +28,9 @@ static unsigned int PLAYER_ATK = 10;
 static unsigned int PLAYER_DEF = 10;
 static Pos PLAYER_START_POS = { 7,7 };
 
-PWRHNGRDEFINE void defPlayerValRestore(Player* p) {
+// Initializes the Player struct
+// OR returns it to the default values (after a game over)
+static inline void defPlayerValRestore(Player* p) {
 	PLAYER_MAX_HP = 100;
 	PLAYER_MAX_MP = 50;
 	PLAYER_ATK = 10;
@@ -52,8 +51,8 @@ PWRHNGRDEFINE void defPlayerValRestore(Player* p) {
 	p->boughtVigor = false;
 
 	p->aegisPickedUp = 0;
+	p->deathCount = 0;
 }
-
 
 
 // Enemies
@@ -100,10 +99,9 @@ static const unsigned int GOLEM_LOOT = 160;
 
 // JIMMY DEFAULT STATS
 static const char* BOSS_NAME = "Jimmy";
-static unsigned int JIMMY_HP = 150;
-static const unsigned int JIMMY_ATK = 50;
-static unsigned int JIMMY_DEF = 40;
-
+static unsigned int BOSS_HP = 150;
+static const unsigned int BOSS_ATK = 50;
+static unsigned int BOSS_DEF = 40;
 
 
 // Magic
@@ -145,9 +143,8 @@ static unsigned int RSOJ_COST = 50;
 static unsigned int RSOJ_LV_REQ = 0;
 static unsigned int RSOJ_PRICE = 1250;
 
-
-// Initializes the Player's Magia roster
-PWRHNGRDEFINE void initPlayerMagic(Player* p) {
+// Initializes the Player's Magia array
+static inline void initPlayerMagic(Player* p) {
 	// initializing magic
 	for (unsigned int i = 0; i < 6; i++) {
 		switch (i) {

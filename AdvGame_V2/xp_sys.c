@@ -15,17 +15,23 @@
     #define SLEEP_MS(ms) usleep((ms)*1000)
 #endif // _WIN32
 
-#define PWRHNGRDEFINE static inline
-
 // Allows the character to level up
-PWRHNGRDEFINE void level_up(Player* p) {
+static inline void level_up(Player* p) {
 	if (p->E.xp >= LV_UP_REQ(p->lv)) {
-		p->lv++;
+        p->lv++;
+        PLAYER_MAX_MP += 10;
+        PLAYER_MAX_HP += 10;
 
-		PLAYER_MAX_HP += 10;
-		PLAYER_ATK += 10;
-		PLAYER_DEF += 10;
-		PLAYER_MAX_MP += 10;
+        if(strcmp(p->E.name, "Saki")==0) {
+            PLAYER_ATK += 5;
+            PLAYER_DEF += 5;
+        }
+
+		else {
+            PLAYER_ATK += 10;
+            PLAYER_DEF += 10;
+		}
+
 
 		p->E.hp = PLAYER_MAX_HP;
 		p->E.atk = PLAYER_ATK;
@@ -60,7 +66,7 @@ PWRHNGRDEFINE void level_up(Player* p) {
 
 // Grants the player experience points
 // (Either from an Arcane Tome or from slaying a Foe)
-PWRHNGRDEFINE void xp_gain(unsigned int experience, Player* p, bool fought) {
+static inline void xp_gain(unsigned int experience, Player* p, bool fought) {
 	p->E.xp += experience;
 	if (fought)
 		printf("%s has gained %d XP from the battle! (Current: %d / %d)\n",
@@ -74,7 +80,7 @@ PWRHNGRDEFINE void xp_gain(unsigned int experience, Player* p, bool fought) {
 
 // Grants the player GOLD from slaying a Foe
 // The first can be used to buy upgrades in Shop
-PWRHNGRDEFINE void looting(Player* p, unsigned int money) {
+static inline void looting(Player* p, unsigned int money) {
 	p->money += money;
 	printf("%d GOLD gained!\n", money);
 	SLEEP_MS(500);

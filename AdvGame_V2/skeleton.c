@@ -1,15 +1,14 @@
 #include "game_data.c"
 #include "battle_sys.c"
 #include "shop.c"
+#include "tictactoe.c"
 
 #include <math.h>
 #include <time.h>
 #include <ctype.h>
 
-#define PWRHNGRDEFINE static inline
-
 // Draws the map
-PWRHNGRDEFINE void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+static inline void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // to manipulate the color of the output
 	system("cls");
 
@@ -76,7 +75,7 @@ PWRHNGRDEFINE void drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DL
 }
 
 // Moves the boss of the game
-PWRHNGRDEFINE void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DLL* ol) {
+static inline void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DLL* ol) {
 	if(isPresent) {
         FoeNode* jimmyNode = findFoeByName(foeList, "Jimmy");
         if (jimmyNode != NULL) {
@@ -111,7 +110,7 @@ PWRHNGRDEFINE void moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DL
 }
 
 // Allows the Foes (except for Jimmy) to move
-PWRHNGRDEFINE void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
+static inline void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
 	FoeNode* current = foeList->head;
 	while (current != NULL && strcmp(current->f->E.name, "Jimmy") != 0) {
 		if(!current->f->E.dead) {
@@ -177,8 +176,24 @@ PWRHNGRDEFINE void moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p) {
 	}
 }
 
+static inline bool unknownOne(const char* msg) {
+    return
+        strcmp(msg, "Phantom")!=0 &&
+        strcmp(msg, "Sakura")!=0 &&
+        strcmp(msg, "Akari")!=0 &&
+        strcmp(msg, "Sasaki")!=0 &&
+        strcmp(msg, "Hana")!=0 &&
+        strcmp(msg, "Thomas")!=0 &&
+        strcmp(msg, "Minerva")!=0 &&
+        strcmp(msg, "Lucius")!=0 &&
+        strcmp(msg, "Aleister")!=0 &&
+        strcmp(msg, "Saki")!=0 &&
+        strcmp(msg, "Nari")!=0;
+}
+
 // Initializes the player and the spells in order to avoid access violation
-PWRHNGRDEFINE Player* initPlayer() {
+// Also, a small greeting under certain conditions
+static inline Player* initPlayer() {
 	Player* p = (Player*)malloc(sizeof(Player));
 
 	if (p != NULL) {
@@ -190,123 +205,211 @@ PWRHNGRDEFINE Player* initPlayer() {
 		defPlayerValRestore(p);
 		initPlayerMagic(p);
 
-		if(strcmp(msg, "Sasuke") == 0) {
-            p->M[0].acquired = true;
-            printf("\x1b[31mHow in the actual HELL is YOUR PRESENCE here POSSIBLE... ");
-            for(int i=0; i<strlen(msg); i++) {
-                printf("\x1b[31m%c", toupper(msg[i]));
-                SLEEP_MS(1000/3);
+		if(!unknownOne(msg)) {
+            if(strcmp(msg, "Thomas") == 0) {
+                printf("I'm not afraid of your hounds... ");
+                for(int i=0; i<strlen(msg); i++) {
+                    printf("\x1b[31m%c", toupper(msg[i]));
+                }
+                printf("\x1b[31m!\x1b[0m");
             }
-            printf("\x1b[31m?!\x1b[0m\n");
+
+            if(strcmp(msg, "Hana") == 0) {
+                // Tic-Tac-Toe... just for prank...
+                printf("Oh, little child... You're not suited for such realms at all...\n");
+                SLEEP_MS(500);
+                printf("Let's play something else instead, shall we?\n");
+                SLEEP_MS(500);
+                char yesno = ' ';
+                while(yesno != 'n') {
+                    system("cls");
+                    gameMech_3T();
+                    printf("Again? (Y/N) ");
+                    scanf( "%c", &yesno);
+                }
+            }
+
+            if(strcmp(msg, "Sasaki") == 0) {
+                printf("\x1b[31mTo think you can live with such secrets... ");
+                SLEEP_MS(500);
+                printf("\x1b[31mHave you ever wondered why could she see a glimpse of her future... ");
+                for(int i=0; i<strlen(msg); i++) {
+                    printf("\x1b[31m%c", toupper(msg[i]));
+                    SLEEP_MS(1000/3);
+                }
+                printf("\x1b[31m?\x1b[0m\n");
+            }
+
+            if(strcmp(msg, "Akari") == 0 || strcmp(msg, "Lucius") == 0 || strcmp(msg, "Minerva") == 0) {
+                p->M[5].acquired = true;
+                if(strcmp(msg, "Akari")==0) {
+                    p->M[5].magName = strdup(AKARI);
+                    p->M[5].magATK = RSOJ_ATK;
+                    p->M[5].magCost = RSOJ_COST;
+                    p->boughtMagic = true;
+                }
+                printf("\x1b[31mSo, you have finally come for my head... ");
+                for(int i=0; i<strlen(msg); i++) {
+                    printf("\x1b[31m%c", toupper(msg[i]));
+                    SLEEP_MS(1000/3);
+                }
+                printf("\x1b[31m!\x1b[0m\n");
+            }
+
+            if(strcmp(msg, "Aleister") == 0 || strcmp(msg, "Al") == 0) {
+                p->M[4].acquired = true;
+                p->boughtVigor = true;
+                PLAYER_MAX_HP += (p->lv-1)*LVUP_VAL + 30;
+                PLAYER_MAX_MP += (p->lv-1)*LVUP_VAL + 30;
+                p->E.hp = PLAYER_MAX_HP;
+                p->mp = PLAYER_MAX_MP;
+                printf("\x1b[31mMy death will never bring Her back... ");
+                for(int i=0; i<strlen(msg); i++) {
+                    printf("\x1b[31m%c", toupper(msg[i]));
+                    SLEEP_MS(1000/3);
+                }
+                printf("\x1b[31m!\x1b[0m\n");
+            }
+
+            if(strcmp(msg, "Sakura") == 0) {
+                p->M[2].acquired = true;
+                printf("\x1b[31mAs if you can defeat me... ");
+                for(int i=0; i<strlen(msg); i++) {
+                    printf("\x1b[31m%c", toupper(msg[i]));
+                    SLEEP_MS(1000/3);
+                }
+                printf("\x1b[31m...\x1b[0m\n");
+            }
+
+            if(strcmp(msg, "Phantom") == 0) {
+                p->lv = 10;
+
+                for(int i=0; i<SKILL_ROSTER; i++) {
+                    p->M[i].acquired = true;
+                }
+
+                p->M[5].magName = strdup(AKARI);
+                p->M[5].magATK = RSOJ_ATK;
+                p->M[5].magCost = RSOJ_COST;
+                p->boughtMagic = true;
+
+                p->boughtATK = true;
+                p->boughtDEF = true;
+                p->boughtVigor = true;
+                PLAYER_MAX_HP += (p->lv-1)*LVUP_VAL + 30;
+                PLAYER_MAX_MP += (p->lv-1)*LVUP_VAL + 30;
+                PLAYER_ATK += (p->lv-1)*LVUP_VAL + 30;
+                PLAYER_DEF += (p->lv-1)*LVUP_VAL + 30;
+                p->E.hp = PLAYER_MAX_HP;
+                p->mp = PLAYER_MAX_MP;
+                p->E.atk = PLAYER_ATK;
+                p->E.def = PLAYER_DEF;
+
+                printf("\x1b[31mGet psyched for your funeral... ");
+                for(int i=0; i<strlen(msg); i++) {
+                    printf("\x1b[31m%c", toupper(msg[i]));
+                    SLEEP_MS(1000/3);
+                }
+                printf("\x1b[31m!!!\x1b[0m\n");
+            }
+
+            if(strcmp(msg, "Nari") == 0) {
+                p->M[1].acquired = true;
+                p->boughtATK = true;
+                p->boughtDEF = true;
+                PLAYER_ATK += (p->lv-1)*LVUP_VAL + 30;
+                PLAYER_DEF += (p->lv-1)*LVUP_VAL + 30;
+                p->E.atk = PLAYER_ATK;
+                p->E.def = PLAYER_DEF;
+
+                printf("\x1b[31mThe failed materfamilias...\n");
+                SLEEP_MS(500);
+                printf("\x1b[31mHow does it feel like to be in Hell for betraying your own, innocent blood...\n");
+                SLEEP_MS(500);
+                printf("\x1b[31mEven killing her with that disingenuous move of yours...\n");
+                SLEEP_MS(500);
+                printf("\x1b[31mJust because of a lie shattering your pride... ");
+                for(int i=0; i<strlen(msg); i++) {
+                    printf("\x1b[31m%c", toupper(msg[i]));
+                    SLEEP_MS(1000/3);
+                }
+                printf("\x1b[31m...\x1b[0m\n");
+            }
+
+            if(strcmp(msg, "Saki") == 0) {
+                printf("\x1b[31mYou...\n");
+                SLEEP_MS(500);
+                printf("\x1b[0mYou're not fit for this realm...\n");
+                SLEEP_MS(500);
+                printf("\x1b[0mI pity you...\n");
+                SLEEP_MS(500);
+                printf("\x1b[0mEven though I'm supposed to be your enemy...\n");
+                SLEEP_MS(500);
+                printf("\x1b[0mI cannot let you in...");
+                SLEEP_MS(2000);
+
+                char choice[2]={' ', '>'};
+                while(1) {
+                    system("cls");
+                    printf("%c\tI cannot let you do your evil either! ... I need to be free... I'm going in, no matter what!\n%c\tI... I can understand... I'm not ready yet...",
+                           choice[0], choice[1]);
+                    char input = getch();
+                    switch(input) {
+                    case 'w':
+                        if(choice[0]=='>') {
+                            choice[0]=' ';
+                            choice[1]='>';
+                        }
+                        else {
+                            choice[1]=' ';
+                            choice[0]='>';
+                        }
+                        break;
+                    case 's':
+                        if(choice[0]=='>') {
+                            choice[0]=' ';
+                            choice[1]='>';
+                        }
+                        else {
+                            choice[1]=' ';
+                            choice[0]='>';
+                        }
+                        break;
+                    case 13:
+                        if(choice[0]=='>') {
+                            printf("\nYou don't know what you're dwelling yourself into... ");
+                            for(int i=0; i<strlen(msg)+3; i++) {
+                                printf("\x1b[31m%c", toupper(msg[i]));
+                                SLEEP_MS(1000/3);
+                                if(i>strlen(msg)) {
+                                    printf("\x1b[31m.");
+                                    SLEEP_MS(1000/3);
+                                }
+                            }
+                            printf("\x1b[0m\n");
+
+                            PLAYER_ATK /= 2;
+                            p->E.atk = PLAYER_ATK;
+                            PLAYER_DEF /= 2;
+                            p->E.def = PLAYER_DEF;
+                            PLAYER_MAX_HP *= 2;
+                            p->E.hp = PLAYER_MAX_HP;
+                            PLAYER_MAX_MP *= 2;
+                            p->mp = PLAYER_MAX_MP;
+
+                            p->M[3].acquired = true;
+
+                            return p;
+                        }
+                        else {
+                            printf("\nA wise decision...\n");
+                            exit(265918);
+                        }
+                    }
+                }
+
+            }
 		}
-
-		if(strcmp(msg, "Akari") == 0) {
-            p->M[5].acquired = true;
-            p->M[5].magName = strdup(AKARI);
-            p->M[5].magATK = RSOJ_ATK;
-            p->M[5].magCost = RSOJ_COST;
-            p->boughtMagic = true;
-            printf("\x1b[31mSo, you have finally come for my head... ");
-            for(int i=0; i<strlen(msg); i++) {
-                printf("\x1b[31m%c", toupper(msg[i]));
-                SLEEP_MS(1000/3);
-            }
-            printf("\x1b[31m!\x1b[0m\n");
-        }
-
-        if(strcmp(msg, "Aleister") == 0) {
-            p->M[4].acquired = true;
-            p->boughtVigor = true;
-            PLAYER_MAX_HP += (p->lv-1)*LVUP_VAL + 30;
-            PLAYER_MAX_MP += (p->lv-1)*LVUP_VAL + 30;
-            p->E.hp = PLAYER_MAX_HP;
-            p->mp = PLAYER_MAX_MP;
-            printf("\x1b[31mMy death will never bring Her back... ");
-            for(int i=0; i<strlen(msg); i++) {
-                printf("\x1b[31m%c", toupper(msg[i]));
-                SLEEP_MS(1000/3);
-            }
-            printf("\x1b[31m!\x1b[0m\n");
-        }
-
-        if(strcmp(msg, "Sakura") == 0) {
-            p->M[2].acquired = true;
-            printf("\x1b[31mAs if you can defeat me... ");
-            for(int i=0; i<strlen(msg); i++) {
-                printf("\x1b[31m%c", toupper(msg[i]));
-                SLEEP_MS(1000/3);
-            }
-            printf("\x1b[31m...\x1b[0m\n");
-        }
-
-        if(strcmp(msg, "Phantom") == 0) {
-            p->lv = 10;
-
-            for(int i=0; i<SKILL_ROSTER; i++) {
-                p->M[i].acquired = true;
-            }
-
-            p->M[5].magName = strdup(AKARI);
-            p->M[5].magATK = RSOJ_ATK;
-            p->M[5].magCost = RSOJ_COST;
-            p->boughtMagic = true;
-
-            p->boughtATK = true;
-            p->boughtDEF = true;
-            p->boughtVigor = true;
-            PLAYER_MAX_HP += (p->lv-1)*LVUP_VAL + 30;
-            PLAYER_MAX_MP += (p->lv-1)*LVUP_VAL + 30;
-            PLAYER_ATK += (p->lv-1)*LVUP_VAL + 30;
-            PLAYER_DEF += (p->lv-1)*LVUP_VAL + 30;
-            p->E.hp = PLAYER_MAX_HP;
-            p->mp = PLAYER_MAX_MP;
-            p->E.atk = PLAYER_ATK;
-            p->E.def = PLAYER_DEF;
-
-            printf("\x1b[31mGet psyched for your funeral... ");
-            for(int i=0; i<strlen(msg); i++) {
-                printf("\x1b[31m%c", toupper(msg[i]));
-                SLEEP_MS(1000/3);
-            }
-            printf("\x1b[31m!!!\x1b[0m\n");
-        }
-
-        if(strcmp(msg, "Nari") == 0) {
-            p->M[1].acquired = true;
-            p->boughtATK = true;
-            p->boughtDEF = true;
-            PLAYER_ATK += (p->lv-1)*LVUP_VAL + 30;
-            PLAYER_DEF += (p->lv-1)*LVUP_VAL + 30;
-            p->E.atk = PLAYER_ATK;
-            p->E.def = PLAYER_DEF;
-
-            printf("\x1b[31mThe failed materfamilias...\n");
-            SLEEP_MS(500);
-            printf("\x1b[31mHow does it feel like to be in Hell for betraying your own, innocent blood...\n");
-            SLEEP_MS(500);
-            printf("\x1b[31Even killing her with that disingenuous move of yours...\n");
-            SLEEP_MS(500);
-            printf("\x1b[31mJust because of a lie shattering your pride... ");
-            for(int i=0; i<strlen(msg); i++) {
-                printf("\x1b[31m%c", toupper(msg[i]));
-                SLEEP_MS(1000/3);
-            }
-            printf("\x1b[31m...\x1b[0m\n");
-        }
-
-        if(strcmp(msg, "Saki") == 0) {
-            printf("\x1b[31mYou...\n");
-            SLEEP_MS(500);
-            printf("\x1b[0mYou're not fit for this realm...\n");
-            SLEEP_MS(500);
-            printf("\x1b[0mI pity you...\n");
-            SLEEP_MS(500);
-            printf("\x1b[0mEven though I'm supposed to be your enemy...\n");
-            SLEEP_MS(500);
-            printf("\x1b[0mI cannot let you in...");
-            SLEEP_MS(2000);
-            exit(265918);
-        }
 
         else {
             printf("\x1b[31mWelcome to Hell... ");
@@ -324,7 +427,7 @@ PWRHNGRDEFINE Player* initPlayer() {
 }
 
 // Initializes the map
-PWRHNGRDEFINE void initMap(char map[MAP_SIZE][MAP_SIZE]) {
+static inline void initMap(char map[MAP_SIZE][MAP_SIZE]) {
 	memset(map, '\0', sizeof(char) * MAP_SIZE * MAP_SIZE);
 	FILE* mapFP = fopen("map.txt", "r");
 
@@ -351,7 +454,7 @@ PWRHNGRDEFINE void initMap(char map[MAP_SIZE][MAP_SIZE]) {
 
 // Places a random Object on the map, which buffs the Player (until the next level up, that is)
 // Depending on the situation, the iteration can be controlled
-PWRHNGRDEFINE void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsigned int num) {
+static inline void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsigned int num) {
 	for (int i = 0; i < num; i++) {
         switch (rand() % 7) {
             case 0:
@@ -380,7 +483,7 @@ PWRHNGRDEFINE void placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, cons
 }
 
 // Allows the Player to pick Objects up and consume them
-PWRHNGRDEFINE void playerSeeksObj(Player* p, OBJ_DLL* list) {
+static inline void playerSeeksObj(Player* p, OBJ_DLL* list) {
 	static int mangaFound = 0;
 	ObjNode* currObjNode = list->head;
 	while (currObjNode != NULL) {
@@ -492,7 +595,7 @@ PWRHNGRDEFINE void playerSeeksObj(Player* p, OBJ_DLL* list) {
 
 // The player takes action upon input (movement, attacking foes in its vicinity)
 // It becomes true when they moved
-PWRHNGRDEFINE bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+static inline bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	bool moved = false;
 	bool isShopThreatened = false;
 	unsigned int foesThreateningShop = 0;
@@ -629,7 +732,7 @@ PWRHNGRDEFINE bool playerAction(char input, char map[15][15], Player* p, OBJ_DLL
 
 // Creates Foes based on the Player's level
 // Adjusted not to flood the map
-PWRHNGRDEFINE void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+static inline void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
     for(unsigned int i = 0; i < 5; i++) {
         if (p->lv <= 3) {
             if (getFoeCountByName(foeList, SLIME_NAME) < 2) { // Limit number of Slimes
@@ -680,14 +783,14 @@ PWRHNGRDEFINE void breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
     }
 
 	if (p->lv >= 10 && !jimmySummoned) {
-		insertFoeIntoList(p, objList, foeList, BOSS_NAME, JIMMY_HP, JIMMY_ATK, JIMMY_DEF, 0, 0);
+		insertFoeIntoList(p, objList, foeList, BOSS_NAME, BOSS_HP, BOSS_ATK, BOSS_DEF, 0, 0);
 		foeList->tail->f->E.pos.col = foeList->tail->f->E.pos.row = 14;
 		jimmySummoned = true;
 	}
 }
 
 // A simple non-interactive UI
-PWRHNGRDEFINE void showPlayerInfo(Player* p) {
+static inline void showPlayerInfo(Player* p) {
 	printf("HP:\t%d/%d\n", p->E.hp, PLAYER_MAX_HP);
 	printf("MP:\t%d/%d\n", p->mp, PLAYER_MAX_MP);
 	printf("ATK:\t%d/%d\n", p->E.atk, PLAYER_ATK);
@@ -698,7 +801,7 @@ PWRHNGRDEFINE void showPlayerInfo(Player* p) {
 }
 
 // The Player's current location on the map (under the UI)
-PWRHNGRDEFINE void narrate(char map[15][15], Player* p) {
+static inline void narrate(char map[15][15], Player* p) {
 	printf("Current location: ");
 	switch (map[p->E.pos.col][p->E.pos.row]) {
 	case 'F': printf("Forest\n"); break;

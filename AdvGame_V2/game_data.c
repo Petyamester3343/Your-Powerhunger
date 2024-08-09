@@ -21,27 +21,26 @@
 
 #define SAVE_DIR "saves/"
 #define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
-#define PWRHNGRDEFINE static inline
 
 // Checks if the file has the extension .dat
-PWRHNGRDEFINE bool hasDatExtension(const char* fileName) {
+static inline bool hasDatExtension(const char* fileName) {
     return (strrchr(fileName, '.') != NULL && strcmp(strrchr(fileName, '.'), ".dat") == 0);
 }
 
 // Creates the save folder
-PWRHNGRDEFINE void ensureSaveDir() {
+static inline void ensureSaveDir() {
     if(_mkdir(SAVE_DIR) != 0 && errno != EEXIST) {
         fprintf(stderr, "Cannot create main save directory!\n");
     }
 }
 
 // Checks if the file exists
-PWRHNGRDEFINE bool checkFileExists(const char* filePath) {
+static inline bool checkFileExists(const char* filePath) {
     return access(filePath, F_OK) != -1;
 }
 
 // Saves the Player's stats (actions included)
-PWRHNGRDEFINE void saveData(Player* p) {
+static inline void saveData(Player* p) {
     ensureSaveDir();
 
 	char filePath[MAX_PATH];
@@ -84,7 +83,7 @@ PWRHNGRDEFINE void saveData(Player* p) {
 }
 
 // Lists the existing save files
-PWRHNGRDEFINE void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
+static inline void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
     DIR* dir;
     struct dirent* entry;
     int count = 0;
@@ -114,7 +113,7 @@ PWRHNGRDEFINE void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
 }
 
 // Allows the user to choose from the available save datas and load one of them
-PWRHNGRDEFINE int chooseAndLoadData(Player* p) {
+static inline int chooseAndLoadData(Player* p) {
 	char saveFiles[SAVE_SIZE][MAX_PATH];
 	bzero(saveFiles, sizeof(saveFiles));
 	int fileCount = 0;
@@ -189,7 +188,7 @@ PWRHNGRDEFINE int chooseAndLoadData(Player* p) {
 }
 
 // Allows the user to choose from the available save datas and delete one of them
-PWRHNGRDEFINE void chooseAndDeleteData() {
+static inline void chooseAndDeleteData() {
 	char saveFiles[10][MAX_PATH];
 	int fileCount = 0;
 

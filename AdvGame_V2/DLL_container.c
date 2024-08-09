@@ -2,10 +2,8 @@
 
 #include <string.h>
 
-#define PWRHNGRDEFINE static inline
-
 // Checks if a certain position is already occupied
-PWRHNGRDEFINE bool isPosOccupied(unsigned int col, unsigned int row, Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
+static inline bool isPosOccupied(unsigned int col, unsigned int row, Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
 	if (col == p->E.pos.col && row == p->E.pos.row && p->E.pos.occupied)
 		return true;
 
@@ -27,7 +25,7 @@ PWRHNGRDEFINE bool isPosOccupied(unsigned int col, unsigned int row, Player* p, 
 }
 
 // A random position generator
-PWRHNGRDEFINE Pos generateRandomPos(Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
+static inline Pos generateRandomPos(Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
 	Pos pos = { 0, 0 };
 
 	do {
@@ -40,7 +38,7 @@ PWRHNGRDEFINE Pos generateRandomPos(Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
 }
 
 // Constructor
-PWRHNGRDEFINE OBJ_DLL* createObjList() {
+static inline OBJ_DLL* createObjList() {
 	OBJ_DLL* list = (OBJ_DLL*)malloc(sizeof(OBJ_DLL));
 	if (list != NULL) {
 		list->head = NULL;
@@ -50,7 +48,7 @@ PWRHNGRDEFINE OBJ_DLL* createObjList() {
 }
 
 // Finds an object by a given position
-PWRHNGRDEFINE ObjNode* findObjByPos(OBJ_DLL* list, Pos p) {
+static inline ObjNode* findObjByPos(OBJ_DLL* list, Pos p) {
 	ObjNode* curr = list->head;
 	while (curr != NULL) {
 		if (curr->o->pos.col == p.col && curr->o->pos.row == p.row) {
@@ -62,7 +60,7 @@ PWRHNGRDEFINE ObjNode* findObjByPos(OBJ_DLL* list, Pos p) {
 }
 
 // Inserts an instance of object into the list
-PWRHNGRDEFINE bool insertObjIntoList(OBJ_DLL* olist, FOE_DLL* flist, char sign, unsigned int eff, Player* p) {
+static inline bool insertObjIntoList(OBJ_DLL* olist, FOE_DLL* flist, char sign, unsigned int eff, Player* p) {
 	Object* o = (Object*)malloc(sizeof(Object));
 	if (o == NULL)
         return false;
@@ -96,7 +94,7 @@ PWRHNGRDEFINE bool insertObjIntoList(OBJ_DLL* olist, FOE_DLL* flist, char sign, 
 }
 
 // Empties the object list
-PWRHNGRDEFINE void emptyObjList(OBJ_DLL* list) {
+static inline void emptyObjList(OBJ_DLL* list) {
 	ObjNode* curr = list->head;
 	ObjNode* next;
 
@@ -108,13 +106,13 @@ PWRHNGRDEFINE void emptyObjList(OBJ_DLL* list) {
 }
 
 // Destructor
-PWRHNGRDEFINE void destroyObjList(OBJ_DLL* list) {
+static inline void destroyObjList(OBJ_DLL* list) {
 	emptyObjList(list);
 	free(list);
 }
 
 // Removes an instance of Object from the list
-PWRHNGRDEFINE void removeObjNode(OBJ_DLL* list, ObjNode* node) {
+static inline void removeObjNode(OBJ_DLL* list, ObjNode* node) {
     node->o->pos.occupied = false;
     if (node == list->head && node == list->tail) {
         // Case: Only one node in the list
@@ -142,7 +140,7 @@ PWRHNGRDEFINE void removeObjNode(OBJ_DLL* list, ObjNode* node) {
 
 
 // Constructor
-PWRHNGRDEFINE FOE_DLL* createFoeList() {
+static inline FOE_DLL* createFoeList() {
 	FOE_DLL* list = (FOE_DLL*)malloc(sizeof(FOE_DLL));
 	if (list != NULL) {
 		list->head = NULL;
@@ -152,7 +150,7 @@ PWRHNGRDEFINE FOE_DLL* createFoeList() {
 }
 
 // Creates an instance of Foe inside the list
-PWRHNGRDEFINE FoeNode* createFoe(Foe* f) {
+static inline FoeNode* createFoe(Foe* f) {
 	FoeNode* neu = (FoeNode*)malloc(sizeof(FoeNode));
 	if (neu == NULL)
         return NULL;
@@ -164,7 +162,7 @@ PWRHNGRDEFINE FoeNode* createFoe(Foe* f) {
 }
 
 // Finds a foe by its name
-PWRHNGRDEFINE FoeNode* findFoeByName(FOE_DLL* list, const char* name) {
+static inline FoeNode* findFoeByName(FOE_DLL* list, const char* name) {
 	FoeNode* curr = list->head;
 	while (curr != NULL) {
 		if (strcmp(curr->f->E.name, name) == 0) {
@@ -176,7 +174,7 @@ PWRHNGRDEFINE FoeNode* findFoeByName(FOE_DLL* list, const char* name) {
 }
 
 // Inserts a Foe into the list
-PWRHNGRDEFINE bool insertFoeIntoList
+static inline bool insertFoeIntoList
 (Player* p, OBJ_DLL* ol, FOE_DLL* fl,
  const char* name,
  unsigned int hp, const unsigned int atk, unsigned int def,
@@ -217,7 +215,7 @@ PWRHNGRDEFINE bool insertFoeIntoList
 }
 
 // Removes an instance of Foe from the list
-PWRHNGRDEFINE void removeFoeNode(FOE_DLL* list, FoeNode* node) {
+static inline void removeFoeNode(FOE_DLL* list, FoeNode* node) {
 	node->f->E.pos.occupied = false;
 
 	if (node->prev != NULL) {
@@ -239,7 +237,7 @@ PWRHNGRDEFINE void removeFoeNode(FOE_DLL* list, FoeNode* node) {
 }
 
 // Finds a foe by a given position
-PWRHNGRDEFINE FoeNode* findFoeByPos(FOE_DLL* list, Pos p) {
+static inline FoeNode* findFoeByPos(FOE_DLL* list, Pos p) {
 	FoeNode* curr = list->head;
 	while (curr != NULL) {
 		if (curr->f->E.pos.col == p.col && curr->f->E.pos.row == p.row) {
@@ -251,7 +249,7 @@ PWRHNGRDEFINE FoeNode* findFoeByPos(FOE_DLL* list, Pos p) {
 }
 
 // Finds a foe by its state of living
-PWRHNGRDEFINE FoeNode* findFoeByStatus(FOE_DLL* list) {
+static inline FoeNode* findFoeByStatus(FOE_DLL* list) {
 	FoeNode* curr = list->head;
 	while (curr != NULL) {
 		if (curr->f->E.dead) {
@@ -263,7 +261,7 @@ PWRHNGRDEFINE FoeNode* findFoeByStatus(FOE_DLL* list) {
 }
 
 // Removes a foe if it is dead
-PWRHNGRDEFINE void removeFoeByStatus(FOE_DLL* list) {
+static inline void removeFoeByStatus(FOE_DLL* list) {
 	FoeNode* node = findFoeByStatus(list);
 	if (node != NULL) {
 		removeFoeNode(list, node);
@@ -271,7 +269,7 @@ PWRHNGRDEFINE void removeFoeByStatus(FOE_DLL* list) {
 }
 
 // Gets the number of foes inside the foes' doubly linked list
-PWRHNGRDEFINE const unsigned int getFoeCount(FOE_DLL* list) {
+static inline const unsigned int getFoeCount(FOE_DLL* list) {
 	unsigned int size = 0;
 	FoeNode* curr = list->head;
 	while (curr != NULL) {
@@ -282,7 +280,7 @@ PWRHNGRDEFINE const unsigned int getFoeCount(FOE_DLL* list) {
 }
 
 // Gets the number of specific(!) foes inside the foes' doubly linked list
-PWRHNGRDEFINE const unsigned int getFoeCountByName(FOE_DLL* list, const char* name) {
+static inline const unsigned int getFoeCountByName(FOE_DLL* list, const char* name) {
     unsigned int count = 0;
     FoeNode* curr = list->head;
     while(curr != NULL) {
@@ -295,7 +293,7 @@ PWRHNGRDEFINE const unsigned int getFoeCountByName(FOE_DLL* list, const char* na
 }
 
 // Empties the doubly linked list
-PWRHNGRDEFINE void emptyFoeList(FOE_DLL* list) {
+static inline void emptyFoeList(FOE_DLL* list) {
 	FoeNode* curr = list->head;
 	FoeNode* next;
 
@@ -307,7 +305,7 @@ PWRHNGRDEFINE void emptyFoeList(FOE_DLL* list) {
 }
 
 // Destructor
-PWRHNGRDEFINE void destroyFoeList(FOE_DLL* list) {
+static inline void destroyFoeList(FOE_DLL* list) {
 	emptyFoeList(list);
 	free(list);
 }
