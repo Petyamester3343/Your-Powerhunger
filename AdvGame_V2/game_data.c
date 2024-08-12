@@ -1,15 +1,5 @@
 #include "def_vals.h"
 
-#ifdef _WIN32
-    #include <windows.h> // for Sleep()
-    #include <direct.h> // for _mkdir()
-    #define SLEEP_MS(ms) Sleep(ms)
-#else
-    #include <sys/stat.h>
-    #include <unistd.h>
-    #define SLEEP_MS(ms) usleep((ms) * 1000) // usleep takes microseconds
-#endif // _WIN32
-
 #include <conio.h>
 #include <dirent.h>
 #include <errno.h>
@@ -19,28 +9,27 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SAVE_DIR "saves/"
-#define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
+#include "definitions.h"
 
 // Checks if the file has the extension .dat
-static inline bool hasDatExtension(const char* fileName) {
+PWRHNGR_BOOLDEF hasDatExtension(const char* fileName) {
     return (strrchr(fileName, '.') != NULL && strcmp(strrchr(fileName, '.'), ".dat") == 0);
 }
 
 // Creates the save folder
-static inline void ensureSaveDir() {
+PWRHNGR_DEF ensureSaveDir() {
     if(_mkdir(SAVE_DIR) != 0 && errno != EEXIST) {
         fprintf(stderr, "Cannot create main save directory!\n");
     }
 }
 
 // Checks if the file exists
-static inline bool checkFileExists(const char* filePath) {
+PWRHNGR_BOOLDEF checkFileExists(const char* filePath) {
     return access(filePath, F_OK) != -1;
 }
 
 // Saves the Player's stats (actions included)
-static inline void saveData(Player* p) {
+PWRHNGR_DEF saveData(Player* p) {
     ensureSaveDir();
 
 	char filePath[MAX_PATH];
@@ -83,7 +72,7 @@ static inline void saveData(Player* p) {
 }
 
 // Lists the existing save files
-static inline void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
+PWRHNGR_DEF listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
     DIR* dir;
     struct dirent* entry;
     int count = 0;
@@ -113,7 +102,7 @@ static inline void listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
 }
 
 // Allows the user to choose from the available save datas and load one of them
-static inline int chooseAndLoadData(Player* p) {
+PWRHNGR_IDEF chooseAndLoadData(Player* p) {
 	char saveFiles[SAVE_SIZE][MAX_PATH];
 	bzero(saveFiles, sizeof(saveFiles));
 	int fileCount = 0;
@@ -188,7 +177,7 @@ static inline int chooseAndLoadData(Player* p) {
 }
 
 // Allows the user to choose from the available save datas and delete one of them
-static inline void chooseAndDeleteData() {
+PWRHNGR_DEF chooseAndDeleteData() {
 	char saveFiles[10][MAX_PATH];
 	int fileCount = 0;
 

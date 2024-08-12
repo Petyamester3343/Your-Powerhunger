@@ -1,22 +1,11 @@
 #include "def_vals.h"
 #include "entities.h"
+#include "definitions.h"
 
 #include <stdio.h>
 
-// Mathematical formula for the Player
-// Once reached, they will ascend to the next level
-#define LV_UP_REQ(lv) ((lv)*(lv)*25)
-
-#ifdef _WIN32
-    #include <windows.h>
-    #define SLEEP_MS(ms) Sleep(ms)
-#else
-    #include <unistd.h>
-    #define SLEEP_MS(ms) usleep((ms)*1000)
-#endif // _WIN32
-
 // Allows the character to level up
-static inline void level_up(Player* p) {
+PWRHNGR_DEF level_up(Player* p) {
 	if (p->E.xp >= LV_UP_REQ(p->lv)) {
         p->lv++;
         PLAYER_MAX_MP += 10;
@@ -66,7 +55,7 @@ static inline void level_up(Player* p) {
 
 // Grants the player experience points
 // (Either from an Arcane Tome or from slaying a Foe)
-static inline void xp_gain(unsigned int experience, Player* p, bool fought) {
+PWRHNGR_DEF xp_gain(unsigned int experience, Player* p, bool fought) {
 	p->E.xp += experience;
 	if (fought)
 		printf("%s has gained %d XP from the battle! (Current: %d / %d)\n",
@@ -80,7 +69,7 @@ static inline void xp_gain(unsigned int experience, Player* p, bool fought) {
 
 // Grants the player GOLD from slaying a Foe
 // The first can be used to buy upgrades in Shop
-static inline void looting(Player* p, unsigned int money) {
+PWRHNGR_DEF looting(Player* p, unsigned int money) {
 	p->money += money;
 	printf("%d GOLD gained!\n", money);
 	SLEEP_MS(500);

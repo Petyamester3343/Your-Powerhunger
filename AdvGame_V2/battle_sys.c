@@ -2,19 +2,12 @@
 
 #include "DLL_container.c"
 #include "xp_sys.c"
+#include "definitions.h"
 
-#ifdef _WIN32
-    #include <windows.h>
-    #define SLEEP_MS(ms) Sleep(ms)
-#else
-    #include <unistd.h>
-    #define SLEEP_MS(ms) usleep((ms)*1000)
-#endif // _WIN32
-
-static inline void playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl);
+PWRHNGR_DEF playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl);
 
 // Determines if there is a Foe in the Player's vicinity
-static inline bool checkPlayerSurrounding(Foe* f, Player* p) {
+PWRHNGR_BOOLDEF checkPlayerSurrounding(Foe* f, Player* p) {
 	return
 		(f->E.pos.col == p->E.pos.col + 1 && f->E.pos.row == p->E.pos.row) ||
 		(f->E.pos.col == p->E.pos.col - 1 && f->E.pos.row == p->E.pos.row) ||
@@ -27,7 +20,7 @@ static inline bool checkPlayerSurrounding(Foe* f, Player* p) {
 }
 
 // Player attacks Foe
-static inline void playerAttack(Player* p, Foe* f) {
+PWRHNGR_DEF playerAttack(Player* p, Foe* f) {
 	bool obliterated = false;
 
 	if (p->E.hp != 0 && f->E.hp != 0) {
@@ -102,7 +95,7 @@ static inline void playerAttack(Player* p, Foe* f) {
 }
 
 // Foe attacks Player
-static inline void foeAttack(Player* p, Foe* f) {
+PWRHNGR_DEF foeAttack(Player* p, Foe* f) {
 	if (p->E.hp != 0 && f->E.hp != 0) {
 		unsigned int fDMG = (f->E.atk < p->E.def) ? 0 : (f->E.atk - p->E.def);
 		int multi = 2;
@@ -169,7 +162,7 @@ static inline void foeAttack(Player* p, Foe* f) {
 
 // Player casts Magia on a Foe in exchange for n MP
 // (n is varying, for it is based on the Magia the Player may casr)
-static inline void playerCastsMagic(Player* p, Foe* f, Magia m) {
+PWRHNGR_DEF playerCastsMagic(Player* p, Foe* f, Magia m) {
 	bool obliterated = false;
 
 	if (p->E.hp != 0 && f->E.hp != 0) {
@@ -240,7 +233,7 @@ static inline void playerCastsMagic(Player* p, Foe* f, Magia m) {
 }
 
 // Allows the Player to choose from their acquired spells
-static inline void playerChoosesMagic(Player* p, Foe* f) {
+PWRHNGR_DEF playerChoosesMagic(Player* p, Foe* f) {
 	char magChoice[7] = { '>', ' ', ' ', ' ', ' ', ' ', ' ' };
 
 	while (!p->E.fled && !p->E.dead) {
@@ -402,7 +395,7 @@ static inline void playerChoosesMagic(Player* p, Foe* f) {
 }
 
 // Foe acts
-static inline void foeChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
+PWRHNGR_DEF foeChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
 	f->E.fled = false;
 	bool defChanged = false;
 
@@ -486,7 +479,7 @@ static inline void foeChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl)
 }
 
 // Allows the Player to initiate attack when they have a Foe in their vicinity
-static inline void impendingDoom(Player* p, FOE_DLL* foeList, OBJ_DLL* ol) {
+PWRHNGR_DEF impendingDoom(Player* p, FOE_DLL* foeList, OBJ_DLL* ol) {
 	FoeNode* curr = foeList->head;
 	while (curr != NULL) {
 		if (checkPlayerSurrounding(curr->f, p)) {
@@ -511,7 +504,7 @@ static inline void impendingDoom(Player* p, FOE_DLL* foeList, OBJ_DLL* ol) {
 }
 
 // Player chooses an action
-static inline void playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
+PWRHNGR_DEF playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl) {
 	char in = ' ';
 	char actChoice[5] = { '>', ' ', ' ', ' ', ' ' };
 	p->E.fled = false;

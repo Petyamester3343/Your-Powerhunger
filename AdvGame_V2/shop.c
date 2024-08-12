@@ -1,24 +1,19 @@
 #include "entities.h"
 #include "def_vals.h"
+#include "definitions.h"
 
 #include <stdio.h>
 #include <conio.h>
 
-#ifdef _WIN32
-    #include <windows.h>
-    #define SLEEP_MS(ms) Sleep(ms)
-#else
-    #include <unistd.h>
-    #define SLEEP_MS(ms) usleep((ms)*1000)
-#endif
-
 // Prices of the permanent stat boosters
-static const int armor_price = 1000;
-static const int plasma_gun_price = 1000;
-static const int invigorator_price = 750;
+const PWRHNGR_UINT armor_price = 1000;
+const PWRHNGR_UINT plasma_gun_price = 1000;
+const PWRHNGR_UINT invigorator_price = 750;
+
+const PWRHNGR_UINT product_buff = 30;
 
 // The shop system (practically an upgrade system where one must sacrifice GOLD to obtain more power)
-static inline void go2Shop(Player* p) {
+PWRHNGR_DEF go2Shop(Player* p) {
 	char choice[5] = { '>', ' ', ' ', ' ', ' ' };
 	char exitChoice[2] = { ' ', '>' };
 	char input = ' ';
@@ -106,7 +101,7 @@ static inline void go2Shop(Player* p) {
 			if (choice[1] == '>') {
 				if (p->money >= armor_price && !p->boughtDEF) {
 					p->money -= armor_price;
-					p->E.def += 30;
+					p->E.def += product_buff;
 					p->boughtDEF = true;
 					printf("%s has purchased the Aegis Automatized Armor! DEF +30\n", p->E.name);
 					SLEEP_MS(500);
@@ -124,7 +119,7 @@ static inline void go2Shop(Player* p) {
 			if (choice[2] == '>') {
 				if (p->money >= plasma_gun_price && !p->boughtATK) {
 					p->money -= plasma_gun_price;
-					p->E.atk += 30;
+					p->E.atk += product_buff;
 					p->boughtATK = true;
 					printf("%s has purchased the Plasma Railgun! ATK +30\n", p->E.name);
 					SLEEP_MS(500);
@@ -142,9 +137,9 @@ static inline void go2Shop(Player* p) {
 			if (choice[3] == '>') {
 				if (p->money >= invigorator_price && !p->boughtVigor) {
 					p->money -= invigorator_price;
-					PLAYER_MAX_HP += 30;
+					PLAYER_MAX_HP += product_buff;
 					p->E.hp = PLAYER_MAX_HP;
-					PLAYER_MAX_MP += 30;
+					PLAYER_MAX_MP += product_buff;
 					p->mp = PLAYER_MAX_MP;
 					p->boughtVigor = true;
 					printf("%s has purchased the Vigor Enhancer! HP & MP +30 PERMANENTLY!\n", p->E.name);

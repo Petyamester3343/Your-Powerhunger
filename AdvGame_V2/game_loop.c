@@ -1,10 +1,10 @@
 #include "skeleton.c"
 
 // prototype functions for the game loop and the main menu since they are intertwined
-static inline void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
-static inline void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
+PWRHNGR_DEF MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
+PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
 
-static inline void checkWinCondition(Player* p, FOE_DLL* foeList) {
+PWRHNGR_DEF checkWinCondition(Player* p, FOE_DLL* foeList) {
     if (jimmyDefeated) {
         printf("%s, you have finally slain Jimmy. You win!\n", p->E.name);
         saveData(p);
@@ -15,7 +15,7 @@ static inline void checkWinCondition(Player* p, FOE_DLL* foeList) {
 // When the player dies, a counter incrememnts
 // Once the counter reaches 10, it's Game Over
 // Until then, the Player is placed back at its starter position
-static inline void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, char map[15][15]) {
+PWRHNGR_DEF GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, char map[15][15]) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	printf("You died!\n");
 	p->deathCount++;																			// Death count is incremented by 1
@@ -30,7 +30,7 @@ static inline void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char 
         printf("Only one shot left...\nBetter make it count...\x1b[0m\n");
 	}
 
-	else if (p->deathCount == 10) {																	// Player can die 10 times in total. After that, the game restarts.
+	else if (p->deathCount == 10) {																// Player can die 10 times in total. After that, the game restarts.
 		const char* msg = "GAME OVER!";
 		p->deathCount = 0;
 		SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
@@ -54,7 +54,7 @@ static inline void GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char 
 }
 
 // Game initializes and the loop begins
-static inline void NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGR_DEF NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	p = initPlayer();																			// Player is initialized
 
 	objList = createObjList();																	// Object list is initialized
@@ -69,7 +69,7 @@ static inline void NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objL
 }
 
 // Game initializes (while using a save file as source), and the loop begins
-static inline void LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGR_DEF LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	initPlayerMagic(p);																			// Since the game has already loaded the save, re-initialization of Player's Magia is first
 
 	objList = createObjList();																	// Object list is initialized
@@ -84,7 +84,7 @@ static inline void LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* obj
 }
 
 // Game loop
-static inline void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	bool divineHelpGained = false;
 
 	while (1) {
@@ -121,7 +121,7 @@ static inline void GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* obj
 }
 
 // The main menu and its mechanism
-static inline void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
+PWRHNGR_DEF MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList) {
 	HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
 	char choice[3] = { '#', ' ', ' ' };
 
@@ -138,6 +138,23 @@ static inline void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* obj
 		// the player may traverse the main menu by 1 unit fwd/bwd
 		// the same principle is applied to all the other selection menus
 		switch (getc) {
+		case 13: // Enter key
+			if (choice[0] == '#') {
+				NewGame(getc, map, p, objList, foeList);
+			}
+
+			else if (choice[1] == '#') {
+				if (chooseAndLoadData(p) == -1) {												 // Should a save file not exist
+					NewGame(getc, map, p, objList, foeList);
+				}
+				else {																			 // If there is a save file,
+					LoadGame(getc, map, p, objList, foeList);
+				}
+			}
+			else {
+				chooseAndDeleteData();															 // Declared save file gets deleted
+			}
+			break;
 		case 'w':
 			if (choice[0] == '#') {
 				choice[2] = '#';
@@ -166,24 +183,7 @@ static inline void MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* obj
 				choice[2] = ' ';
 			}
 			break;
-		case 13: // Enter key
-			if (choice[0] == '#') {
-				NewGame(getc, map, p, objList, foeList);
-			}
-
-			else if (choice[1] == '#') {
-				if (chooseAndLoadData(p) == -1) {												    // Should a save file not exist
-					NewGame(getc, map, p, objList, foeList);
-				}
-				else {																				// If there is a save file,
-					LoadGame(getc, map, p, objList, foeList);
-				}
-			}
-			else {
-				chooseAndDeleteData();																// Declared save file gets deleted
-			}
-			break;
-		case 27:
+		case 27: // Esc key
 		    while (!exitChose) {
 			system("cls");
 			printf("Are you sure you want to exit? (Any unsaved data will be lost.)\n\t%c YES\n\t%c NO", exitChoice[0], exitChoice[1]);

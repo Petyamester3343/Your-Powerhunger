@@ -3,34 +3,26 @@
 #include <string.h>
 
 #include "entities.h"
-
-// DEFAULT SAVE SIZE
-#define SAVE_SIZE 10
-
-// DEFAULT MAP SIZE
-#define MAP_SIZE 15
-
-// DEFAULT NORMAL OBJECT BUFF VALUE
-#define BUFF 5
+#include "definitions.h"
 
 // Indicators of Jimmy having been defeated and summoned
 static bool jimmyDefeated = false;
 static bool jimmySummoned = false;
 
 // Level up value, used to incrememnt the Player's numeral stats
-static const unsigned int LVUP_VAL = 10;
+const PWRHNGR_UINT LVUP_VAL = 10;
 
 
 // PLAYER DEFAULT STATS
-static unsigned int PLAYER_MAX_HP = 100;
-static unsigned int PLAYER_MAX_MP = 50;
-static unsigned int PLAYER_ATK = 10;
-static unsigned int PLAYER_DEF = 10;
+PWRHNGR_UINT PLAYER_MAX_HP = 100;
+PWRHNGR_UINT PLAYER_MAX_MP = 50;
+PWRHNGR_UINT PLAYER_ATK = 10;
+PWRHNGR_UINT PLAYER_DEF = 10;
 static Pos PLAYER_START_POS = { 7,7 };
 
 // Initializes the Player struct
 // OR returns it to the default values (after a game over)
-static inline void defPlayerValRestore(Player* p) {
+PWRHNGR_DEF defPlayerValRestore(Player* p) {
 	PLAYER_MAX_HP = 100;
 	PLAYER_MAX_MP = 50;
 	PLAYER_ATK = 10;
@@ -58,93 +50,93 @@ static inline void defPlayerValRestore(Player* p) {
 // Enemies
 
 // SLIME DEFAULT STATS
-static const char* SLIME_NAME = "Slime";
-static unsigned int SLIME_HP = 15;
-static const unsigned int SLIME_ATK = 3;
-static unsigned int SLIME_DEF = 2;
-static const unsigned int SLIME_XP = 10;
-static const unsigned int SLIME_LOOT = 10;
+PWRHNGR_STR SLIME_NAME = "Slime";
+PWRHNGR_UINT SLIME_HP = 15;
+const PWRHNGR_UINT SLIME_ATK = 3;
+PWRHNGR_UINT SLIME_DEF = 2;
+const PWRHNGR_UINT SLIME_XP = 10;
+const PWRHNGR_UINT SLIME_LOOT = 10;
 
 // GOBLIN DEFAULT STATS
-static const char* GOBLIN_NAME = "Goblin";
-static unsigned int GOBLIN_HP = 25;
-static const unsigned int GOBLIN_ATK = 7;
-static unsigned int GOBLIN_DEF = 6;
-static const unsigned int GOBLIN_XP = 20;
-static const unsigned int GOBLIN_LOOT = 20;
+PWRHNGR_STR GOBLIN_NAME = "Goblin";
+PWRHNGR_UINT GOBLIN_HP = 25;
+const PWRHNGR_UINT GOBLIN_ATK = 7;
+PWRHNGR_UINT GOBLIN_DEF = 6;
+const PWRHNGR_UINT GOBLIN_XP = 20;
+const PWRHNGR_UINT GOBLIN_LOOT = 20;
 
 // ACOLYTE DEFAULT STATS
-static const char* ACOLYTE_NAME = "Acolyte";
-static unsigned int ACOLYTE_HP = 40;
-static const unsigned int ACOLYTE_ATK = 12;
-static unsigned int ACOLYTE_DEF = 10;
-static const unsigned int ACOLYTE_XP = 40;
-static const unsigned int ACOLYTE_LOOT = 40;
+PWRHNGR_STR ACOLYTE_NAME = "Acolyte";
+PWRHNGR_UINT ACOLYTE_HP = 40;
+const PWRHNGR_UINT ACOLYTE_ATK = 12;
+PWRHNGR_UINT ACOLYTE_DEF = 10;
+const PWRHNGR_UINT ACOLYTE_XP = 40;
+const PWRHNGR_UINT ACOLYTE_LOOT = 40;
 
 // THWARTED SELF DEFAULT STATS
-static const char* THWARTED_SELF_NAME = "Thwarted Self";
-static unsigned int THWARTED_SELF_HP = 70;
-static const unsigned int THWARTED_SELF_ATK = 20;
-static unsigned int THWARTED_SELF_DEF = 14;
-static const unsigned int THWARTED_SELF_XP = 80;
-static const unsigned int THWARTED_SELF_LOOT = 80;
+PWRHNGR_STR THWARTED_SELF_NAME = "Thwarted Self";
+PWRHNGR_UINT THWARTED_SELF_HP = 70;
+const PWRHNGR_UINT THWARTED_SELF_ATK = 20;
+PWRHNGR_UINT THWARTED_SELF_DEF = 14;
+const PWRHNGR_UINT THWARTED_SELF_XP = 80;
+const PWRHNGR_UINT THWARTED_SELF_LOOT = 80;
 
 // CARCASS GOLEM DEFAULT STATS
-static const char* GOLEM_NAME = "Carcass Golem";
-static unsigned int GOLEM_HP = 90;
-static const unsigned int GOLEM_ATK = 30;
-static unsigned int GOLEM_DEF = 20;
-static const unsigned int GOLEM_XP = 160;
-static const unsigned int GOLEM_LOOT = 160;
+PWRHNGR_STR GOLEM_NAME = "Carcass Golem";
+PWRHNGR_UINT GOLEM_HP = 90;
+const PWRHNGR_UINT GOLEM_ATK = 30;
+PWRHNGR_UINT GOLEM_DEF = 20;
+const PWRHNGR_UINT GOLEM_XP = 160;
+const PWRHNGR_UINT GOLEM_LOOT = 160;
 
 // JIMMY DEFAULT STATS
-static const char* BOSS_NAME = "Jimmy";
-static unsigned int BOSS_HP = 150;
-static const unsigned int BOSS_ATK = 50;
-static unsigned int BOSS_DEF = 40;
+PWRHNGR_STR BOSS_NAME = "Jimmy";
+PWRHNGR_UINT BOSS_HP = 150;
+const PWRHNGR_UINT BOSS_ATK = 50;
+PWRHNGR_UINT BOSS_DEF = 40;
 
 
 // Magic
 
 // FIREBALL DEFAULT STATS (1.)
-static const char* FB = "Homing Fireball";
-static unsigned int FIREBALL_ATK = 10;
-static unsigned int FIREBALL_COST = 5;
-static unsigned int FIREBALL_LV_REQ = 2;
+PWRHNGR_STR FB = "Homing Fireball";
+const PWRHNGR_UINT FIREBALL_ATK = 10;
+const PWRHNGR_UINT FIREBALL_COST = 5;
+const PWRHNGR_UINT FIREBALL_LV_REQ = 2;
 
 // BLIZZARD DEFAULT STATS (2.)
-static const char* BLIZZ = "Blades of the Blizzard Queen";
-static unsigned int BLIZZARD_ATK = 20;
-static unsigned int BLIZZARD_COST = 10;
-static unsigned int BLIZZARD_LV_REQ = 4;
+PWRHNGR_STR BLIZZ = "Blades of the Blizzard Queen";
+const PWRHNGR_UINT BLIZZARD_ATK = 20;
+const PWRHNGR_UINT BLIZZARD_COST = 10;
+const PWRHNGR_UINT BLIZZARD_LV_REQ = 4;
 
 // LIGHTNING DEFAULT STATS (3.)
-static const char* RAI = "Raijin's Wrath";
-static unsigned int LIGHTNING_ATK = 25;
-static unsigned int LIGHTNING_COST = 15;
-static unsigned int LIGHTNING_LV_REQ = 6;
+PWRHNGR_STR RAI = "Raijin's Wrath";
+const PWRHNGR_UINT LIGHTNING_ATK = 25;
+const PWRHNGR_UINT LIGHTNING_COST = 15;
+const PWRHNGR_UINT LIGHTNING_LV_REQ = 6;
 
 // GRAVITY_BOMB DEFAULT STATS (4.)
-static const char* GRAV = "Gravity Bomb";
-static unsigned int GRAV_BOMB_ATK = 35;
-static unsigned int GRAV_BOMB_COST = 25;
-static unsigned int GRAV_BOMB_LV_REQ = 7;
+PWRHNGR_STR GRAV = "Gravity Bomb";
+const PWRHNGR_UINT GRAV_BOMB_ATK = 35;
+const PWRHNGR_UINT GRAV_BOMB_COST = 25;
+const PWRHNGR_UINT GRAV_BOMB_LV_REQ = 7;
 
 // LOEWENHERZ DEFAULT STATS (5.)
-static const char* LIONHEART = "Ray of the Lionhearted";
-static unsigned int LOEWENHERZ_ATK = 40;
-static unsigned int LOEWENHERZ_COST = 35;
-static unsigned int LOEWENHERZ_LV_REQ = 9;
+PWRHNGR_STR LIONHEART = "Ray of the Lionhearted";
+const PWRHNGR_UINT LOEWENHERZ_ATK = 40;
+const PWRHNGR_UINT LOEWENHERZ_COST = 35;
+const PWRHNGR_UINT LOEWENHERZ_LV_REQ = 9;
 
 // RSoJ DEFAULT STATS (6.)
-static const char* AKARI = "Raining Spears of Justice";
-static unsigned int RSOJ_ATK = 60;
-static unsigned int RSOJ_COST = 50;
-static unsigned int RSOJ_LV_REQ = 0;
-static unsigned int RSOJ_PRICE = 1250;
+PWRHNGR_STR AKARI = "Raining Spears of Justice";
+const PWRHNGR_UINT RSOJ_ATK = 60;
+const PWRHNGR_UINT RSOJ_COST = 50;
+const PWRHNGR_UINT RSOJ_LV_REQ = 0;
+const PWRHNGR_UINT RSOJ_PRICE = 1250;
 
 // Initializes the Player's Magia array
-static inline void initPlayerMagic(Player* p) {
+PWRHNGR_DEF initPlayerMagic(Player* p) {
 	// initializing magic
 	for (unsigned int i = 0; i < 6; i++) {
 		switch (i) {
