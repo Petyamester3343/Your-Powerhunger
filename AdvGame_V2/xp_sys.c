@@ -5,72 +5,84 @@
 #include <stdio.h>
 
 // Allows the character to level up
-PWRHNGR_DEF level_up(Player* p) {
-	if (p->E.xp >= LV_UP_REQ(p->lv)) {
+PWRHNGR_DEF level_up(Player* p)
+{
+    if (p->E.xp >= LV_UP_REQ(p->lv))
+    {
         p->lv++;
         PLAYER_MAX_MP += 10;
         PLAYER_MAX_HP += 10;
 
-        if(strcmp(p->E.name, "Saki")==0) {
+        if(strcmp(p->E.name, "Saki")==0)
+        {
             PLAYER_ATK += 5;
             PLAYER_DEF += 5;
         }
 
-		else {
+        else
+        {
             PLAYER_ATK += 10;
             PLAYER_DEF += 10;
-		}
+        }
 
 
-		p->E.hp = PLAYER_MAX_HP;
-		p->E.atk = PLAYER_ATK;
-		p->E.def = PLAYER_DEF;
-		p->mp = PLAYER_MAX_MP;
+        p->E.hp = PLAYER_MAX_HP;
+        p->E.atk = PLAYER_ATK;
+        p->E.def = PLAYER_DEF;
+        p->mp = PLAYER_MAX_MP;
 
-		printf("%s is now at LEVEL %d!\n", p->E.name, p->lv);
+        printf("%s is now at LEVEL %d!\n", p->E.name, p->lv);
 
-		if (p->lv == FIREBALL_LV_REQ && !p->M[0].acquired) {
-			p->M[0].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, FB);
-		}
-		if (p->lv == BLIZZARD_LV_REQ && !p->M[1].acquired) {
-			p->M[1].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, BLIZZ);
-		}
-		if (p->lv == LIGHTNING_LV_REQ && !p->M[2].acquired) {
-			p->M[2].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, RAI);
-		}
-		if (p->lv == GRAV_BOMB_LV_REQ && !p->M[3].acquired) {
-			p->M[3].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, GRAV);
-		}
-		if (p->lv == LOEWENHERZ_LV_REQ && !p->M[4].acquired) {
-			p->M[4].acquired = true;
-			printf("%s has acquired %s!\n", p->E.name, LIONHEART);
-		}
-		SLEEP_MS(500);
-	}
+        if (p->lv == FIREBALL_LV_REQ && !p->M[0].acquired)
+        {
+            p->M[0].acquired = true;
+            printf("%s has acquired %s!\n", p->E.name, FB);
+        }
+        if (p->lv == BLIZZARD_LV_REQ && !p->M[1].acquired)
+        {
+            p->M[1].acquired = true;
+            printf("%s has acquired %s!\n", p->E.name, BLIZZ);
+        }
+        if (p->lv == LIGHTNING_LV_REQ && !p->M[2].acquired)
+        {
+            p->M[2].acquired = true;
+            printf("%s has acquired %s!\n", p->E.name, RAI);
+        }
+        if (p->lv == GRAV_BOMB_LV_REQ && !p->M[3].acquired)
+        {
+            p->M[3].acquired = true;
+            printf("%s has acquired %s!\n", p->E.name, GRAV);
+        }
+        if (p->lv == LOEWENHERZ_LV_REQ && !p->M[4].acquired)
+        {
+            p->M[4].acquired = true;
+            printf("%s has acquired %s!\n", p->E.name, LIONHEART);
+        }
+        SLEEP_MS(500);
+    }
 }
 
 // Grants the player experience points
 // (Either from an Arcane Tome or from slaying a Foe)
-PWRHNGR_DEF xp_gain(unsigned int experience, Player* p, bool fought) {
-	p->E.xp += experience;
-	if (fought)
-		printf("%s has gained %d XP from the battle! (Current: %d / %d)\n",
-			p->E.name, experience, p->E.xp, LV_UP_REQ(p->lv));
-	else
-		printf("(Current: %d / %d)\n", p->E.xp, LV_UP_REQ(p->lv));
-	while (p->E.xp >= LV_UP_REQ(p->lv)) {
-		level_up(p);
-	}
+PWRHNGR_DEF xp_gain(unsigned int experience, Player* p, bool fought)
+{
+    p->E.xp += experience;
+    if (fought)
+        printf("%s has gained %d XP from the battle! (Current: %d / %d)\n",
+               p->E.name, experience, p->E.xp, LV_UP_REQ(p->lv));
+    else
+        printf("(Current: %d / %d)\n", p->E.xp, LV_UP_REQ(p->lv));
+    while (p->E.xp >= LV_UP_REQ(p->lv))
+    {
+        level_up(p);
+    }
 }
 
 // Grants the player GOLD from slaying a Foe
 // The first can be used to buy upgrades in Shop
-PWRHNGR_DEF looting(Player* p, unsigned int money) {
-	p->money += money;
-	printf("%d GOLD gained!\n", money);
-	SLEEP_MS(500);
+PWRHNGR_DEF looting(Player* p, unsigned int money)
+{
+    p->money += money;
+    printf("%d GOLD gained!\n", money);
+    SLEEP_MS(500);
 }

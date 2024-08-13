@@ -17,7 +17,6 @@ PWRHNGR_DEF drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
     {
         for (unsigned int j = 0; j < MAP_SIZE; j++)
         {
-
             // Draw Player
             if (i == p->E.pos.col && j == p->E.pos.row)
             {
@@ -32,7 +31,7 @@ PWRHNGR_DEF drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
             {
                 if (currObj->o->pos.col == i && currObj->o->pos.row == j)
                 {
-                    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+                    SetConsoleTextAttribute(hConsole, FOREGROUND_YELLOW);
                     printf("%c \x1b[0m", currObj->o->sign);
                     break;
                 }
@@ -49,7 +48,7 @@ PWRHNGR_DEF drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
                 {
                     if(strcmp(currFoe->f->E.name, "Jimmy") == 0)
                     {
-                        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE);
+                        SetConsoleTextAttribute(hConsole, FOREGROUND_PURPLE);
                         printf("J \x1b[0m");
                     }
                     else
@@ -69,7 +68,7 @@ PWRHNGR_DEF drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
             switch (map[i][j])
             {
             case 'R':
-                SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE);
+                SetConsoleTextAttribute(hConsole, FOREGROUND_CYAN);
                 printf("%c \x1b[0m", map[i][j]);
                 break;
             case 'T':
@@ -77,6 +76,7 @@ PWRHNGR_DEF drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
                 printf("%c \x1b[0m", map[i][j]);
                 break;
             default:
+                SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY);
                 printf("%c \x1b[0m", map[i][j]);
                 break;
             }
@@ -88,45 +88,45 @@ PWRHNGR_DEF drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
 
 // Moves the boss of the game, named "Jimmy"
 // (based on the difference between the absolute values of hor. and vert. distances)
-PWRHNGR_DEF moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DLL* ol)
+PWRHNGR_DEF moveBoss(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DLL* ol)
 {
     if(isPresent)
     {
-        FoeNode* jimmyNode = findFoeByName(foeList, "Jimmy");
-        if (jimmyNode != NULL)
+        FoeNode* bossNode = findFoeByName(foeList, BOSS_NAME);
+        if (bossNode != NULL)
         {
-            int dRow = abs((int)p->E.pos.row - (int)jimmyNode->f->E.pos.row);
-            int dCol = abs((int)p->E.pos.col - (int)jimmyNode->f->E.pos.col);
+            int dRow = abs((int)p->E.pos.row - (int)bossNode->f->E.pos.row);
+            int dCol = abs((int)p->E.pos.col - (int)bossNode->f->E.pos.col);
 
             if (dRow > dCol)
             {
-                if (p->E.pos.row > jimmyNode->f->E.pos.row)
+                if (p->E.pos.row > bossNode->f->E.pos.row)
                 {
-                    jimmyNode->f->E.pos.row++;
+                    bossNode->f->E.pos.row++;
                 }
                 else
                 {
-                    jimmyNode->f->E.pos.row--;
+                    bossNode->f->E.pos.row--;
                 }
             }
             else
             {
-                if (p->E.pos.col > jimmyNode->f->E.pos.col)
+                if (p->E.pos.col > bossNode->f->E.pos.col)
                 {
-                    jimmyNode->f->E.pos.col++;
+                    bossNode->f->E.pos.col++;
                 }
                 else
                 {
-                    jimmyNode->f->E.pos.col--;
+                    bossNode->f->E.pos.col--;
                 }
             }
         }
-        printf("Jimmy moved toward %s! (x: %d, y: %d)\n", p->E.name, jimmyNode->f->E.pos.col + 1, jimmyNode->f->E.pos.row + 1);
-        if(jimmyNode->f->E.pos.col == p->E.pos.col && jimmyNode->f->E.pos.row == p->E.pos.row)
+        printf("%s moved toward %s! (x: %d, y: %d)\n", bossNode->f->E.name, p->E.name, bossNode->f->E.pos.col + 1, bossNode->f->E.pos.row + 1);
+        if(bossNode->f->E.pos.col == p->E.pos.col && bossNode->f->E.pos.row == p->E.pos.row)
         {
-            printf("%s has found you... Prepare for the BATTLE OF AEONS!!!\n", jimmyNode->f->E.name);
+            printf("%s has found you... Prepare for the BATTLE OF AEONS!!!\n", bossNode->f->E.name);
             SLEEP_MS(LATENCY);
-            foeChoosesAction(p, jimmyNode->f, ol, foeList);
+            foeChoosesAction(p, bossNode->f, ol, foeList);
         }
         SLEEP_MS(LATENCY);
     }
@@ -136,7 +136,7 @@ PWRHNGR_DEF moveJimmy(bool isPresent, FOE_DLL* foeList, Player* p, OBJ_DLL* ol)
 PWRHNGR_DEF moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p)
 {
     FoeNode* current = foeList->head;
-    while (current != NULL && strcmp(current->f->E.name, "Jimmy") != 0)
+    while (current != NULL && strcmp(current->f->E.name, BOSS_NAME) != 0)
     {
         if(!current->f->E.dead)
         {
@@ -207,7 +207,7 @@ PWRHNGR_DEF moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p)
         }
 
         current = current->next;
-        SLEEP_MS(LATENCY);
+        SLEEP_MS((LATENCY / 3) * 2);
     }
 }
 
@@ -215,7 +215,8 @@ PWRHNGR_DEF moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p)
 PWRHNGR_BOOLDEF unknownOne(const char* msg)
 {
     return
-        (strcmp(msg, "Phantom") !=0 || strcmp(msg, "Peter") != 0) &&
+        strcmp(msg, "Cassius") != 0 &&
+        strcmp(msg, "Phantom") !=0 &&
         strcmp(msg, "Sakura") !=0 &&
         strcmp(msg, "Sasaki") !=0 &&
         strcmp(msg, "Thomas") !=0 &&
@@ -223,8 +224,8 @@ PWRHNGR_BOOLDEF unknownOne(const char* msg)
         strcmp(msg, "Lucius") !=0 &&
         strcmp(msg, "Hana") !=0 &&
         strcmp(msg, "Saki") !=0 &&
-        (strcmp(msg, "Aleister") !=0 || strcmp(msg, "Al") != 0) &&
-        (strcmp(msg, "Nari") !=0 || strcmp(msg, "Nacchan") != 0) &&
+        strcmp(msg, "Aleister") !=0 &&
+        strcmp(msg, "Nari") != 0 &&
         strcmp(msg, "Akari") !=0;
 }
 
@@ -238,18 +239,27 @@ PWRHNGR_DEF printText(const char* msg)
     }
 }
 
+// Formatting name into a "Xyz" uniform
+PWRHNGR_DEF formatName(char str[STR_SIZE])
+{
+    str[0] = toupper(str[0]);
+    for(unsigned int i=1; i<strlen(str); i++)
+        str[i] = tolower(str[i]);
+}
+
 // Initializes the player and the spells in order to avoid access violation
-// Also, a small greeting sequence is triggered under certain conditions
+// Also, a small greeting sequence is triggered under certain secret conditions
 PWRHNGR_PLAYERDEF initPlayer()
 {
     Player* p = (Player*)malloc(sizeof(Player));
 
     if (p != NULL)
     {
-        char msg[100] = "";
+        char msg[STR_SIZE] = "";
         printf("Name your hero: ");
         fflush(stdin);
         scanf("%[^\n]s", msg);
+        formatName(msg);
         p->E.name = strdup(msg);
         p->money = 0;
         defPlayerValRestore(p);
@@ -264,13 +274,13 @@ PWRHNGR_PLAYERDEF initPlayer()
                 printf("\x1b[31m!\x1b[0m");
             }
 
-            if(strcmp(msg, "Hana") == 0)
+            else if(strcmp(msg, "Hana") == 0)
             {
                 // An unbeatable Tic-Tac-Toe... just for prank...
                 printf("Oh, little child... You are not suited for such realms at all...\n");
-                SLEEP_MS(LATENCY);
+                SLEEP_MS(LATENCY*4);
                 printf("Let us play something else instead, shall we?\n");
-                SLEEP_MS(LATENCY);
+                SLEEP_MS(LATENCY*4);
                 char yesno = ' ';
                 while(yesno != 'n')
                 {
@@ -279,52 +289,45 @@ PWRHNGR_PLAYERDEF initPlayer()
                     printf("Again? (Y/N) ");
                     fflush(stdin);
                     scanf("%c", &yesno);
-                    if(toupper(yesno)=='N') exit(265918);
+                    if(toupper(yesno)=='N')
+                    {
+                        free(p);
+                        exit(265918);
+                    }
                 }
             }
 
-            if(strcmp(msg, "Sasaki") == 0)
+            else if(strcmp(msg, "Sasaki") == 0)
             {
                 printf("\x1b[31mTo think you can live with such secrets...\n");
-                SLEEP_MS(LATENCY);
+                SLEEP_MS(LATENCY*4);
                 printf("\x1b[31mHave you ever wondered why she can see a glimpse of the future... ");
                 printText(msg);
                 printf("\x1b[31m?\x1b[0m\n");
             }
 
-            if(strcmp(msg, "Akari") == 0 || strcmp(msg, "Lucius") == 0 || strcmp(msg, "Minerva") == 0)
+            else if(strcmp(msg, "Aleister") == 0 || strcmp(msg, "Cassius") == 0)
             {
-                p->M[5].acquired = true;
-                if(strcmp(msg, "Akari") == 0)
+                if(strcmp(msg, "Aleister") == 0)
                 {
-                    p->M[5].magName = strdup(AKARI);
-                    p->M[5].magATK = RSOJ_ATK;
-                    p->M[5].magCost = RSOJ_COST;
-                    p->boughtMagic = true;
+                    p->M[4].acquired = true;
+                    p->boughtVigor = true;
+                    PLAYER_MAX_HP += product_buff;
+                    PLAYER_MAX_MP += product_buff;
+                    p->E.hp = PLAYER_MAX_HP;
+                    p->mp = PLAYER_MAX_MP;
                 }
-                printf("\x1b[31mSo, you have finally come for my head... ");
-                printText(msg);
-                printf("\x1b[31m!\x1b[0m\n");
-            }
-
-            if(strcmp(msg, "Aleister") == 0 || strcmp(msg, "Al") == 0)
-            {
-                p->E.name = strdup("Aleister");
-                p->M[4].acquired = true;
-                p->boughtVigor = true;
-                PLAYER_MAX_HP += product_buff;
-                PLAYER_MAX_MP += product_buff;
-                p->E.hp = PLAYER_MAX_HP;
-                p->mp = PLAYER_MAX_MP;
                 printf("\x1b[31mMy death will never bring Her back... ");
+                SLEEP_MS(LATENCY*4);
                 printText(msg);
                 printf("\x1b[31m!\x1b[0m\n");
             }
 
-            if(strcmp(msg, "Sakura") == 0)
+            else if(strcmp(msg, "Sakura") == 0)
             {
                 p->M[2].acquired = true;
                 printf("\x1b[31mAs if you can foresee my defeat... ");
+                SLEEP_MS(LATENCY*4);
                 printText(msg);
                 for(unsigned int i = 0; i < 3; i++)
                 {
@@ -334,7 +337,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 printf("\x1b[0m\n");
             }
 
-            if(strcmp(msg, "Phantom") == 0 || strcmp(msg, "Peter") == 0)
+            else if(strcmp(msg, "Phantom") == 0)
             {
                 p->E.name = strdup("Phantom");
                 p->lv = 10;
@@ -356,6 +359,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 p->E.def = PLAYER_DEF;
 
                 printf("\x1b[31mGet psyched for your funeral... ");
+                SLEEP_MS(LATENCY*2);
                 printText(msg);
                 for(unsigned int i = 0; i < 3; i++)
                 {
@@ -365,7 +369,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 printf("\x1b[0m\n");
             }
 
-            if(strcmp(msg, "Nari") == 0 || strcmp(msg, "Nacchan") == 0)
+            else if(strcmp(msg, "Nari") == 0)
             {
                 p->E.name = strdup("Nari");
                 p->M[1].acquired = true;
@@ -388,7 +392,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 SLEEP_MS(LATENCY*4);
                 printf("\x1b[31mJust because of a lie shattering your pride...\n");
                 SLEEP_MS(LATENCY*4);
-                printf("\x1b[31mPlease do humor me... Do you have any ounce of remorse in your heart... ");
+                printf("\x1b[31mPlease do humor me... Do you have any ounce of remorse in your heart...\n");
                 SLEEP_MS(LATENCY*4);
                 printf("\x1b[31mDo you wish to send her soul to Heaven... ");
                 SLEEP_MS(LATENCY*4);
@@ -401,7 +405,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 printf("?\x1b[0m\n");
             }
 
-            if(strcmp(msg, "Saki") == 0)
+            else if(strcmp(msg, "Saki") == 0)
             {
                 printf("\x1b[31mYou...\n");
                 SLEEP_MS(LATENCY*4);
@@ -413,7 +417,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 SLEEP_MS(LATENCY*4);
                 printf("\x1b[0mEven though I am supposed to be your enemy...\n");
                 SLEEP_MS(LATENCY*4);
-                printf("\x1b[0mI cannot let you in...");
+                printf("\x1b[0mI cannot let you in...\n");
                 SLEEP_MS(LATENCY*4);
                 printf("\x1b[0mYou have to understand...\n");
                 SLEEP_MS(LATENCY*4);
@@ -455,7 +459,10 @@ PWRHNGR_PLAYERDEF initPlayer()
                     case 13:
                         if(choice[0]=='>')
                         {
-                            printf("\nYou do not know what you are dwelling yourself into... ");
+                            printf("\n... I see... It is your choice, after all...");
+                            SLEEP_MS(LATENCY*4);
+                            printf("\n\x1b[31mYet you do not know what you are dwelling yourself into... ");
+                            SLEEP_MS(LATENCY*4);
                             printText(msg);
                             for(unsigned int i=0; i<3; i++)
                             {
@@ -480,18 +487,36 @@ PWRHNGR_PLAYERDEF initPlayer()
                         else
                         {
                             printf("\n\x1b[0mA wise decision...\n");
+                            free(p);
                             exit(265918);
                         }
                     }
                 }
 
             }
+
+            else if(strcmp(msg, "Akari") == 0 || strcmp(msg, "Lucius") == 0 || strcmp(msg, "Minerva") == 0)
+            {
+                p->M[5].acquired = true;
+                if(strcmp(msg, "Akari") == 0)
+                {
+                    p->M[5].magName = strdup(AKARI);
+                    p->M[5].magATK = RSOJ_ATK;
+                    p->M[5].magCost = RSOJ_COST;
+                    p->boughtMagic = true;
+                }
+                printf("\x1b[31mSo, you have finally come for my head... ");
+                SLEEP_MS(LATENCY*4);
+                printText(msg);
+                printf("\x1b[31m!\x1b[0m\n");
+            }
+
         }
 
         else
         {
             printf("\x1b[31mWelcome to Hell... ");
-            SLEEP_MS(2000);
+            SLEEP_MS(LATENCY*4);
             printText(msg);
             printf("\x1b[31m!\x1b[0m\n");
         }
@@ -574,7 +599,7 @@ PWRHNGR_DEF playerSeeksObj(Player* p, OBJ_DLL* list)
     {
         if (currObjNode->o->pos.col == p->E.pos.col && currObjNode->o->pos.row == p->E.pos.row)
         {
-            // Player has found an Object
+            // Player has found an Object on the given position of the map
             switch (currObjNode->o->sign)
             {
             case '+':
@@ -830,7 +855,10 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
     if (moved)
     {
         printf("%s moved! (X: %d, Y: %d)\n", p->E.name, p->E.pos.col + 1, p->E.pos.row + 1);
-        playerSeeksObj(p, objList); // After moving one unit in any direction, Player checks if "there is something on the ground"
+        // After moving one unit in any direction, Player checks if "there is something on the ground"
+        playerSeeksObj(p, objList);
+
+        // Player is now checking if there is any monster on the position they're about to occupy
         curr = foeList->head;
         while(curr != NULL)
         {
@@ -858,6 +886,18 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
     return moved;
 }
 
+// Utility method for summoning the Boss
+PWRHNGR_DEF deployBoss(Player* p, OBJ_DLL* ol, FOE_DLL* fl)
+{
+    if (p->lv >= 10 && !jimmySummoned)
+    {
+        insertFoeIntoList(p, ol, fl,
+                          BOSS_NAME, BOSS_HP, BOSS_ATK, BOSS_DEF, 0, 0);
+        fl->tail->f->E.pos.col = fl->tail->f->E.pos.row = 14;
+        jimmySummoned = true;
+    }
+}
+
 // Creates Foes based on the Player's level
 // Adjusted not to flood the map
 PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
@@ -866,7 +906,7 @@ PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
     {
         if (p->lv <= 3)
         {
-            if (getFoeCountByName(foeList, SLIME_NAME) < 2)   // Limit number of Slimes
+            if (getFoeCountByName(foeList, SLIME_NAME) < MAX_SLIME)   // Limit number of Slimes
             {
                 insertFoeIntoList(p, objList, foeList,
                                   SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, SLIME_LOOT);
@@ -876,13 +916,13 @@ PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 
         if (p->lv >= 4)
         {
-            if (getFoeCountByName(foeList, GOBLIN_NAME) < 2 && rand() % 2 == 0)   // Limit number of Goblins
+            if (getFoeCountByName(foeList, GOBLIN_NAME) < MAX_GOBLIN && rand() % 2 == 0)   // Limit number of Goblins
             {
                 insertFoeIntoList(p, objList, foeList,
                                   GOBLIN_NAME, GOBLIN_HP, GOBLIN_ATK, GOBLIN_DEF, GOBLIN_XP, GOBLIN_LOOT);
                 printf("Goblin summoned!\n");
             }
-            else if (getFoeCountByName(foeList, SLIME_NAME) < 2)
+            else if (getFoeCountByName(foeList, SLIME_NAME) < MAX_SLIME)
             {
                 insertFoeIntoList(p, objList, foeList,
                                   SLIME_NAME, SLIME_HP, SLIME_ATK, SLIME_DEF, SLIME_XP, SLIME_LOOT);
@@ -892,13 +932,13 @@ PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 
         if (p->lv >= 6)
         {
-            if (getFoeCountByName(foeList, ACOLYTE_NAME) < 2 && rand() % 2 == 0)   // Limit number of Acolytes
+            if (getFoeCountByName(foeList, ACOLYTE_NAME) < MAX_ACOLYTE && rand() % 2 == 0)   // Limit number of Acolytes
             {
                 insertFoeIntoList(p, objList, foeList,
                                   ACOLYTE_NAME, ACOLYTE_HP, ACOLYTE_ATK, ACOLYTE_DEF, ACOLYTE_XP, ACOLYTE_LOOT);
                 printf("Acolyte summoned!\n");
             }
-            else if (getFoeCountByName(foeList, GOBLIN_NAME) < 2)
+            else if (getFoeCountByName(foeList, GOBLIN_NAME) < MAX_GOBLIN)
             {
                 insertFoeIntoList(p, objList, foeList,
                                   GOBLIN_NAME, GOBLIN_HP, GOBLIN_ATK, GOBLIN_DEF, GOBLIN_XP, GOBLIN_LOOT);
@@ -908,13 +948,13 @@ PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 
         if (p->lv >= 8)
         {
-            if (getFoeCountByName(foeList, THWARTED_SELF_NAME) < 1 && rand() % 2 == 0)   // Limit number of Thwarted Selves
+            if (getFoeCountByName(foeList, THWARTED_SELF_NAME) < MAX_THW_SELF && rand() % 2 == 0)   // Limit number of Thwarted Selves
             {
                 insertFoeIntoList(p, objList, foeList,
                                   THWARTED_SELF_NAME, THWARTED_SELF_HP, THWARTED_SELF_ATK, THWARTED_SELF_DEF, THWARTED_SELF_XP, THWARTED_SELF_LOOT);
                 printf("Your Thwarted Self summoned!\n");
             }
-            else if (getFoeCountByName(foeList, ACOLYTE_NAME) < 2)
+            else if (getFoeCountByName(foeList, ACOLYTE_NAME) < MAX_ACOLYTE)
             {
                 insertFoeIntoList(p, objList, foeList,
                                   ACOLYTE_NAME, ACOLYTE_HP, ACOLYTE_ATK, ACOLYTE_DEF, ACOLYTE_XP, ACOLYTE_LOOT);
@@ -924,13 +964,13 @@ PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 
         if (p->lv >= 9)
         {
-            if (getFoeCountByName(foeList, GOLEM_NAME) < 1 && rand() % 2 == 0)   // Limit number of Carcass Golems
+            if (getFoeCountByName(foeList, GOLEM_NAME) < MAX_GOLEM && rand() % 2 == 0)   // Limit number of Carcass Golems
             {
                 insertFoeIntoList(p, objList, foeList,
                                   GOLEM_NAME, GOLEM_HP, GOLEM_ATK, GOLEM_DEF, GOLEM_XP, GOLEM_LOOT);
                 printf("Carcass Golem summoned!\n");
             }
-            else if (getFoeCountByName(foeList, THWARTED_SELF_NAME) < 1)
+            else if (getFoeCountByName(foeList, THWARTED_SELF_NAME) < MAX_THW_SELF)
             {
                 insertFoeIntoList(p, objList, foeList,
                                   THWARTED_SELF_NAME, THWARTED_SELF_HP, THWARTED_SELF_ATK, THWARTED_SELF_DEF, THWARTED_SELF_XP, THWARTED_SELF_LOOT);
@@ -939,13 +979,7 @@ PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
         }
     }
 
-    if (p->lv >= 10 && !jimmySummoned)
-    {
-        insertFoeIntoList(p, objList, foeList,
-                          BOSS_NAME, BOSS_HP, BOSS_ATK, BOSS_DEF, 0, 0);
-        foeList->tail->f->E.pos.col = foeList->tail->f->E.pos.row = 14;
-        jimmySummoned = true;
-    }
+    deployBoss(p, objList, foeList);
 }
 
 // A simple non-interactive UI

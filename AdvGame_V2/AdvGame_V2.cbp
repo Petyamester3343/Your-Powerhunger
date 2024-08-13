@@ -39,6 +39,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="def_vals.h" />
+		<Unit filename="definitions.h" />
 		<Unit filename="entities.h" />
 		<Unit filename="game_data.c">
 			<Option compilerVar="CC" />

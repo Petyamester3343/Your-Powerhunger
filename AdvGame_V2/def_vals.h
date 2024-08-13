@@ -22,32 +22,33 @@ static Pos PLAYER_START_POS = { 7,7 };
 
 // Initializes the Player struct
 // OR returns it to the default values (after a game over)
-PWRHNGR_DEF defPlayerValRestore(Player* p) {
-	PLAYER_MAX_HP = 100;
-	PLAYER_MAX_MP = 50;
-	PLAYER_ATK = 10;
-	PLAYER_DEF = 10;
+PWRHNGR_DEF defPlayerValRestore(Player* p)
+{
+    PLAYER_MAX_HP = 100;
+    PLAYER_MAX_MP = 50;
+    PLAYER_ATK = 10;
+    PLAYER_DEF = 10;
 
-	p->E.hp = PLAYER_MAX_HP;
-	p->E.atk = PLAYER_ATK;
-	p->E.def = PLAYER_DEF;
-	p->E.xp = 0;
-	p->E.pos = PLAYER_START_POS;
-	p->E.dead = false;
+    p->E.hp = PLAYER_MAX_HP;
+    p->E.atk = PLAYER_ATK;
+    p->E.def = PLAYER_DEF;
+    p->E.xp = 0;
+    p->E.pos = PLAYER_START_POS;
+    p->E.dead = false;
 
-	p->lv = 1;
-	p->mp = PLAYER_MAX_MP;
-	p->boughtMagic = false;
-	p->boughtATK = false;
-	p->boughtDEF = false;
-	p->boughtVigor = false;
+    p->lv = 1;
+    p->mp = PLAYER_MAX_MP;
+    p->boughtMagic = false;
+    p->boughtATK = false;
+    p->boughtDEF = false;
+    p->boughtVigor = false;
 
-	p->aegisPickedUp = 0;
-	p->deathCount = 0;
+    p->aegisPickedUp = 0;
+    p->deathCount = 0;
 }
 
 
-// Enemies
+// FOES
 
 // SLIME DEFAULT STATS
 PWRHNGR_STR SLIME_NAME = "Slime";
@@ -90,13 +91,13 @@ const PWRHNGR_UINT GOLEM_XP = 160;
 const PWRHNGR_UINT GOLEM_LOOT = 160;
 
 // JIMMY DEFAULT STATS
-PWRHNGR_STR BOSS_NAME = "Jimmy";
+PWRHNGR_STR BOSS_NAME = "Absalom";
 PWRHNGR_UINT BOSS_HP = 150;
 const PWRHNGR_UINT BOSS_ATK = 50;
 PWRHNGR_UINT BOSS_DEF = 40;
 
 
-// Magic
+// MAGIA
 
 // FIREBALL DEFAULT STATS (1.)
 PWRHNGR_STR FB = "Homing Fireball";
@@ -136,51 +137,54 @@ const PWRHNGR_UINT RSOJ_LV_REQ = 0;
 const PWRHNGR_UINT RSOJ_PRICE = 1250;
 
 // Initializes the Player's Magia array
-PWRHNGR_DEF initPlayerMagic(Player* p) {
-	// initializing magic
-	for (unsigned int i = 0; i < 6; i++) {
-		switch (i) {
-		case 0:
-			p->M[i].magName = strdup(FB);
-			p->M[i].magATK = FIREBALL_ATK;
-			p->M[i].magCost = FIREBALL_COST;
-			p->M[i].magLVReq = FIREBALL_LV_REQ;
-			p->M[i].acquired = (p->lv >= FIREBALL_LV_REQ) ? true : false;
-			break;
-		case 1:
-			p->M[i].magName = strdup(BLIZZ);
-			p->M[i].magATK = BLIZZARD_ATK;
-			p->M[i].magCost = BLIZZARD_COST;
-			p->M[i].magLVReq = BLIZZARD_LV_REQ;
-			p->M[i].acquired = (p->lv >= BLIZZARD_LV_REQ) ? true : false;
-			break;
-		case 2:
-			p->M[i].magName = strdup(RAI);
-			p->M[i].magATK = LIGHTNING_ATK;
-			p->M[i].magCost = LIGHTNING_COST;
-			p->M[i].magLVReq = LIGHTNING_LV_REQ;
-			p->M[i].acquired = (p->lv >= LIGHTNING_LV_REQ) ? true : false;
-			break;
-		case 3:
-			p->M[i].magName = strdup(GRAV);
-			p->M[i].magATK = GRAV_BOMB_ATK;
-			p->M[i].magCost = GRAV_BOMB_COST;
-			p->M[i].magLVReq = GRAV_BOMB_LV_REQ;
-			p->M[i].acquired = (p->lv >= GRAV_BOMB_LV_REQ) ? true : false;
-			break;
-		case 4:
-			p->M[i].magName = strdup(LIONHEART);
-			p->M[i].magATK = LOEWENHERZ_ATK;
-			p->M[i].magCost = LOEWENHERZ_COST;
-			p->M[i].magLVReq = LOEWENHERZ_LV_REQ;
-			p->M[i].acquired = (p->lv >= LOEWENHERZ_LV_REQ) ? true : false;;
-			break;
-		case 5:
-			p->M[i].magName = (!p->boughtMagic) ? strdup("PLACEHOLDER TEXT") : strdup(AKARI);
-			p->M[i].magATK = (!p->boughtMagic) ? 0 : RSOJ_ATK;
-			p->M[i].magCost = (!p->boughtMagic) ? 0 : RSOJ_COST;
-			p->M[i].magLVReq = 0;
-			p->M[i].acquired = (!p->boughtMagic) ? false : true;
-		}
-	}
+PWRHNGR_DEF initPlayerMagic(Player* p)
+{
+    // initializing magic
+    for (unsigned int i = 0; i < 6; i++)
+    {
+        switch (i)
+        {
+        case 0:
+            p->M[i].magName = strdup(FB);
+            p->M[i].magATK = FIREBALL_ATK;
+            p->M[i].magCost = FIREBALL_COST;
+            p->M[i].magLVReq = FIREBALL_LV_REQ;
+            p->M[i].acquired = (p->lv >= FIREBALL_LV_REQ) ? true : false;
+            break;
+        case 1:
+            p->M[i].magName = strdup(BLIZZ);
+            p->M[i].magATK = BLIZZARD_ATK;
+            p->M[i].magCost = BLIZZARD_COST;
+            p->M[i].magLVReq = BLIZZARD_LV_REQ;
+            p->M[i].acquired = (p->lv >= BLIZZARD_LV_REQ) ? true : false;
+            break;
+        case 2:
+            p->M[i].magName = strdup(RAI);
+            p->M[i].magATK = LIGHTNING_ATK;
+            p->M[i].magCost = LIGHTNING_COST;
+            p->M[i].magLVReq = LIGHTNING_LV_REQ;
+            p->M[i].acquired = (p->lv >= LIGHTNING_LV_REQ) ? true : false;
+            break;
+        case 3:
+            p->M[i].magName = strdup(GRAV);
+            p->M[i].magATK = GRAV_BOMB_ATK;
+            p->M[i].magCost = GRAV_BOMB_COST;
+            p->M[i].magLVReq = GRAV_BOMB_LV_REQ;
+            p->M[i].acquired = (p->lv >= GRAV_BOMB_LV_REQ) ? true : false;
+            break;
+        case 4:
+            p->M[i].magName = strdup(LIONHEART);
+            p->M[i].magATK = LOEWENHERZ_ATK;
+            p->M[i].magCost = LOEWENHERZ_COST;
+            p->M[i].magLVReq = LOEWENHERZ_LV_REQ;
+            p->M[i].acquired = (p->lv >= LOEWENHERZ_LV_REQ) ? true : false;;
+            break;
+        case 5:
+            p->M[i].magName = (!p->boughtMagic) ? strdup("PLACEHOLDER TEXT") : strdup(AKARI);
+            p->M[i].magATK = (!p->boughtMagic) ? 0 : RSOJ_ATK;
+            p->M[i].magCost = (!p->boughtMagic) ? 0 : RSOJ_COST;
+            p->M[i].magLVReq = 0;
+            p->M[i].acquired = (!p->boughtMagic) ? false : true;
+        }
+    }
 }

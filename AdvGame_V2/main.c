@@ -13,7 +13,7 @@ int main(void)
 
     // Instance of the Player struct
     // The user may control it
-    Player* p=(Player*)malloc(sizeof(Player));
+    Player* p = (Player*)malloc(sizeof(Player));
 
     // Doubly linked list for storing Objects and Foes
     OBJ_DLL* objList = createObjList();
