@@ -8,8 +8,8 @@
 // A homemade struct for defining the position on a map
 PWRHNGR_STRUCT Pos
 {
-    unsigned int col;
-    unsigned int row;
+    uint col;
+    uint row;
     bool occupied;
 } Pos;
 
@@ -17,9 +17,9 @@ PWRHNGR_STRUCT Pos
 PWRHNGR_STRUCT Magia
 {
     char* magName;
-    unsigned int magATK;
-    unsigned int magCost;
-    unsigned int magLVReq;
+    uint magATK;
+    uint magCost;
+    uint magLVReq;
     bool acquired;
 } Magia;
 
@@ -27,7 +27,7 @@ PWRHNGR_STRUCT Magia
 PWRHNGR_STRUCT Object
 {
     char sign;
-    unsigned int eff;
+    uint eff;
     bool found;
     Pos pos;
 } Object;
@@ -36,30 +36,31 @@ PWRHNGR_STRUCT Object
 PWRHNGR_STRUCT Entity
 {
     char* name;
-    unsigned int hp;
-    unsigned int atk;
-    unsigned int def;
-    unsigned int xp;
+    uint hp;
+    uint atk;
+    uint def;
+    uint xp;
     bool dead;
     bool fled;
     Pos pos;
 } Entity;
 
 // The playable character's struct, having Entity "inherited,"
-// and being able to cast magic, possess money, and level up
+// being able to cast magic, possess money, buy stuff, and level up,
+// and also count the picked up Aegis cores
 PWRHNGR_STRUCT Player
 {
     Entity E;
     Magia M[SKILL_ROSTER];
-    unsigned int mp;
-    unsigned int deathCount;
-    unsigned int money;
-    unsigned int lv;
+    uint mp;
+    uint deathCount;
+    uint money;
+    uint lv;
     bool boughtMagic;
     bool boughtATK;
     bool boughtDEF;
     bool boughtVigor;
-    unsigned int aegisPickedUp;
+    uint aegisPickedUp;
 } Player;
 
 // The enemy struct, having Entity "inherited,"
@@ -67,5 +68,5 @@ PWRHNGR_STRUCT Player
 PWRHNGR_STRUCT Foe
 {
     Entity E;
-    unsigned int loot;
+    uint loot;
 } Foe;

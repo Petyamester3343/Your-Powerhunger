@@ -1,6 +1,6 @@
 #include "game_loop.c"
 
-int main(void)
+int main()
 {
     // time seed
     srand((unsigned)time(NULL));

@@ -36,7 +36,7 @@ PWRHNGR_DEF GameOver(Player* p, FOE_DLL* foeList, OBJ_DLL* objList, char input, 
 
     else if (p->deathCount == 10)  																// Player can die 10 times in total. After that, the game restarts.
     {
-        const char* msg = "GAME OVER!";
+        myStr msg = "GAME OVER!";
         p->deathCount = 0;
         SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
         for (int i = 0; i < sizeof(msg); i++)
@@ -99,12 +99,12 @@ PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 
     while (1)
     {
-        system("cls");																			// Clears the console for the new output
-        drawMap(map, p, objList, foeList);														// Draws the map (player, foes, objects, unoccupied positions)
-        showPlayerInfo(p);																		// A simple UI, which shows the current and max. stats of player, along with the money they possess
+        system("cls");																			// Clear the console for the new output
+        drawMap(map, p, objList, foeList);														// Draw the map (player, foes, objects, unoccupied positions)
+        showPlayerInfo(p);																		// Draw a simple UI, which shows the current and max. stats of player, along with the money and lives they possess
         narrate(map, p);																		// A desription of the territory the character is on (related buffs may be implemented later)
 
-        if (playerAction(getc, map, p, objList, foeList))                                       // This function determines if the player has acted in any way possible.
+        if (playerAction(getc, map, p, objList, foeList))                                       // This function determines if the player has acted in any way possible
         {
             if (getFoeCount(foeList) == 0)  													// Should the player clear the map, they are granted another chance to gain more power
             {
@@ -113,13 +113,13 @@ PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
                 divineHelpGained = false;                                                       // The Divine Help flag gets reset.
             }
 
-            moveFoes(foeList, objList, p);														// After initialization, the enemies move, too (but their movement is randomized, quasi-wandering).
+            moveFoes(foeList, objList, p);														// After initialization, the enemies move, too (but their movement is randomized, quasi-wandering)
             moveBoss(jimmySummoned, foeList, p, objList);										// If Jimmy is present, he moves towards the player (based on the absolute values of the hor. and vert. distance between them)
 
-            if (p->E.hp < PLAYER_MAX_HP && !divineHelpGained)
+            if (p->E.hp < PLAYER_MAX_HP && !divineHelpGained)                                   // Upon getting hurt
             {
                 placeObjectsOnMap(objList, foeList, p, 1);										// A guardian angel gives the Player a random object...
-                divineHelpGained = true;                                                        // and that's that...
+                divineHelpGained = true;                                                        // ... and refuses to elaborate further
             }
         }
 
@@ -127,8 +127,8 @@ PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 
         if (p->E.hp == 0)                                                                       // In case Player's HP would reach 0
         {
-            GameOver(p, foeList, objList, getc, map);
-            divineHelpGained = false;
+            GameOver(p, foeList, objList, getc, map);                                           // Game over
+            divineHelpGained = false;                                                           // Your guardian angel comes back
         }
 
         checkWinCondition(p, foeList);                                                          // Your sole goal is to defeat Jimmy once you get strong enough (LV 10 or above)
@@ -148,36 +148,13 @@ PWRHNGR_DEF MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
     {
         system("cls");
         SetConsoleTextAttribute(hndl, FOREGROUND_RED);
-        const char* title = "POWERHUNGER\x1b[0m";
+        myStr title = "POWERHUNGER\x1b[0m";
         printf("%s\n\t%c New Game\n\t%c Load Game\n\t%c \x1b[31mDelete Save File\n\n\x1b[0m", title, choice[0], choice[1], choice[2]);
 
-        getc = getch();
-        // the player may traverse the main menu by 1 unit fwd/bwd
-        // the same principle is applied to all the other selection menus
-        switch (getc)
-        {
-        case 13: // Enter key
-            if (choice[0] == '#')
-            {
-                NewGame(getc, map, p, objList, foeList);
-            }
+        getc = getch();                                                                         // the player may traverse the main menu by 1 unit fwd/bwd
 
-            else if (choice[1] == '#')
-            {
-                if (chooseAndLoadData(p) == -1)  												 // Should a save file not exist
-                {
-                    NewGame(getc, map, p, objList, foeList);
-                }
-                else  																			 // If there is a save file,
-                {
-                    LoadGame(getc, map, p, objList, foeList);
-                }
-            }
-            else
-            {
-                chooseAndDeleteData();															 // Declared save file gets deleted
-            }
-            break;
+        switch (getc)                                                                           // the same principle is applied to all the other selection menus
+        {
         case 'w':
             if (choice[0] == '#')
             {
@@ -210,6 +187,28 @@ PWRHNGR_DEF MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
             {
                 choice[0] = '#';
                 choice[2] = ' ';
+            }
+            break;
+        case 13: // Enter key
+            if (choice[0] == '#')
+            {
+                NewGame(getc, map, p, objList, foeList);
+            }
+
+            else if (choice[1] == '#')
+            {
+                if (chooseAndLoadData(p) == -1)  												 // Should a save file not exist
+                {
+                    NewGame(getc, map, p, objList, foeList);
+                }
+                else  																			 // If there is a save file,
+                {
+                    LoadGame(getc, map, p, objList, foeList);
+                }
+            }
+            else
+            {
+                chooseAndDeleteData();															 // Declared save file gets deleted
             }
             break;
         case 27: // Esc key

@@ -12,7 +12,7 @@
 #include "definitions.h"
 
 // Checks if the file has the extension .dat
-PWRHNGR_BOOLDEF hasDatExtension(const char* fileName)
+PWRHNGR_BOOLDEF hasDatExtension(myStr fileName)
 {
     return (strrchr(fileName, '.') != NULL && strcmp(strrchr(fileName, '.'), ".dat") == 0);
 }
@@ -27,7 +27,7 @@ PWRHNGR_DEF ensureSaveDir()
 }
 
 // Checks if the file exists
-PWRHNGR_BOOLDEF checkFileExists(const char* filePath)
+PWRHNGR_BOOLDEF checkFileExists(myStr filePath)
 {
     return access(filePath, F_OK) != -1;
 }
@@ -214,7 +214,7 @@ PWRHNGR_DEF chooseAndDeleteData()
     }
 
     printf("Available:\n");
-    for(unsigned int i = 0; i<fileCount; i++)
+    for(uint i = 0; i<fileCount; i++)
     {
         printf("%d: %s\n", i, saveFiles[i]);
     }

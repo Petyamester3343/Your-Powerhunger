@@ -140,7 +140,7 @@ const PWRHNGR_UINT RSOJ_PRICE = 1250;
 PWRHNGR_DEF initPlayerMagic(Player* p)
 {
     // initializing magic
-    for (unsigned int i = 0; i < 6; i++)
+    for (uint i = 0; i < 6; i++)
     {
         switch (i)
         {
@@ -188,3 +188,8 @@ PWRHNGR_DEF initPlayerMagic(Player* p)
         }
     }
 }
+
+// Default prices of the permanent stat boosters available in the Shop
+const PWRHNGR_UINT ARMOR_PRICE = 1000;
+const PWRHNGR_UINT PLASMA_GUN_PRICE = 1000;
+const PWRHNGR_UINT INVIGORATOR_PRICE = 750;

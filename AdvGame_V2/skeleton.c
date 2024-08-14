@@ -13,9 +13,9 @@ PWRHNGR_DEF drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // to manipulate the color of the output
     system("cls");
 
-    for (unsigned int i = 0; i < MAP_SIZE; i++)
+    for (uint i = 0; i < MAP_SIZE; i++)
     {
-        for (unsigned int j = 0; j < MAP_SIZE; j++)
+        for (uint j = 0; j < MAP_SIZE; j++)
         {
             // Draw Player
             if (i == p->E.pos.col && j == p->E.pos.row)
@@ -212,7 +212,7 @@ PWRHNGR_DEF moveFoes(FOE_DLL* foeList, OBJ_DLL* objList, Player* p)
 }
 
 // Utility function for the greeting sequence
-PWRHNGR_BOOLDEF unknownOne(const char* msg)
+PWRHNGR_BOOLDEF unknownOne(myStr msg)
 {
     return
         strcmp(msg, "Cassius") != 0 &&
@@ -230,9 +230,9 @@ PWRHNGR_BOOLDEF unknownOne(const char* msg)
 }
 
 // Text printing methodized for the greeting sequence
-PWRHNGR_DEF printText(const char* msg)
+PWRHNGR_DEF printText(myStr msg)
 {
-    for(unsigned int i=0; i<strlen(msg); i++)
+    for(uint i=0; i<strlen(msg); i++)
     {
         printf("\x1b[31m%c", toupper(msg[i]));
         SLEEP_MS(LATENCY);
@@ -243,7 +243,7 @@ PWRHNGR_DEF printText(const char* msg)
 PWRHNGR_DEF formatName(char str[STR_SIZE])
 {
     str[0] = toupper(str[0]);
-    for(unsigned int i=1; i<strlen(str); i++)
+    for(uint i=1; i<strlen(str); i++)
         str[i] = tolower(str[i]);
 }
 
@@ -312,8 +312,8 @@ PWRHNGR_PLAYERDEF initPlayer()
                 {
                     p->M[4].acquired = true;
                     p->boughtVigor = true;
-                    PLAYER_MAX_HP += product_buff;
-                    PLAYER_MAX_MP += product_buff;
+                    PLAYER_MAX_HP += PERM_BUFF;
+                    PLAYER_MAX_MP += PERM_BUFF;
                     p->E.hp = PLAYER_MAX_HP;
                     p->mp = PLAYER_MAX_MP;
                 }
@@ -329,7 +329,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 printf("\x1b[31mAs if you can foresee my defeat... ");
                 SLEEP_MS(LATENCY*4);
                 printText(msg);
-                for(unsigned int i = 0; i < 3; i++)
+                for(uint i = 0; i < 3; i++)
                 {
                     printf("\x1b[31m.");
                     SLEEP_MS(LATENCY);
@@ -341,7 +341,7 @@ PWRHNGR_PLAYERDEF initPlayer()
             {
                 p->E.name = strdup("Phantom");
                 p->lv = 10;
-                for(unsigned int i = 0; i < SKILL_ROSTER; i++) p->M[i].acquired = true;
+                for(uint i = 0; i < SKILL_ROSTER; i++) p->M[i].acquired = true;
                 p->M[5].magName = strdup(AKARI);
                 p->M[5].magATK = RSOJ_ATK;
                 p->M[5].magCost = RSOJ_COST;
@@ -349,10 +349,10 @@ PWRHNGR_PLAYERDEF initPlayer()
                 p->boughtATK = true;
                 p->boughtDEF = true;
                 p->boughtVigor = true;
-                PLAYER_MAX_HP += (p->lv-1) * LVUP_VAL + product_buff;
-                PLAYER_MAX_MP += (p->lv-1) * LVUP_VAL + product_buff;
-                PLAYER_ATK += (p->lv-1) * LVUP_VAL + product_buff;
-                PLAYER_DEF += (p->lv-1) * LVUP_VAL + product_buff;
+                PLAYER_MAX_HP += (p->lv-1) * LVUP_VAL + PERM_BUFF;
+                PLAYER_MAX_MP += (p->lv-1) * LVUP_VAL + PERM_BUFF;
+                PLAYER_ATK += (p->lv-1) * LVUP_VAL + PERM_BUFF;
+                PLAYER_DEF += (p->lv-1) * LVUP_VAL + PERM_BUFF;
                 p->E.hp = PLAYER_MAX_HP;
                 p->mp = PLAYER_MAX_MP;
                 p->E.atk = PLAYER_ATK;
@@ -361,7 +361,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 printf("\x1b[31mGet psyched for your funeral... ");
                 SLEEP_MS(LATENCY*2);
                 printText(msg);
-                for(unsigned int i = 0; i < 3; i++)
+                for(uint i = 0; i < 3; i++)
                 {
                     printf("\x1b[31m!");
                     SLEEP_MS(LATENCY);
@@ -375,8 +375,8 @@ PWRHNGR_PLAYERDEF initPlayer()
                 p->M[1].acquired = true;
                 p->boughtATK = true;
                 p->boughtDEF = true;
-                PLAYER_ATK += product_buff;
-                PLAYER_DEF += product_buff;
+                PLAYER_ATK += PERM_BUFF;
+                PLAYER_DEF += PERM_BUFF;
                 p->E.atk = PLAYER_ATK;
                 p->E.def = PLAYER_DEF;
 
@@ -397,7 +397,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 printf("\x1b[31mDo you wish to send her soul to Heaven... ");
                 SLEEP_MS(LATENCY*4);
                 printText(msg);
-                for(unsigned int i = 0; i < 3; i++)
+                for(uint i = 0; i < 3; i++)
                 {
                     printf("\x1b[31m.");
                     SLEEP_MS(LATENCY);
@@ -411,7 +411,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 SLEEP_MS(LATENCY*4);
                 printf("\x1b[0mWhy are you here?\n");
                 SLEEP_MS(LATENCY*4);
-                printf("\x1b[0mYou should not be... for you are not fit for this realm...\n");
+                printf("\x1b[0mYou should not be..., for you are not fit for this realm...\n");
                 SLEEP_MS(LATENCY*4);
                 printf("\x1b[0m... Yes... I pity you, broken one...\n");
                 SLEEP_MS(LATENCY*4);
@@ -426,7 +426,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                 while(1)
                 {
                     system("cls");
-                    const char* msg1 = "I cannot let you do your evil either! ... I need to be free... I'm going in, no matter what!",
+                    myStr msg1 = "I cannot let you do your evil either! ... I need to be free... I'm going in, no matter what!",
                                 * msg2 = "I... I can understand... I'm not ready yet...";
                     printf("%c\t%s\n%c\t%s", choice[0], msg1, choice[1], msg2);
                     char input = getch();
@@ -464,7 +464,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                             printf("\n\x1b[31mYet you do not know what you are dwelling yourself into... ");
                             SLEEP_MS(LATENCY*4);
                             printText(msg);
-                            for(unsigned int i=0; i<3; i++)
+                            for(uint i=0; i<3; i++)
                             {
                                 printf("\x1b[31m.");
                                 SLEEP_MS(LATENCY);
@@ -559,29 +559,29 @@ PWRHNGR_DEF initMap(char map[MAP_SIZE][MAP_SIZE])
 
 // Places a random Object on the map, which buffs the Player (until the next level up, that is)
 // Depending on the situation, the iteration can be controlled
-PWRHNGR_DEF placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const unsigned int num)
+PWRHNGR_DEF placeObjectsOnMap(OBJ_DLL* list, FOE_DLL* fl, Player* p, const uint num)
 {
     for (int i = 0; i < num; i++)
     {
         switch (rand() % 7)
         {
         case 0:
-            insertObjIntoList(list, fl, 'S', BUFF, p);
+            insertObjIntoList(list, fl, 'S', OBJ_DEF_BUFF, p);
             break;
         case 1:
-            insertObjIntoList(list, fl, 'A', BUFF, p);
+            insertObjIntoList(list, fl, 'A', OBJ_DEF_BUFF, p);
             break;
         case 2:
-            insertObjIntoList(list, fl, '+', BUFF, p);
+            insertObjIntoList(list, fl, '+', OBJ_DEF_BUFF, p);
             break;
         case 3:
-            insertObjIntoList(list, fl, '/', BUFF, p);
+            insertObjIntoList(list, fl, '/', OBJ_DEF_BUFF, p);
             break;
         case 4:
-            insertObjIntoList(list, fl, 'M', BUFF, p);
+            insertObjIntoList(list, fl, 'M', OBJ_DEF_BUFF, p);
             break;
         case 5:
-            insertObjIntoList(list, fl, '&', BUFF*2, p);
+            insertObjIntoList(list, fl, '&', OBJ_DEF_BUFF*2, p);
             break;
         case 6:
             insertObjIntoList(list, fl, '$', rand() % 30 + 10, p);
@@ -681,7 +681,7 @@ PWRHNGR_DEF playerSeeksObj(Player* p, OBJ_DLL* list)
                 }
                 else if (rand() % 13 == 0)
                 {
-                    unsigned int itemVal = rand() % 100 + 5 * currObjNode->o->eff;
+                    uint itemVal = rand() % 100 + 5 * currObjNode->o->eff;
                     printf("%s has found a valuable item! Lucky bastard... GOLD +%d\n", p->E.name, itemVal);
                     p->money += itemVal;
                 }
@@ -724,15 +724,25 @@ PWRHNGR_DEF playerSeeksObj(Player* p, OBJ_DLL* list)
     }
 }
 
-// The player takes action upon input (movement, attacking foes in its vicinity)
+// Helper method for checking the headcount of Foes lurking in Town
+PWRHNGR_UIDEF foeTerrorizingShop(char map[15][15], FOE_DLL* fl)
+{
+    FoeNode* curr = fl->head;
+    int temp = 0;
+    while (curr!=NULL) {
+        if(map[curr->f->E.pos.col][curr->f->E.pos.row] == 'T') {
+            temp++;
+        }
+        curr = curr->next;
+    }
+    return temp;
+}
+
+// The player takes action upon input (movement, attacking Foes in its vicinity)
 // It becomes true when they moved
 PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 {
     bool moved = false;
-    bool isShopThreatened = false;
-    unsigned int foesThreateningShop = 0;
-
-    FoeNode* curr = foeList->head;
 
     char exitChoice[2] = { ' ', '>' };
     bool exitChose = false;
@@ -742,7 +752,6 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
     switch (input)
     {
     case 'w':
-        foesThreateningShop = 0;
         if (p->E.pos.col > 0)
         {
             p->E.pos.occupied = false;
@@ -789,22 +798,13 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
         saveData(p);
         break;
     case 32:
-        while (curr != NULL)
-        {
-            if (map[curr->f->E.pos.col][curr->f->E.pos.row] == 'T')
-            {
-                isShopThreatened = true;
-                foesThreateningShop++;
-            }
-            curr = curr->next;
-        }
-
-        if (map[p->E.pos.col][p->E.pos.row] == 'T' && !isShopThreatened)
+        if (map[p->E.pos.col][p->E.pos.row] == 'T' && foeTerrorizingShop(map, foeList) == 0)
             go2Shop(p);
-        else if (isShopThreatened)
-            printf("%s needs to slay %d monsters at Town to access the shop!\n", p->E.name, foesThreateningShop);
+        else if (foeTerrorizingShop(map, foeList) > 0)
+            printf("%s needs to slay %d monsters at Town to access the shop!\n", p->E.name, foeTerrorizingShop(map, foeList));
         else if (map[p->E.pos.col][p->E.pos.row] != 'T')
-            printf("There is no one who could sell the hero anything here...\n");
+            printf("There is no one who could sell the hero anything here.\n");
+        SLEEP_MS(LATENCY);
         break;
     case 27:
         while (!exitChose)
@@ -859,7 +859,7 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
         playerSeeksObj(p, objList);
 
         // Player is now checking if there is any monster on the position they're about to occupy
-        curr = foeList->head;
+        FoeNode* curr = foeList->head;
         while(curr != NULL)
         {
             if(curr->f->E.pos.col == p->E.pos.col && curr->f->E.pos.row == p->E.pos.row)
@@ -902,7 +902,7 @@ PWRHNGR_DEF deployBoss(Player* p, OBJ_DLL* ol, FOE_DLL* fl)
 // Adjusted not to flood the map
 PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 {
-    for(unsigned int i = 0; i < 5; i++)
+    for(uint i = 0; i < 5; i++)
     {
         if (p->lv <= 3)
         {

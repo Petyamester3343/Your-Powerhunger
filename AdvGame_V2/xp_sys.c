@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-// Allows the character to level up
+// Allows the Player to level up
 PWRHNGR_DEF level_up(Player* p)
 {
     if (p->E.xp >= LV_UP_REQ(p->lv))
@@ -63,8 +63,8 @@ PWRHNGR_DEF level_up(Player* p)
 }
 
 // Grants the player experience points
-// (Either from an Arcane Tome or from slaying a Foe)
-PWRHNGR_DEF xp_gain(unsigned int experience, Player* p, bool fought)
+// (Either from an Object or from slaying a Foe)
+PWRHNGR_DEF xp_gain(uint experience, Player* p, bool fought)
 {
     p->E.xp += experience;
     if (fought)
@@ -79,8 +79,8 @@ PWRHNGR_DEF xp_gain(unsigned int experience, Player* p, bool fought)
 }
 
 // Grants the player GOLD from slaying a Foe
-// The first can be used to buy upgrades in Shop
-PWRHNGR_DEF looting(Player* p, unsigned int money)
+// GOLD can be used to buy permanent upgrades in Shop
+PWRHNGR_DEF looting(Player* p, uint money)
 {
     p->money += money;
     printf("%d GOLD gained!\n", money);

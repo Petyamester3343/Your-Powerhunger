@@ -4,7 +4,7 @@
 #include <string.h>
 
 // Checks if a certain position is already occupied
-PWRHNGR_BOOLDEF isPosOccupied(unsigned int col, unsigned int row, Player* p, OBJ_DLL* ol, FOE_DLL* fl)
+PWRHNGR_BOOLDEF isPosOccupied(uint col, uint row, Player* p, OBJ_DLL* ol, FOE_DLL* fl)
 {
     if (col == p->E.pos.col && row == p->E.pos.row && p->E.pos.occupied)
         return true;
@@ -35,8 +35,8 @@ PWRHNGR_POSDEF generateRandomPos(Player* p, OBJ_DLL* ol, FOE_DLL* fl)
 
     do
     {
-        pos.col = (unsigned int)rand() % 15;
-        pos.row = (unsigned int)rand() % 15;
+        pos.col = (uint)rand() % 15;
+        pos.row = (uint)rand() % 15;
     }
     while ((pos.col == 14 && pos.row == 14) && isPosOccupied(pos.col, pos.row, p, ol, fl) && (pos.col == p->E.pos.col && pos.row == p->E.pos.row));
 
@@ -72,7 +72,7 @@ PWRHNGR_OBJDEF findObjByPos(OBJ_DLL* list, Pos p)
 }
 
 // Inserts an instance of object into the list
-PWRHNGR_BOOLDEF insertObjIntoList(OBJ_DLL* olist, FOE_DLL* flist, char sign, unsigned int eff, Player* p)
+PWRHNGR_BOOLDEF insertObjIntoList(OBJ_DLL* olist, FOE_DLL* flist, char sign, uint eff, Player* p)
 {
     Object* o = (Object*)malloc(sizeof(Object));
     if (o == NULL)
@@ -164,7 +164,7 @@ PWRHNGR_DEF removeObjNode(OBJ_DLL* list, ObjNode* node)
 
 
 // Constructor
-static inline FOE_DLL* createFoeList()
+PWRHNGR_FLLDEF createFoeList()
 {
     FOE_DLL* list = (FOE_DLL*)malloc(sizeof(FOE_DLL));
     if (list != NULL)
@@ -176,7 +176,7 @@ static inline FOE_DLL* createFoeList()
 }
 
 // Creates an instance of Foe inside the list
-static inline FoeNode* createFoe(Foe* f)
+PWRHNGR_FOEDEF createFoe(Foe* f)
 {
     FoeNode* neu = (FoeNode*)malloc(sizeof(FoeNode));
     if (neu == NULL)
@@ -189,7 +189,7 @@ static inline FoeNode* createFoe(Foe* f)
 }
 
 // Finds a foe by its name
-static inline FoeNode* findFoeByName(FOE_DLL* list, const char* name)
+PWRHNGR_FOEDEF findFoeByName(FOE_DLL* list, myStr name)
 {
     FoeNode* curr = list->head;
     while (curr != NULL)
@@ -204,11 +204,11 @@ static inline FoeNode* findFoeByName(FOE_DLL* list, const char* name)
 }
 
 // Inserts a Foe into the list
-static inline bool insertFoeIntoList
+PWRHNGR_BOOLDEF insertFoeIntoList
 (Player* p, OBJ_DLL* ol, FOE_DLL* fl,
- const char* name,
- unsigned int hp, const unsigned int atk, unsigned int def,
- const unsigned int xp, const unsigned int loot)
+ myStr name,
+ uint hp, const uint atk, uint def,
+ const uint xp, const uint loot)
 {
     Foe* f = (Foe*)malloc(sizeof(Foe));
     if (f == NULL)
@@ -276,7 +276,7 @@ PWRHNGR_DEF removeFoeNode(FOE_DLL* list, FoeNode* node)
 }
 
 // Finds a foe by a given position
-static inline FoeNode* findFoeByPos(FOE_DLL* list, Pos p)
+PWRHNGR_FOEDEF findFoeByPos(FOE_DLL* list, Pos p)
 {
     FoeNode* curr = list->head;
     while (curr != NULL)
@@ -291,7 +291,7 @@ static inline FoeNode* findFoeByPos(FOE_DLL* list, Pos p)
 }
 
 // Finds a foe by its state of living
-static inline FoeNode* findFoeByStatus(FOE_DLL* list)
+PWRHNGR_FOEDEF findFoeByStatus(FOE_DLL* list)
 {
     FoeNode* curr = list->head;
     while (curr != NULL)
@@ -316,9 +316,9 @@ PWRHNGR_DEF removeFoeByStatus(FOE_DLL* list)
 }
 
 // Gets the number of foes inside the foes' doubly linked list
-static inline const unsigned int getFoeCount(FOE_DLL* list)
+const PWRHNGR_UIDEF getFoeCount(FOE_DLL* list)
 {
-    unsigned int size = 0;
+    uint size = 0;
     FoeNode* curr = list->head;
     while (curr != NULL)
     {
@@ -329,9 +329,9 @@ static inline const unsigned int getFoeCount(FOE_DLL* list)
 }
 
 // Gets the number of specific(!) foes inside the foes' doubly linked list
-static inline const unsigned int getFoeCountByName(FOE_DLL* list, const char* name)
+const PWRHNGR_UIDEF getFoeCountByName(FOE_DLL* list, myStr name)
 {
-    unsigned int count = 0;
+    uint count = 0;
     FoeNode* curr = list->head;
     while(curr != NULL)
     {

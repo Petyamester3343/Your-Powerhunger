@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "definitions.h"
 
+// Helper method for drawing the board
 T3_DECL_CHAR gridChar_3T(const int i)
 {
     char c;
@@ -19,6 +20,7 @@ T3_DECL_CHAR gridChar_3T(const int i)
     return c;
 }
 
+// Draws the board
 T3_DECL_VOID drawBoard_3T(const int b[9])
 {
     printf(" %c | %c | %c\n", gridChar_3T(b[0]), gridChar_3T(b[1]), gridChar_3T(b[2]));
@@ -32,7 +34,7 @@ T3_DECL_VOID drawBoard_3T(const int b[9])
 T3_DECL_INT checkWin_3T(const int board[9])
 {
     unsigned wins[8][3] = { {0,1,2},{3,4,5},{6,7,8},{0,3,6},{1,4,7},{2,5,8},{0,4,8},{2,4,6} };
-    for (unsigned int i = 0; i < 8; ++i)
+    for (uint i = 0; i < 8; ++i)
     {
         if (board[wins[i][0]] != 0 &&
                 board[wins[i][0]] == board[wins[i][1]] &&
@@ -51,7 +53,7 @@ T3_DECL_INT minimax_3T(int board[9], const int player)
 
     int move = -1;
     int score = -2; // Losing moves are preferred to no move
-    for (unsigned int i = 0; i < 9; ++i)   // For all moves,
+    for (uint i = 0; i < 9; ++i)   // For all moves,
     {
         if (board[i] == 0)   // If the move is legal,
         {
@@ -75,7 +77,7 @@ T3_DECL_VOID cpuMove_3T(int board[9])
 {
     int move = -1;
     int score = -2;
-    for (unsigned int i = 0; i < 9; ++i)
+    for (uint i = 0; i < 9; ++i)
     {
         if (board[i] == 0)
         {
@@ -117,7 +119,7 @@ T3_DECL_VOID gameMech_3T()
 {
     int board[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     // Computer squares are 1, player squares are -1
-    unsigned int player = 0;
+    uint player = 0;
     while(player != 1 && player != 2)
     {
         printf("Computer: O, You: X\nPlay (1)st or (2)nd? ");
