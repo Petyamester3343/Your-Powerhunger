@@ -38,7 +38,7 @@ PWRHNGR_POSDEF generateRandomPos(Player* p, OBJ_DLL* ol, FOE_DLL* fl)
         pos.col = (uint)rand() % 15;
         pos.row = (uint)rand() % 15;
     }
-    while ((pos.col == 14 && pos.row == 14) && isPosOccupied(pos.col, pos.row, p, ol, fl) && (pos.col == p->E.pos.col && pos.row == p->E.pos.row));
+    while ((pos.col == 14 && pos.row == 14) && isPosOccupied(pos.col, pos.row, p, ol, fl) == true && (pos.col == p->E.pos.col && pos.row == p->E.pos.row));
 
     pos.occupied = true;
     return pos;

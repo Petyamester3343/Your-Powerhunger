@@ -46,10 +46,10 @@ PWRHNGR_DEF drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeL
             {
                 if (currFoe->f->E.pos.col == i && currFoe->f->E.pos.row == j)
                 {
-                    if(strcmp(currFoe->f->E.name, "Jimmy") == 0)
+                    if(strcmp(currFoe->f->E.name, BOSS_NAME) == 0)
                     {
                         SetConsoleTextAttribute(hConsole, FOREGROUND_PURPLE);
-                        printf("J \x1b[0m");
+                        printf("B \x1b[0m");
                     }
                     else
                     {
