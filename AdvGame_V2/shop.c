@@ -91,12 +91,14 @@ PWRHNGR_DEF go2Shop(Player* p)
                 if (p->money >= RSOJ_PRICE && !p->boughtMagic)
                 {
                     p->money -= RSOJ_PRICE;
+                    p->boughtMagic = true;
+
                     p->M[5].magName = strdup(AKARI);
                     p->M[5].magATK = RSOJ_ATK;
                     p->M[5].magCost = RSOJ_COST;
                     p->M[5].magLVReq = RSOJ_LV_REQ;
                     p->M[5].acquired = true;
-                    p->boughtMagic = true;
+
                     printf("%s has successfully acquired the most powerful spell known to mankind!\n", p->E.name);
                     SLEEP_MS(LATENCY);
                     break;
@@ -117,8 +119,10 @@ PWRHNGR_DEF go2Shop(Player* p)
                 if (p->money >= ARMOR_PRICE && !p->boughtDEF)
                 {
                     p->money -= ARMOR_PRICE;
-                    p->E.def += PERM_BUFF;
                     p->boughtDEF = true;
+
+                    p->E.def += PERM_BUFF;
+
                     printf("%s has purchased the Aegis Automatized Armor! DEF +30\n", p->E.name);
                     SLEEP_MS(LATENCY);
                     break;
@@ -139,8 +143,10 @@ PWRHNGR_DEF go2Shop(Player* p)
                 if (p->money >= PLASMA_GUN_PRICE && !p->boughtATK)
                 {
                     p->money -= PLASMA_GUN_PRICE;
-                    p->E.atk += PERM_BUFF;
                     p->boughtATK = true;
+
+                    p->E.atk += PERM_BUFF;
+
                     printf("%s has purchased the Plasma Railgun! ATK +30\n", p->E.name);
                     SLEEP_MS(LATENCY);
                     break;
@@ -161,11 +167,14 @@ PWRHNGR_DEF go2Shop(Player* p)
                 if (p->money >= INVIGORATOR_PRICE && !p->boughtVigor)
                 {
                     p->money -= INVIGORATOR_PRICE;
-                    PLAYER_MAX_HP += PERM_BUFF;
-                    p->E.hp = PLAYER_MAX_HP;
-                    PLAYER_MAX_MP += PERM_BUFF;
-                    p->mp = PLAYER_MAX_MP;
                     p->boughtVigor = true;
+
+                    PLAYER_MAX_HP += PERM_BUFF;
+                    PLAYER_MAX_MP += PERM_BUFF;
+
+                    p->E.hp = PLAYER_MAX_HP;
+                    p->mp = PLAYER_MAX_MP;
+
                     printf("%s has purchased the Vigor Enhancer! HP & MP +30 PERMANENTLY!\n", p->E.name);
                     SLEEP_MS(LATENCY);
                     break;

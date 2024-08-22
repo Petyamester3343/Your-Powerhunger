@@ -1,6 +1,6 @@
 POWERHUNGER
 
-Movements: WASD (W and S should be used for menu traversal, too)
+Movements: WASD (W/S keys should be used for menu traversal, too)
 
 Initiate attack: E
 

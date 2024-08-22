@@ -270,17 +270,17 @@ PWRHNGR_PLAYERDEF initPlayer()
             if(strcmp(msg, "Thomas") == 0)
             {
                 printf("I am not afraid of your hounds... ");
-                printText(msg);
-                printf("\x1b[31m!\x1b[0m");
+                printText(strcat(msg, "!"));
+                printf("\x1b[0m");
             }
 
             else if(strcmp(msg, "Hana") == 0)
             {
-                // An unbeatable Tic-Tac-Toe... just for prank...
-                printf("Oh, little child... You are not suited for such realms at all...\n");
-                SLEEP_MS(LATENCY*4);
+                // An unbeatable Tic-Tac-Toe... Just for prank...
+                printf("\x1b[0mOh, little child... You are not suited for such realms at all...\n");
+                SLEEP_MS(LATENCY * 4);
                 printf("Let us play something else instead, shall we?\n");
-                SLEEP_MS(LATENCY*4);
+                SLEEP_MS(LATENCY * 4);
                 char yesno = ' ';
                 while(yesno != 'n')
                 {
@@ -289,7 +289,7 @@ PWRHNGR_PLAYERDEF initPlayer()
                     printf("Again? (Y/N) ");
                     fflush(stdin);
                     scanf("%c", &yesno);
-                    if(toupper(yesno)=='N')
+                    if(toupper(yesno) == 'N')
                     {
                         free(p);
                         exit(265918);
@@ -300,40 +300,31 @@ PWRHNGR_PLAYERDEF initPlayer()
             else if(strcmp(msg, "Sasaki") == 0)
             {
                 printf("\x1b[31mTo think you can live with such secrets...\n");
-                SLEEP_MS(LATENCY*4);
+                SLEEP_MS(LATENCY * 4);
                 printf("\x1b[31mHave you ever wondered why she can see a glimpse of the future... ");
-                printText(msg);
-                printf("\x1b[31m?\x1b[0m\n");
+                printText(strcat(msg, "?"));
+                printf("\x1b[0m\n");
             }
 
             else if(strcmp(msg, "Aleister") == 0 || strcmp(msg, "Cassius") == 0)
             {
-                if(strcmp(msg, "Aleister") == 0)
-                {
-                    p->M[4].acquired = true;
-                    p->boughtVigor = true;
-                    PLAYER_MAX_HP += PERM_BUFF;
-                    PLAYER_MAX_MP += PERM_BUFF;
-                    p->E.hp = PLAYER_MAX_HP;
-                    p->mp = PLAYER_MAX_MP;
-                }
+                p->boughtVigor = true;
+                PLAYER_MAX_HP += PERM_BUFF;
+                PLAYER_MAX_MP += PERM_BUFF;
+                p->E.hp = PLAYER_MAX_HP;
+                p->mp = PLAYER_MAX_MP;
+
                 printf("\x1b[31mMy death will never bring Her back... ");
                 SLEEP_MS(LATENCY*4);
-                printText(msg);
-                printf("\x1b[31m!\x1b[0m\n");
+                printText(strcat(msg, "!"));
+                printf("\x1b[0m\n");
             }
 
             else if(strcmp(msg, "Sakura") == 0)
             {
-                p->M[2].acquired = true;
                 printf("\x1b[31mAs if you can foresee my defeat... ");
-                SLEEP_MS(LATENCY*4);
-                printText(msg);
-                for(uint i = 0; i < 3; i++)
-                {
-                    printf("\x1b[31m.");
-                    SLEEP_MS(LATENCY);
-                }
+                SLEEP_MS(LATENCY * 4);
+                printText(strcat(msg, "..."));
                 printf("\x1b[0m\n");
             }
 
@@ -341,38 +332,28 @@ PWRHNGR_PLAYERDEF initPlayer()
             {
                 p->E.name = strdup("Phantom");
                 p->lv = 10;
-                for(uint i = 0; i < SKILL_ROSTER; i++) p->M[i].acquired = true;
-                p->M[5].magName = strdup(AKARI);
-                p->M[5].magATK = RSOJ_ATK;
-                p->M[5].magCost = RSOJ_COST;
                 p->boughtMagic = true;
                 p->boughtATK = true;
                 p->boughtDEF = true;
                 p->boughtVigor = true;
-                PLAYER_MAX_HP += (p->lv-1) * LVUP_VAL + PERM_BUFF;
-                PLAYER_MAX_MP += (p->lv-1) * LVUP_VAL + PERM_BUFF;
-                PLAYER_ATK += (p->lv-1) * LVUP_VAL + PERM_BUFF;
-                PLAYER_DEF += (p->lv-1) * LVUP_VAL + PERM_BUFF;
+                PLAYER_MAX_HP += (p->lv - 1) * LVUP_VAL + PERM_BUFF;
+                PLAYER_MAX_MP += (p->lv - 1) * LVUP_VAL + PERM_BUFF;
+                PLAYER_ATK += (p->lv - 1) * LVUP_VAL + PERM_BUFF;
+                PLAYER_DEF += (p->lv - 1) * LVUP_VAL + PERM_BUFF;
                 p->E.hp = PLAYER_MAX_HP;
                 p->mp = PLAYER_MAX_MP;
                 p->E.atk = PLAYER_ATK;
                 p->E.def = PLAYER_DEF;
 
                 printf("\x1b[31mGet psyched for your funeral... ");
-                SLEEP_MS(LATENCY*2);
-                printText(msg);
-                for(uint i = 0; i < 3; i++)
-                {
-                    printf("\x1b[31m!");
-                    SLEEP_MS(LATENCY);
-                }
+                SLEEP_MS(LATENCY * 2);
+                printText(strcat(msg, "!!!"));
                 printf("\x1b[0m\n");
             }
 
             else if(strcmp(msg, "Nari") == 0)
             {
                 p->E.name = strdup("Nari");
-                p->M[1].acquired = true;
                 p->boughtATK = true;
                 p->boughtDEF = true;
                 PLAYER_ATK += PERM_BUFF;
@@ -381,53 +362,48 @@ PWRHNGR_PLAYERDEF initPlayer()
                 p->E.def = PLAYER_DEF;
 
                 printf("\x1b[31mAh, there you are...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[31mThe failed \"materfamilias...\"\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[31mHow does it feel like to be in Hell for betraying your own, innocent kin...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[31mYour only flesh and blood... A victim of the chaos you inadvertently unleashed on her...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[31mMaking her suffer and beg for her death with that disingenuous move of yours...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[31mJust because of a lie shattering your pride...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[31mPlease do humor me... Do you have any ounce of remorse in your heart...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[31mDo you wish to send her soul to Heaven... ");
-                SLEEP_MS(LATENCY*4);
-                printText(msg);
-                for(uint i = 0; i < 3; i++)
-                {
-                    printf("\x1b[31m.");
-                    SLEEP_MS(LATENCY);
-                }
-                printf("?\x1b[0m\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("The failed \"materfamilias...\"\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("How does it feel like to be in Hell for betraying your own, innocent kin...\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("Your only flesh and blood... A victim of the chaos you inadvertently unleashed on her...\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("Making her suffer and beg for her death with that disingenuous move of yours...\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("Just because of a lie shattering your pride...\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("Please do humor me... Do you have any ounce of remorse in your heart...\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("Do you wish to send her soul to Heaven..., ");
+                SLEEP_MS(LATENCY * 4);
+                printText(strcat(msg, "...?"));
+                printf("\x1b[0m\n");
             }
 
             else if(strcmp(msg, "Saki") == 0)
             {
-                printf("\x1b[31mYou...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[0mWhy are you here?\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[0mYou should not be..., for you are not fit for this realm...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[0m... Yes... I pity you, broken one...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[0mEven though I am supposed to be your enemy...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[0mI cannot let you in...\n");
-                SLEEP_MS(LATENCY*4);
-                printf("\x1b[0mYou have to understand...\n");
-                SLEEP_MS(LATENCY*4);
+                printf("\x1b[31mYou...\n\x1b[0m");
+                SLEEP_MS(LATENCY * 4);
+                printf("Why are you here?\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("You should not be..., for you are not fit for this realm...\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("... Yes... I pity you, broken one...\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("Even though I am supposed to be your enemy...\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("I cannot let you in...\n");
+                SLEEP_MS(LATENCY * 4);
+                printf("You have to understand...\n");
+                SLEEP_MS(LATENCY * 4);
 
                 char choice[2]= {' ', '>'};
                 while(1)
                 {
                     system("cls");
-                    myStr msg1 = "I cannot let you do your evil either! ... I need to be free... I'm going in, no matter what!",
-                                * msg2 = "I... I can understand... I'm not ready yet...";
+                    myStr msg1 = "I cannot let you do your evil either! ... I need to be free... I'm going in, no matter what!";
+                    myStr msg2 = "I... I can understand... I'm not ready yet...";
                     printf("%c\t%s\n%c\t%s", choice[0], msg1, choice[1], msg2);
                     char input = getch();
                     switch(input)
@@ -457,18 +433,13 @@ PWRHNGR_PLAYERDEF initPlayer()
                         }
                         break;
                     case 13:
-                        if(choice[0]=='>')
+                        if(choice[0] == '>')
                         {
                             printf("\n... I see... It is your choice, after all...");
-                            SLEEP_MS(LATENCY*4);
+                            SLEEP_MS(LATENCY * 4);
                             printf("\n\x1b[31mYet you do not know what you are dwelling yourself into... ");
-                            SLEEP_MS(LATENCY*4);
-                            printText(msg);
-                            for(uint i=0; i<3; i++)
-                            {
-                                printf("\x1b[31m.");
-                                SLEEP_MS(LATENCY);
-                            }
+                            SLEEP_MS(LATENCY * 4);
+                            printText(strcat(msg, "..."));
                             printf("\x1b[0m\n");
 
                             PLAYER_ATK /= 2;
@@ -479,10 +450,6 @@ PWRHNGR_PLAYERDEF initPlayer()
                             p->E.hp = PLAYER_MAX_HP;
                             PLAYER_MAX_MP *= 2;
                             p->mp = PLAYER_MAX_MP;
-
-                            p->M[3].acquired = true;
-
-                            return p;
                         }
                         else
                         {
@@ -497,28 +464,22 @@ PWRHNGR_PLAYERDEF initPlayer()
 
             else if(strcmp(msg, "Akari") == 0 || strcmp(msg, "Lucius") == 0 || strcmp(msg, "Minerva") == 0)
             {
-                p->M[5].acquired = true;
                 if(strcmp(msg, "Akari") == 0)
-                {
-                    p->M[5].magName = strdup(AKARI);
-                    p->M[5].magATK = RSOJ_ATK;
-                    p->M[5].magCost = RSOJ_COST;
                     p->boughtMagic = true;
-                }
+
                 printf("\x1b[31mSo, you have finally come for my head... ");
                 SLEEP_MS(LATENCY*4);
-                printText(msg);
-                printf("\x1b[31m!\x1b[0m\n");
+                printText(strcat(msg, "!"));
+                printf("\x1b[0m\n");
             }
-
         }
 
         else
         {
             printf("\x1b[31mWelcome to Hell... ");
             SLEEP_MS(LATENCY*4);
-            printText(msg);
-            printf("\x1b[31m!\x1b[0m\n");
+            printText(strcat(msg, "!"));
+            printf("\x1b[0m\n");
         }
     }
     SLEEP_MS(LATENCY);
@@ -729,8 +690,10 @@ PWRHNGR_UIDEF foeTerrorizingShop(char map[15][15], FOE_DLL* fl)
 {
     FoeNode* curr = fl->head;
     int temp = 0;
-    while (curr!=NULL) {
-        if(map[curr->f->E.pos.col][curr->f->E.pos.row] == 'T') {
+    while (curr!=NULL)
+    {
+        if(map[curr->f->E.pos.col][curr->f->E.pos.row] == 'T')
+        {
             temp++;
         }
         curr = curr->next;
@@ -749,6 +712,10 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
 
     // keyboard input
     input = getch();
+    if(input == 0 || input == 224) {
+        input = getch();
+    }
+
     switch (input)
     {
     case 'w':
@@ -795,7 +762,7 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
         impendingDoom(p, foeList, objList);
         break;
     case '0':
-        saveData(p);
+        saveData(p, objList, foeList);
         break;
     case 32:
         if (map[p->E.pos.col][p->E.pos.row] == 'T' && foeTerrorizingShop(map, foeList) == 0)
@@ -985,6 +952,7 @@ PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 // A simple non-interactive UI
 PWRHNGR_DEF showPlayerInfo(Player* p)
 {
+    //printf("Player name:\t%s\n", p->E.name); // debug to test the save/load function
     printf("HP:\t%d/%d\n", p->E.hp, PLAYER_MAX_HP);
     printf("MP:\t%d/%d\n", p->mp, PLAYER_MAX_MP);
     printf("ATK:\t%d/%d\n", p->E.atk, PLAYER_ATK);

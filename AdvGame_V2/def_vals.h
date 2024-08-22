@@ -140,7 +140,7 @@ const PWRHNGR_UINT RSOJ_PRICE = 1250;
 PWRHNGR_DEF initPlayerMagic(Player* p)
 {
     // initializing magic
-    for (uint i = 0; i < 6; i++)
+    for (uint i = 0; i < SKILL_ROSTER; i++)
     {
         switch (i)
         {
@@ -186,6 +186,26 @@ PWRHNGR_DEF initPlayerMagic(Player* p)
             p->M[i].magLVReq = 0;
             p->M[i].acquired = (!p->boughtMagic) ? false : true;
         }
+    }
+
+    if(strcmp(p->E.name, "Nari") == 0) {
+        p->M[1].acquired = true;
+    }
+
+    if(strcmp(p->E.name, "Sakura") == 0) {
+        p->M[2].acquired = true;
+    }
+
+    if(strcmp(p->E.name, "Saki") == 0) {
+        p->M[3].acquired = true;
+    }
+
+    if(strcmp(p->E.name, "Aleister") == 0 || strcmp(p->E.name, "Cassius") == 0) {
+        p->M[4].acquired = true;
+    }
+
+    if(strcmp(p->E.name, "Akari") == 0) {
+        p->M[5].acquired = true;
     }
 }
 

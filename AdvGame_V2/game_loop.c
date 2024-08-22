@@ -4,12 +4,12 @@
 PWRHNGR_DEF MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
 PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList);
 
-PWRHNGR_DEF checkWinCondition(Player* p, FOE_DLL* foeList)
+PWRHNGR_DEF checkWinCondition(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 {
     if (jimmyDefeated)
     {
         printf("%s, you have finally slain Jimmy. You win!\n", p->E.name);
-        saveData(p);
+        saveData(p, objList, foeList);
         exit(0);
     }
 }
@@ -72,6 +72,7 @@ PWRHNGR_DEF NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FO
     breedFoes(p, objList, foeList);																// and Foes
 
     initMap(map);                                                                               // Initializing map from a .txt file (15*15 char)
+    initPlayerMagic(p);                                                                         // Initializing Player's Magia
 
     GameLoop(getc, map, p, objList, foeList);													// Everything's set. LET THE GAME BEGIN!!!
 }
@@ -80,15 +81,7 @@ PWRHNGR_DEF NewGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FO
 PWRHNGR_DEF LoadGame(char getc, char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 {
     initPlayerMagic(p);																			// Since the game has already loaded the save, re-initialization of Player's Magia is first
-
-    objList = createObjList();																	// Object list is initialized
-    placeObjectsOnMap(objList, foeList, p, 5);                                                  // and instances of objects are added
-
-    foeList = (FOE_DLL*)createFoeList();                                                        // Same sitch with the Foe list
-    breedFoes(p, objList, foeList);                                                             // and Foes
-
     initMap(map);                                                                               // Initializing map from a .txt file (15*15 char)
-
     GameLoop(getc, map, p, objList, foeList);                                                   // Everything's set. LET THE GAME CONTINUE!
 }
 
@@ -131,7 +124,7 @@ PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
             divineHelpGained = false;                                                           // Your guardian angel comes back
         }
 
-        checkWinCondition(p, foeList);                                                          // Your sole goal is to defeat Jimmy once you get strong enough (LV 10 or above)
+        checkWinCondition(p, objList, foeList);                                                          // Your sole goal is to defeat Jimmy once you get strong enough (LV 10 or above)
     }
 }
 
@@ -197,7 +190,7 @@ PWRHNGR_DEF MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 
             else if (choice[1] == '#')
             {
-                if (chooseAndLoadData(p) == -1)  												 // Should a save file not exist
+                if (chooseAndLoadData(p, objList, foeList) == -1)  												 // Should a save file not exist
                 {
                     NewGame(getc, map, p, objList, foeList);
                 }

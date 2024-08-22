@@ -35,13 +35,13 @@
 #define     SAVE_DIR            "saves/"
 
 #ifdef _WIN32
-    #include <windows.h> // for Sleep()
-    #include <direct.h> // for _mkdir()
-    #define SLEEP_MS(ms) Sleep(ms)
+#include <windows.h> // for Sleep()
+#include <direct.h> // for _mkdir()
+#define     SLEEP_MS(ms)        Sleep(ms)
 #else
-    #include <sys/stat.h>
-    #include <unistd.h>
-    #define SLEEP_MS(ms) usleep((ms) * 1000) // usleep takes microseconds (us)
+#include <sys/stat.h>
+#include <unistd.h>
+#define     SLEEP_MS(ms)        usleep((ms) * 1000) // usleep takes microseconds (us)
 #endif // _WIN32
 
 
@@ -67,6 +67,9 @@
 // DEFAULT STRING SIZE
 #define     STR_SIZE            100
 
+// PLAYER'S SURROUNDINGS' RADIUS VALUE
+#define     PLAYER_R            1
+
 
 // DEFAULT MAX HEADCOUNTS FOR FOES
 #define     MAX_SLIME           3
@@ -84,5 +87,5 @@
 #define     FOREGROUND_YELLOW   FOREGROUND_GREEN|FOREGROUND_RED
 
 // Other helping definitions of data types
-#define uint unsigned int
-#define myStr const char*
+#define     uint                unsigned int
+#define     myStr               const char*

@@ -10,100 +10,110 @@
 #include <string.h>
 
 #include "definitions.h"
+#include "DLL_container.h"
 
-// Checks if the file has the extension .dat
-PWRHNGR_BOOLDEF hasDatExtension(myStr fileName)
-{
+// Check if the file has a .dat extension
+PWRHNGR_BOOLDEF hasDatExtension(myStr fileName) {
     return (strrchr(fileName, '.') != NULL && strcmp(strrchr(fileName, '.'), ".dat") == 0);
 }
 
-// Creates the save folder
-PWRHNGR_DEF ensureSaveDir()
-{
-    if(_mkdir(SAVE_DIR) != 0 && errno != EEXIST)
-    {
+// Create the save folder if it doesn't exist
+PWRHNGR_DEF ensureSaveDir() {
+    if (_mkdir(SAVE_DIR) != 0 && errno != EEXIST) {
         fprintf(stderr, "Cannot create main save directory!\n");
     }
 }
 
-// Checks if the file exists
-PWRHNGR_BOOLDEF checkFileExists(myStr filePath)
-{
+// Check if a file exists
+PWRHNGR_BOOLDEF checkFileExists(myStr filePath) {
     return access(filePath, F_OK) != -1;
 }
 
-// Saves the Player's stats (actions included)
-PWRHNGR_DEF saveData(Player* p)
-{
+// Save Player data, including Objects and Foes
+PWRHNGR_DEF saveData(Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
     ensureSaveDir();
 
     char filePath[MAX_PATH];
-    bzero(filePath, MAX_PATH);
     snprintf(filePath, sizeof(filePath), "%s%s_save.dat", SAVE_DIR, p->E.name);
 
     printf("Saving: %s\n", filePath);
-    SLEEP_MS(500);
 
-    if(checkFileExists(filePath))
-    {
+    if (checkFileExists(filePath)) {
         char choice;
         printf("File \"%s\" already exists. Overwrite? (Y/N): ", filePath);
         scanf(" %c", &choice);
-        while(choice != 'Y' && choice != 'y')
-        {
-            if(choice != 'y' && choice != 'Y')
-            {
-                if(choice == 'n' || choice == 'N')
-                {
-                    printf("Aborting save.\n");
-                    SLEEP_MS(500);
-                    return;
-                }
-                printf("Invalid choice!\n");
-            }
+        if (choice != 'Y' && choice != 'y') {
+            printf("Aborting save.\n");
+            return;
         }
     }
 
     FILE* fp = fopen(filePath, "wb");
-
-    if (fp == NULL)
-    {
+    if (fp == NULL) {
         fprintf(stderr, "Cannot open file!\n");
         return;
     }
 
+    // Save Player data
     fwrite(p, sizeof(Player), 1, fp);
-    fwrite(p->E.name, strlen(p->E.name), 1, fp);
+
+    // Save Player name
+    size_t nameLen = strlen(p->E.name);
+    fwrite(&nameLen, sizeof(size_t), 1, fp);
+    fwrite(p->E.name, nameLen, 1, fp);
+
+    // Save number of objects
+    ObjNode* currO = ol->head;
+    uint oC = 0;
+    while (currO != NULL) {
+        oC++;
+        currO = currO->next;
+    }
+    fwrite(&oC, sizeof(uint), 1, fp);
+
+    // Save each object
+    currO = ol->head;
+    while (currO != NULL) {
+        fwrite(currO->o, sizeof(Object), 1, fp);
+        currO = currO->next;
+    }
+
+    // Save number of foes
+    FoeNode* currF = fl->head;
+    uint fC = 0;
+    while (currF != NULL) {
+        fC++;
+        currF = currF->next;
+    }
+    fwrite(&fC, sizeof(uint), 1, fp);
+
+    // Save each foe
+    currF = fl->head;
+    while (currF != NULL) {
+        fwrite(currF->f, sizeof(Foe), 1, fp);
+        size_t nameLength = strlen(currF->f->E.name);
+        fwrite(&nameLength, sizeof(size_t), 1, fp); // Save name length
+        fwrite(currF->f->E.name, nameLength, 1, fp); // Save name itself
+        currF = currF->next;
+    }
 
     fclose(fp);
     printf("Save data created successfully!\n");
-
-    SLEEP_MS(500);
 }
 
-// Lists the existing save files
-PWRHNGR_DEF listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount)
-{
-    DIR* dir;
-    struct dirent* entry;
-    int count = 0;
-
-    dir = opendir(SAVE_DIR);
-    if(dir == NULL)
-    {
+// List the save files in the save directory
+PWRHNGR_DEF listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount) {
+    DIR* dir = opendir(SAVE_DIR);
+    if (dir == NULL) {
         fprintf(stderr, "Cannot open save directory!\n");
         return;
     }
 
-    printf("Directory opened successfully!\n");
+    struct dirent* entry;
+    int count = 0;
 
-    while((entry = readdir(dir))!=NULL)
-    {
-        printf("Entry found: %s\n", entry->d_name);
-        if(hasDatExtension(entry->d_name))
-        {
-            printf("Save file found: %s\n", entry->d_name);
-            bzero(saveFiles[count], MAX_PATH);
+    while ((entry = readdir(dir)) != NULL) {
+        if (hasDatExtension(entry->d_name)) {
             strncpy(saveFiles[count], entry->d_name, MAX_PATH - 1);
             count++;
         }
@@ -111,35 +121,28 @@ PWRHNGR_DEF listSaveFiles(char saveFiles[][MAX_PATH], int* fileCount)
 
     closedir(dir);
     *fileCount = count;
-
-    printf("Files found: %d\n", *fileCount);
 }
 
-// Allows the user to choose from the available save datas and load one of them
-PWRHNGR_IDEF chooseAndLoadData(Player* p)
-{
+// Choose and load Player data from a save file
+PWRHNGR_IDEF chooseAndLoadData(Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
     char saveFiles[SAVE_SIZE][MAX_PATH];
-    bzero(saveFiles, sizeof(saveFiles));
     int fileCount = 0;
 
     listSaveFiles(saveFiles, &fileCount);
 
-    if(fileCount == 0)
-    {
+    if (fileCount == 0) {
         printf("No save files found!\n");
         return -1;
     }
 
     printf("Available save files:\n");
-    for(int i=0; i<fileCount; i++)
-    {
+    for (int i = 0; i < fileCount; i++) {
         printf("%d: %s\n", i, saveFiles[i]);
     }
 
     int choice = -1;
     printf("Enter the number of the save file to load: ");
-    while (scanf("%d", &choice) != 1 || choice < 0 || choice >= fileCount)
-    {
+    while (scanf("%d", &choice) != 1 || choice < 0 || choice >= fileCount) {
         printf("Invalid choice. Enter a valid number: ");
         while (getchar() != '\n'); // Clear input buffer
     }
@@ -148,97 +151,113 @@ PWRHNGR_IDEF chooseAndLoadData(Player* p)
     snprintf(filePath, sizeof(filePath), "%s%s", SAVE_DIR, saveFiles[choice]);
 
     FILE* fp = fopen(filePath, "rb");
-    if (fp == NULL)
-    {
+    if (fp == NULL) {
         fprintf(stderr, "Cannot open file!\nStarting new game...\n");
-        SLEEP_MS(1000);
         return -1;
     }
-
-    if (fseek(fp, 0, SEEK_END) < 0)
-    {
-        fclose(fp);
-        return -1;
-    }
-
-    long val = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    val -= sizeof(Player);
 
     fread(p, sizeof(Player), 1, fp);
-    p->E.name = (char*)calloc((size_t)val + 1, sizeof(char));
-    if (p->E.name != NULL)
-    {
-        fread(p->E.name, (size_t)val, 1, fp);
+
+    size_t nameLen;
+    fread(&nameLen, sizeof(size_t), 1, fp);
+    p->E.name = (char*)calloc(nameLen + 1, sizeof(char));
+    fread(p->E.name, nameLen, 1, fp);
+
+    // Load objects
+    uint oC = 0;
+    fread(&oC, sizeof(uint), 1, fp);
+    for (uint i = 0; i < oC; i++) {
+        Object* o = (Object*)malloc(sizeof(Object));
+        fread(o, sizeof(Object), 1, fp);
+        ObjNode* oNode = (ObjNode*)malloc(sizeof(ObjNode));
+        oNode->o = o;
+        oNode->next = NULL;
+        oNode->prev = ol->tail;
+        if (ol->tail != NULL) {
+            ol->tail->next = oNode;
+        } else {
+            ol->head = oNode;
+        }
+        ol->tail = oNode;
     }
 
-    if (p->lv > 1)
-    {
+    // Load foes
+    uint fC = 0;
+    fread(&fC, sizeof(uint), 1, fp);
+    for (uint i = 0; i < fC; i++) {
+        Foe* f = (Foe*)malloc(sizeof(Foe));
+        fread(f, sizeof(Foe), 1, fp);
+        size_t nameLength;
+        fread(&nameLength, sizeof(size_t), 1, fp);
+        f->E.name = (char*)calloc(nameLength + 1, sizeof(char));
+        fread(f->E.name, nameLength, 1, fp);
+        FoeNode* fNode = (FoeNode*)malloc(sizeof(FoeNode));
+        fNode->f = f;
+        fNode->next = NULL;
+        fNode->prev = fl->tail;
+        if (fl->tail != NULL) {
+            fl->tail->next = fNode;
+        } else {
+            fl->head = fNode;
+        }
+        fl->tail = fNode;
+    }
+
+    fclose(fp);
+
+    // Restore player stats
+    if (p->lv > 1) {
         PLAYER_MAX_HP += (p->lv - 1) * LVUP_VAL;
         PLAYER_MAX_MP += (p->lv - 1) * LVUP_VAL;
         PLAYER_ATK += (p->lv - 1) * LVUP_VAL;
         PLAYER_DEF += (p->lv - 1) * LVUP_VAL;
     }
 
+    if (p->boughtATK) PLAYER_ATK += PERM_BUFF;
+    if (p->boughtDEF) PLAYER_DEF += PERM_BUFF;
+    if (p->boughtVigor) {
+        PLAYER_MAX_HP += PERM_BUFF;
+        PLAYER_MAX_MP += PERM_BUFF;
+    }
+
     p->E.dead = false;
     p->E.fled = false;
 
-    if(p->boughtATK) PLAYER_ATK += 30;
-    if(p->boughtDEF) PLAYER_DEF += 30;
-    if(p->boughtVigor)
-    {
-        PLAYER_MAX_HP += 30;
-        PLAYER_MAX_MP += 30;
-    }
-
-    fclose(fp);
-
     printf("Data loaded successfully!\n");
-    SLEEP_MS(1000);
 
     return 0;
 }
 
-// Allows the user to choose from the available save datas and delete one of them
-PWRHNGR_DEF chooseAndDeleteData()
-{
+// Choose and delete a save file
+PWRHNGR_DEF chooseAndDeleteData() {
     char saveFiles[10][MAX_PATH];
     int fileCount = 0;
 
     listSaveFiles(saveFiles, &fileCount);
 
-    if(fileCount == 0)
-    {
+    if (fileCount == 0) {
         printf("No save files found to delete!\n");
         return;
     }
 
     printf("Available:\n");
-    for(uint i = 0; i<fileCount; i++)
-    {
+    for (int i = 0; i < fileCount; i++) {
         printf("%d: %s\n", i, saveFiles[i]);
     }
 
     int choice = -1;
     printf("Enter the number of the save file to delete: ");
-    while(scanf("%d", &choice) != 1 || choice < 0 || choice >= fileCount)
-    {
+    while (scanf("%d", &choice) != 1 || choice < 0 || choice >= fileCount) {
         printf("Invalid choice. Enter a valid number: ");
-        while(getchar()!='\n');
+        while (getchar() != '\n');
     }
 
-    char filePath[PATH_MAX];
+    char filePath[MAX_PATH];
     snprintf(filePath, sizeof(filePath), "%s%s", SAVE_DIR, saveFiles[choice]);
 
-    if(remove(filePath)==0)
-    {
+    if (remove(filePath) == 0) {
         printf("Deletion successful!\n");
-    }
-    else
-    {
+    } else {
         perror("FILE DELETION ERROR");
-        printf("Error num: %d\n", errno);
     }
-
-    SLEEP_MS(1000);
 }

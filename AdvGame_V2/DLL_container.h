@@ -7,8 +7,7 @@
 PWRHNGR_STRUCT ObjNode
 {
     Object* o;
-    struct ObjNode* prev;
-    struct ObjNode* next;
+    struct ObjNode* prev, * next;
 } ObjNode;
 
 PWRHNGR_STRUCT OBJ_DLL
@@ -21,8 +20,7 @@ PWRHNGR_STRUCT OBJ_DLL
 PWRHNGR_STRUCT FoeNode
 {
     Foe* f;
-    struct FoeNode* prev;
-    struct FoeNode* next;
+    struct FoeNode* prev, * next;
 } FoeNode;
 
 PWRHNGR_STRUCT FOE_DLL

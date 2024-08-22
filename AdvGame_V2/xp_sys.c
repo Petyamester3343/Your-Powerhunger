@@ -10,21 +10,21 @@ PWRHNGR_DEF level_up(Player* p)
     if (p->E.xp >= LV_UP_REQ(p->lv))
     {
         p->lv++;
-        PLAYER_MAX_MP += 10;
-        PLAYER_MAX_HP += 10;
 
         if(strcmp(p->E.name, "Saki")==0)
         {
+            PLAYER_MAX_HP += 5;
+            PLAYER_MAX_MP += 5;
             PLAYER_ATK += 5;
             PLAYER_DEF += 5;
         }
-
         else
         {
+            PLAYER_MAX_MP += 10;
+            PLAYER_MAX_HP += 10;
             PLAYER_ATK += 10;
             PLAYER_DEF += 10;
         }
-
 
         p->E.hp = PLAYER_MAX_HP;
         p->E.atk = PLAYER_ATK;
@@ -68,14 +68,12 @@ PWRHNGR_DEF xp_gain(uint experience, Player* p, bool fought)
 {
     p->E.xp += experience;
     if (fought)
-        printf("%s has gained %d XP from the battle! (Current: %d / %d)\n",
-               p->E.name, experience, p->E.xp, LV_UP_REQ(p->lv));
+        printf("%s has gained %d XP from the battle! (Current: %d / %d)\n", p->E.name, experience, p->E.xp, LV_UP_REQ(p->lv));
     else
         printf("(Current: %d / %d)\n", p->E.xp, LV_UP_REQ(p->lv));
+
     while (p->E.xp >= LV_UP_REQ(p->lv))
-    {
         level_up(p);
-    }
 }
 
 // Grants the player GOLD from slaying a Foe
