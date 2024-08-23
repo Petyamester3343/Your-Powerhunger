@@ -12,17 +12,36 @@ PWRHNGR_DEF go2Shop(Player* p)
     char choice[5] = { '>', ' ', ' ', ' ', ' ' };
     char exitChoice[2] = { ' ', '>' };
     char input = ' ';
+    char* desc = (char*)malloc(sizeof(char) * MAX_PATH);
 
     // Shop loop
     while (1)
     {
+        if(choice[0] == '>')
+        {
+            desc = strdup("A tome containing the knowledge for the strongest Magia one may ever cast on such Acolythic beings.\n\"My legacy is for those who have no evil intentions in their hearts!\"");
+        }
+        if(choice[1] == '>')
+        {
+            desc = strdup("The most refined armor available from the Skyhopper family business in our humble shop.\nIt can ever adjust to your proportions and repair itself!");
+        }
+        if(choice[2] == '>')
+        {
+            desc = strdup("The Valkyrian Firearms Manufacturing Industry has finally publishes his brand new product!\n\"One shot, one less threatening entity! Self-charging battery included!\"");
+        }
+        if(choice[3] == '>')
+        {
+            desc = strdup("Itachi Shintou presents his latest invention! The Vigor Enhancer Module!\n\"With this, you shall never fear Time marching over you with its fangs gnawing on your very self!\"");
+        }
+
         system("cls");
         printf("Welcome, weary traveler!\nFeel free to browse through my wares!\n");
-        printf("\t%c %s\t->\t\t$%d\n", choice[0], AKARI, RSOJ_PRICE);
-        printf("\t%c %s\t->\t\t$%d\n", choice[1], "Aegis Automatized Armor", ARMOR_PRICE);
-        printf("\t%c %s\t\t->\t\t$%d\n", choice[2], "Plasma Railgun", PLASMA_GUN_PRICE);
-        printf("\t%c %s\t\t->\t\t$%d\n", choice[3], "Vigor Enhancer", INVIGORATOR_PRICE);
+        printf("\t%c %s%s\t\t->\t\t$%d\n", choice[0], "Tome for the ", AKARI, RSOJ_PRICE);
+        printf("\t%c %s\t\t->\t\t$%d\n", choice[1], "Skyhopper Inc. Automatized Armor Mk. I", ARMOR_PRICE);
+        printf("\t%c %s\t\t->\t\t$%d\n", choice[2], "VFM Ind. \"Heiliger Sturz\" Plasma Railgun", PLASMA_GUN_PRICE);
+        printf("\t%c %s\t\t\t->\t\t$%d\n", choice[3], "Shintou's Vigor Enhancer Module", INVIGORATOR_PRICE);
         printf("\t%c %s\n\n", choice[4], "EXIT SHOP");
+        printf("\n%s", desc);
 
         bool leaving = false;
         input = getch();

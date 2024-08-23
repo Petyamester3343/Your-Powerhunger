@@ -768,7 +768,7 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
         if (map[p->E.pos.col][p->E.pos.row] == 'T' && foeTerrorizingShop(map, foeList) == 0)
             go2Shop(p);
         else if (foeTerrorizingShop(map, foeList) > 0)
-            printf("%s needs to slay %d monsters at Town to access the shop!\n", p->E.name, foeTerrorizingShop(map, foeList));
+            printf("%s needs to slay %d Foes at Town to access the shop!\n", p->E.name, foeTerrorizingShop(map, foeList));
         else if (map[p->E.pos.col][p->E.pos.row] != 'T')
             printf("There is no one who could sell the hero anything here.\n");
         SLEEP_MS(LATENCY);
