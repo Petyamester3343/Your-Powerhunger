@@ -43,6 +43,8 @@ PWRHNGR_STRUCT Entity
     bool dead;
     bool fled;
     Pos pos;
+    bool hasMagiaResist;
+    uint magiaResist;
 } Entity;
 
 // The playable character's struct, having Entity "inherited,"

@@ -1,5 +1,6 @@
 #include "DLL_container.h"
 #include "definitions.h"
+#include "def_vals.h"
 
 #include <string.h>
 
@@ -224,6 +225,11 @@ PWRHNGR_BOOLDEF insertFoeIntoList
     f->E.fled = false;
     f->loot = loot;
 
+    f->E.hasMagiaResist = strcmp(f->E.name, ACOLYTE_NAME) == 0 || strcmp(f->E.name, THWARTED_SELF_NAME) == 0 || strcmp(f->E.name, BOSS_NAME) == 0;
+    if(strcmp(f->E.name, ACOLYTE_NAME) == 0) f->E.magiaResist = 10;
+    if(strcmp(f->E.name, THWARTED_SELF_NAME) == 0) f->E.magiaResist = 20;
+    if(strcmp(f->E.name, BOSS_NAME) == 0) f->E.magiaResist = 30;
+    if(!f->E.hasMagiaResist) f->E.magiaResist = 0;
 
     FoeNode* neu = createFoe(f);
 

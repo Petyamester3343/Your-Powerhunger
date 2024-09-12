@@ -8,7 +8,7 @@
 #include <ctype.h>
 
 // Map-drawing function with output color manipulation
-PWRHNGR_DEF drawMap(char map[15][15], Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
+PWRHNGR_DEF drawMap(char map[MAP_SIZE][MAP_SIZE], Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // to manipulate the color of the output
     system("cls");
@@ -262,6 +262,8 @@ PWRHNGR_PLAYERDEF initPlayer()
         formatName(msg);
         p->E.name = strdup(msg);
         p->money = 0;
+        p->E.hasMagiaResist = true;
+        p->E.magiaResist = (strcmp(p->E.name, "Saki") != 0) ? 10 : 15;
         defPlayerValRestore(p);
         initPlayerMagic(p);
 

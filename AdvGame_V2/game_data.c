@@ -156,8 +156,8 @@ PWRHNGR_IDEF chooseAndLoadData(Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
         return -1;
     }
 
+    // Load Player and its name
     fread(p, sizeof(Player), 1, fp);
-
     size_t nameLen;
     fread(&nameLen, sizeof(size_t), 1, fp);
     p->E.name = (char*)calloc(nameLen + 1, sizeof(char));
@@ -205,7 +205,7 @@ PWRHNGR_IDEF chooseAndLoadData(Player* p, OBJ_DLL* ol, FOE_DLL* fl) {
 
     fclose(fp);
 
-    // Restore player stats
+    // Restore Player stats
     if (p->lv > 1) {
         PLAYER_MAX_HP += (p->lv - 1) * LVUP_VAL;
         PLAYER_MAX_MP += (p->lv - 1) * LVUP_VAL;

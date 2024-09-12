@@ -207,7 +207,7 @@ PWRHNGR_DEF playerCastsMagic(Player* p, Foe* f, Magia m)
             printf("%s sacrifices %d MP to cast %s on %s! (MP: %d)\n", p->E.name, m.magCost, m.magName, f->E.name, p->mp);
             if (rnd % 10 == 0)
             {
-                if (pCrit_MAG_DMG > f->E.def)
+                if (pCrit_MAG_DMG > f->E.def + f->E.magiaResist)
                 {
                     if (pCrit_MAG_DMG < f->E.hp)
                     {
@@ -233,7 +233,7 @@ PWRHNGR_DEF playerCastsMagic(Player* p, Foe* f, Magia m)
             }
             else
             {
-                if (m.magATK > f->E.def)
+                if (m.magATK > f->E.def + f->E.magiaResist)
                 {
                     if (m.magATK < f->E.hp)
                     {
@@ -627,12 +627,20 @@ PWRHNGR_DEF playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl)
     5. elem.: FLEE
     */
 
+    myStr yes = "YES";
+    myStr no = "NO";
+
     // The choosing segment
     while (!p->E.fled && !p->E.dead && !f->E.dead && !f->E.fled)
     {
         system("cls");
         printf("%s's HP: %d\n%s's MP: %d\n\n", p->E.name, p->E.hp, p->E.name, p->mp);
-        printf("%s's HP: %d\n\n", f->E.name, f->E.hp);
+        printf("%s's HP: %d\n", f->E.name, f->E.hp);
+        printf("Is Foe resistent to Magia: %s\n", (f->E.hasMagiaResist) ? yes : no);
+        if(f->E.hasMagiaResist)
+            printf("Magia Resistance: %d\n\n", f->E.magiaResist);
+        else
+            printf("\n\n");
         printf("Choose an action:\n\t%c ATTACK\n\t%c DEFEND\n\t%c MAGIC\n\t%c HEAL\n\t%c FLEE\n\n", actChoice[0], actChoice[1], actChoice[2], actChoice[3], actChoice[4]);
 
         in = getch();
@@ -708,13 +716,14 @@ PWRHNGR_DEF playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl)
                     enhDEF = p->E.def + (OBJ_DEF_BUFF * p->aegisPickedUp);
                     p->E.def = enhDEF;
                     printf("%d Aegis Cores acivated. %s's DEF is now strengthtened! (DEF: %d)", p->aegisPickedUp, p->E.name, p->E.def);
+                    p->aegisPickedUp = 0;
                 }
                 else if (p->aegisPickedUp == 1)
                 {
                     enhDEF = p->E.def + OBJ_DEF_BUFF;
                     p->E.def = enhDEF;
                     printf("Aegis Core activated. %s's DEF is slightly strengthened! (DEF: %d)", p->E.name, p->E.def);
-
+                    p->aegisPickedUp = 0;
                 }
                 else
                 {
