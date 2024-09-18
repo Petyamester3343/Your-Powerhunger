@@ -47,7 +47,7 @@ PWRHNGR_STRUCT Entity
     uint magiaResist;
 } Entity;
 
-// The playable character's struct, having Entity "inherited,"
+// The playable character's struct, having Entity and Magia "inherited,"
 // being able to cast magic, possess money, buy stuff, and level up,
 // and also count the picked up Aegis cores
 PWRHNGR_STRUCT Player

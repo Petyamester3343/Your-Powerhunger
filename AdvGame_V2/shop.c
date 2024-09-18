@@ -15,7 +15,7 @@ PWRHNGR_DEF go2Shop(Player* p)
     char* desc = (char*)malloc(sizeof(char) * MAX_PATH);
 
     // Shop loop
-    while (1)
+    while (input != 27)
     {
         if(choice[0] == '>')
         {
@@ -36,6 +36,7 @@ PWRHNGR_DEF go2Shop(Player* p)
 
         system("cls");
         printf("Welcome, weary traveler!\nFeel free to browse through my wares!\n");
+        printf("Money: $%d\n\n", p->money);
         printf("\t%c %s%s\t\t->\t\t$%d\n", choice[0], "Tome for the ", AKARI, RSOJ_PRICE);
         printf("\t%c %s\t\t->\t\t$%d\n", choice[1], "Skyhopper Inc. Automatized Armor Mk. I", ARMOR_PRICE);
         printf("\t%c %s\t\t->\t\t$%d\n", choice[2], "VFM Ind. \"Heiliger Sturz\" Plasma Railgun", PLASMA_GUN_PRICE);
