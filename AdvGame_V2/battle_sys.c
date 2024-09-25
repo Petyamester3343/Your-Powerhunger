@@ -50,7 +50,7 @@ PWRHNGR_DEF playerAttack(Player* p, Foe* f)
                     }
                     else
                     {
-                        f->E.hp -= 3;
+                        f->E.hp -= pDMG + 3;
                         printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n", f->E.name, p->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
                         SLEEP_MS(LATENCY);
                     }
@@ -76,7 +76,7 @@ PWRHNGR_DEF playerAttack(Player* p, Foe* f)
                     }
                     else
                     {
-                        f->E.hp -= 1;
+                        f->E.hp -= pDMG;
                         printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n", f->E.name, p->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
                         SLEEP_MS(LATENCY);
                     }
@@ -101,8 +101,7 @@ PWRHNGR_DEF playerAttack(Player* p, Foe* f)
     {
         if (f->E.dead)
         {
-            if(strcmp(f->E.name, "Jimmy") == 0)
-                jimmyDefeated = true;
+            if(strcmp(f->E.name, BOSS_NAME) == 0) bossDefeated = true;
             uint xpReward = (obliterated) ? f->E.xp * 2 : f->E.xp;
             xp_gain(xpReward, p, true);
             uint lootReward = (obliterated) ? f->loot * 2 : f->loot;
@@ -138,7 +137,7 @@ PWRHNGR_DEF foeAttack(Player* p, Foe* f)
                     }
                     else
                     {
-                        p->E.hp -= 3;
+                        p->E.hp -= fDMG + 3;
                         printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n", p->E.name, f->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
                         SLEEP_MS(LATENCY);
                     }
@@ -163,7 +162,7 @@ PWRHNGR_DEF foeAttack(Player* p, Foe* f)
                     }
                     else
                     {
-                        p->E.hp -= 1;
+                        p->E.hp -= fDMG;
                         printf("%s tanked %s's attack!\t(%s: %d\t|\t%s: %d)\n", p->E.name, f->E.name, p->E.name, p->E.hp, f->E.name, f->E.hp);
                         SLEEP_MS(LATENCY);
                     }
@@ -473,7 +472,7 @@ PWRHNGR_DEF playerChoosesMagic(Player* p, Foe* f)
 PWRHNGR_DEF weakenPlayer(Player* p, Foe* f)
 {
     printf("%s screams at %s. It tries to make the wanderer afraid.\n", f->E.name, p->E.name);
-    if(rand()%50 > 25)
+    if(rand() % 50 > 25)
     {
         p->E.def -= 5;
         printf("The wanderer stepped back. DEF \x1b[31m-5!\x1b[0m\n");
@@ -590,7 +589,7 @@ PWRHNGR_DEF impendingDoom(Player* p, FOE_DLL* foeList, OBJ_DLL* ol)
         if (checkPlayerSurrounding(curr->f, p))
         {
             printf("%s noticed an instance of %s skulking around him (X: %d, Y: %d)\n", p->E.name, curr->f->E.name, curr->f->E.pos.col + 1, curr->f->E.pos.row + 1);
-            int randGen = rand()%2;
+            int randGen = rand() % 2;
             switch(randGen)
             {
             case 0:
@@ -641,7 +640,8 @@ PWRHNGR_DEF playerChoosesAction(Player* p, Foe* f, OBJ_DLL* ol, FOE_DLL* fl)
             printf("Magia Resistance: %d\n\n", f->E.magiaResist);
         else
             printf("\n\n");
-        printf("Choose an action:\n\t%c ATTACK\n\t%c DEFEND\n\t%c MAGIC\n\t%c HEAL\n\t%c FLEE\n\n", actChoice[0], actChoice[1], actChoice[2], actChoice[3], actChoice[4]);
+        printf("Choose an action:\n\t%c ATTACK\n\t%c DEFEND\n\t%c MAGIC\n\t%c HEAL\n\t%c FLEE\n\n",
+               actChoice[0], actChoice[1], actChoice[2], actChoice[3], actChoice[4]);
 
         in = getch();
         switch (in)

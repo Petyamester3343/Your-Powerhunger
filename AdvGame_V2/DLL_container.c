@@ -205,11 +205,7 @@ PWRHNGR_FOEDEF findFoeByName(FOE_DLL* list, myStr name)
 }
 
 // Inserts a Foe into the list
-PWRHNGR_BOOLDEF insertFoeIntoList
-(Player* p, OBJ_DLL* ol, FOE_DLL* fl,
- myStr name,
- uint hp, const uint atk, uint def,
- const uint xp, const uint loot)
+PWRHNGR_BOOLDEF insertFoeIntoList (Player* p, OBJ_DLL* ol, FOE_DLL* fl, myStr name, uint hp, const uint atk, uint def, const uint xp, const uint loot)
 {
     Foe* f = (Foe*)malloc(sizeof(Foe));
     if (f == NULL)

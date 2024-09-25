@@ -6,8 +6,8 @@
 #include "definitions.h"
 
 // Indicators of Jimmy having been defeated and summoned
-static bool jimmyDefeated = false;
-static bool jimmySummoned = false;
+static bool bossDefeated = false;
+static bool bossSummoned = false;
 
 // Level up value, used to incrememnt the Player's numeral stats
 const PWRHNGR_UINT LVUP_VAL = 10;

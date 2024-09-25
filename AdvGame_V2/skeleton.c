@@ -671,7 +671,7 @@ PWRHNGR_DEF playerSeeksObj(Player* p, OBJ_DLL* list)
                 break;
             }
 
-            SLEEP_MS(500);
+            SLEEP_MS(LATENCY);
 
             if(currObjNode->o->found)
             {
@@ -692,7 +692,7 @@ PWRHNGR_UIDEF foeTerrorizingShop(char map[15][15], FOE_DLL* fl)
 {
     FoeNode* curr = fl->head;
     int temp = 0;
-    while (curr!=NULL)
+    while (curr != NULL)
     {
         if(map[curr->f->E.pos.col][curr->f->E.pos.row] == 'T')
         {
@@ -833,17 +833,17 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
         {
             if(curr->f->E.pos.col == p->E.pos.col && curr->f->E.pos.row == p->E.pos.row)
             {
-                int rndGen = rand()%2;
+                int rndGen = rand() % 2;
                 switch(rndGen)
                 {
                 case 0:
                     printf("%s successfully approached %s! %s gets to make the first move!\n", p->E.name, curr->f->E.name, p->E.name);
-                    SLEEP_MS(500);
+                    SLEEP_MS(LATENCY);
                     playerChoosesAction(p, curr->f, objList, foeList);
                     break;
                 case 1:
                     printf("%s unfortunately noticed %s! %s gets to act first!\n", curr->f->E.name, p->E.name, curr->f->E.name);
-                    SLEEP_MS(500);
+                    SLEEP_MS(LATENCY);
                     foeChoosesAction(p, curr->f, objList, foeList);
                     break;
                 }
@@ -858,12 +858,12 @@ PWRHNGR_BOOLDEF playerAction(char input, char map[15][15], Player* p, OBJ_DLL* o
 // Utility method for summoning the Boss
 PWRHNGR_DEF deployBoss(Player* p, OBJ_DLL* ol, FOE_DLL* fl)
 {
-    if (p->lv >= 10 && !jimmySummoned)
+    if (p->lv >= 10 && !bossSummoned)
     {
         insertFoeIntoList(p, ol, fl,
                           BOSS_NAME, BOSS_HP, BOSS_ATK, BOSS_DEF, 0, 0);
         fl->tail->f->E.pos.col = fl->tail->f->E.pos.row = 14;
-        jimmySummoned = true;
+        bossSummoned = true;
     }
 }
 
@@ -954,7 +954,7 @@ PWRHNGR_DEF breedFoes(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 // A simple non-interactive UI
 PWRHNGR_DEF showPlayerInfo(Player* p)
 {
-    //printf("Player name:\t%s\n", p->E.name); // debug to test the save/load function
+    printf("Name:\t%s\n", p->E.name);
     printf("HP:\t%d/%d\n", p->E.hp, PLAYER_MAX_HP);
     printf("MP:\t%d/%d\n", p->mp, PLAYER_MAX_MP);
     printf("ATK:\t%d/%d\n", p->E.atk, PLAYER_ATK);

@@ -2,24 +2,19 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="def_vals.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
+	<File name="main.c" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2604" topLine="95" />
-		</Cursor>
-	</File>
-	<File name="game_data.c" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="124" topLine="39" />
-		</Cursor>
-	</File>
-	<File name="entities.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="913" topLine="35" />
+			<Cursor1 position="596" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="skeleton.c" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="8878" topLine="262" />
+			<Cursor1 position="31330" topLine="840" />
+		</Cursor>
+	</File>
+	<File name="game_data.c" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="124" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="map.txt" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -27,49 +22,54 @@
 			<Cursor1 position="255" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="shop.c" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
+	<File name="entities.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="459" topLine="6" />
+			<Cursor1 position="913" topLine="14" />
 		</Cursor>
 	</File>
-	<File name="xp_sys.c" open="1" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="def_vals.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="419" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="definitions.h" open="1" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3007" topLine="54" />
-		</Cursor>
-	</File>
-	<File name="tictactoe.c" open="1" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="250" topLine="100" />
-		</Cursor>
-	</File>
-	<File name="DLL_container.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1155" topLine="4" />
+			<Cursor1 position="207" topLine="6" />
 		</Cursor>
 	</File>
 	<File name="DLL_container.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="169" topLine="0" />
+			<Cursor1 position="198" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="main.c" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="-1" zoom_2="0">
+	<File name="DLL_container.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="596" topLine="0" />
+			<Cursor1 position="4877" topLine="326" />
 		</Cursor>
 	</File>
-	<File name="game_loop.c" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="-2" zoom_2="0">
+	<File name="game_loop.c" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="5304" topLine="69" />
+			<Cursor1 position="5322" topLine="74" />
 		</Cursor>
 	</File>
-	<File name="battle_sys.c" open="1" top="1" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="tictactoe.c" open="1" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="21457" topLine="544" />
+			<Cursor1 position="4202" topLine="119" />
+		</Cursor>
+	</File>
+	<File name="shop.c" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="459" topLine="223" />
+		</Cursor>
+	</File>
+	<File name="xp_sys.c" open="1" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="188" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="definitions.h" open="1" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1749" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="battle_sys.c" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3818" topLine="87" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

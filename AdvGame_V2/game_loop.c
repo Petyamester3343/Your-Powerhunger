@@ -6,7 +6,7 @@ PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 
 PWRHNGR_DEF checkWinCondition(Player* p, OBJ_DLL* objList, FOE_DLL* foeList)
 {
-    if (jimmyDefeated)
+    if (bossDefeated)
     {
         printf("%s, you have finally slain Jimmy. You win!\n", p->E.name);
         saveData(p, objList, foeList);
@@ -90,7 +90,7 @@ PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 {
     bool divineHelpGained = false;
 
-    while (1)
+    while (true)
     {
         system("cls");																			// Clear the console for the new output
         drawMap(map, p, objList, foeList);														// Draw the map (player, foes, objects, unoccupied positions)
@@ -107,7 +107,7 @@ PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
             }
 
             moveFoes(foeList, objList, p);														// After initialization, the enemies move, too (but their movement is randomized, quasi-wandering)
-            moveBoss(jimmySummoned, foeList, p, objList);										// If Jimmy is present, he moves towards the player (based on the absolute values of the hor. and vert. distance between them)
+            moveBoss(bossSummoned, foeList, p, objList);										// If Jimmy is present, he moves towards the player (based on the absolute values of the hor. and vert. distance between them)
 
             if (p->E.hp < PLAYER_MAX_HP && !divineHelpGained)                                   // Upon getting hurt
             {
@@ -124,7 +124,7 @@ PWRHNGR_DEF GameLoop(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
             divineHelpGained = false;                                                           // Your guardian angel comes back
         }
 
-        checkWinCondition(p, objList, foeList);                                                          // Your sole goal is to defeat Jimmy once you get strong enough (LV 10 or above)
+        checkWinCondition(p, objList, foeList);                                                 // Your sole goal is to defeat Jimmy once you get strong enough (LV 10 or above)
     }
 }
 
@@ -142,11 +142,12 @@ PWRHNGR_DEF MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
         system("cls");
         SetConsoleTextAttribute(hndl, FOREGROUND_RED);
         myStr title = "POWERHUNGER\x1b[0m";
-        printf("%s\n\t%c New Game\n\t%c Load Game\n\t%c \x1b[31mDelete Save File\n\n\x1b[0m", title, choice[0], choice[1], choice[2]);
+        printf("%s\n\t%c New Game\n\t%c Load Game\n\t%c \x1b[31mDelete Save File\n\n\x1b[0m",
+               title, choice[0], choice[1], choice[2]);
 
-        getc = getch();                                                                         // the player may traverse the main menu by 1 unit fwd/bwd
+        getc = getch();                                                                         // The player may traverse the main menu by 1 unit forward/backward
 
-        switch (getc)                                                                           // the same principle is applied to all the other selection menus
+        switch (getc)                                                                           // The same principle is applied to all the other selection menus
         {
         case 'w':
             if (choice[0] == '#')
@@ -190,7 +191,7 @@ PWRHNGR_DEF MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
 
             else if (choice[1] == '#')
             {
-                if (chooseAndLoadData(p, objList, foeList) == -1)  												 // Should a save file not exist
+                if (chooseAndLoadData(p, objList, foeList) == -1)  								 // Should a save file not exist
                 {
                     NewGame(getc, map, p, objList, foeList);
                 }
@@ -208,7 +209,8 @@ PWRHNGR_DEF MainMenu(char getc, char map[15][15], Player* p, OBJ_DLL* objList, F
             while (!exitChose)
             {
                 system("cls");
-                printf("Are you sure you want to exit? (Any unsaved data will be lost.)\n\t%c YES\n\t%c NO", exitChoice[0], exitChoice[1]);
+                printf("Are you sure you want to exit? (Any unsaved data will be lost.)\n\t%c YES\n\t%c NO",
+                       exitChoice[0], exitChoice[1]);
                 char exitInput = getch();
                 switch (exitInput)
                 {
